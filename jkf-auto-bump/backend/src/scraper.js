@@ -211,17 +211,34 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
             let topExpiresAt = null;
             let freeStatus = null;
             try {
+                // Wait for the status element to appear, which confirms the page has updated
+                await page.waitForTimeout(3000);
+
                 const bodyText = await page.innerText('body');
-                // The Nuxt UI might show a toast saying "更新狀態成功" or change the button text
                 if (bodyText.includes('處理中') || bodyText.includes('更新狀態成功') || bodyText.includes('推文成功')) {
                     console.log(`[AutoBump] Detected success message in DOM.`);
                 }
 
-                // Extract business status (營業狀態) text
+                // Extract free time (now)
                 const statusMatch = bodyText.match(/營業狀態[-.—\s]*([^\n]+)/);
                 if (statusMatch && statusMatch[1]) {
                     freeStatus = statusMatch[1].trim();
                     console.log(`[Scraped] Business status: ${freeStatus}`);
+                }
+
+                // Ensure we get the top expire text on Nuxt UI
+                const topTextMatch = bodyText.match(/一般置頂\s*時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
+                if (topTextMatch && topTextMatch[1]) {
+                    topExpiresAt = topTextMatch[1];
+                    console.log(`[Scraped] Top expires at: ${topExpiresAt}`);
+                } else {
+                    // Try extracting from the top button directly if text split across elements
+                    const topBtnText = await page.locator('button:has-text("一般置頂")').innerText().catch(() => '');
+                    const innerMatch = topBtnText.match(/時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
+                    if (innerMatch && innerMatch[1]) {
+                        topExpiresAt = innerMatch[1];
+                        console.log(`[Scraped] Top expires at (inner text): ${topExpiresAt}`);
+                    }
                 }
             } catch (e) {
                 console.log("[Notice] Could not extract page info:", e.message);
@@ -247,13 +264,18 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
                 let topExpiresAt = null;
                 let freeStatus = null;
                 try {
-                    const topMatch = bodyText.match(/一般置頂\s*時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
-                    if (topMatch && topMatch[1]) {
-                        topExpiresAt = topMatch[1];
-                    }
                     const statusMatch = bodyText.match(/營業狀態[-.—\s]*([^\n]+)/);
                     if (statusMatch && statusMatch[1]) {
                         freeStatus = statusMatch[1].trim();
+                    }
+
+                    const topMatch = bodyText.match(/一般置頂\s*時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
+                    if (topMatch && topMatch[1]) {
+                        topExpiresAt = topMatch[1];
+                    } else {
+                        const topBtnText = await page.locator('button:has-text("一般置頂")').innerText().catch(() => '');
+                        const innerMatch = topBtnText.match(/時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
+                        if (innerMatch && innerMatch[1]) topExpiresAt = innerMatch[1];
                     }
                 } catch (e) { /* ignore */ }
 
