@@ -1,0 +1,11 @@
+{
+    "name": "悅沐 SPA",
+    "address": "（請填入地址）",
+    "phone": "（請填入電話）",
+    "businessHours": {
+        "weekday": "12:00 - 01:00",
+        "weekend": "12:00 - 01:00"
+    },
+    "lineId": "@你的LINE ID",
+    "parking": "鄰近有收費停車場，步行約2分鐘"
+}

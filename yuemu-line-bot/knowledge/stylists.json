@@ -1,0 +1,16 @@
+[
+    {
+        "name": "師傅A",
+        "specialty": "精油按摩、越式洗髮",
+        "photo": "master-a.jpg",
+        "available": true,
+        "description": "5年經驗，擅長深層放鬆"
+    },
+    {
+        "name": "師傅B",
+        "specialty": "全身SPA、精油按摩",
+        "photo": "master-b.jpg",
+        "available": true,
+        "description": "3年經驗，手法溫柔細膩"
+    }
+]

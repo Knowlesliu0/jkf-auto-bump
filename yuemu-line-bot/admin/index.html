@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>悅沐 LINE Bot 管理後台</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --surface-2: #24243a;
+      --border: #2d2d44;
+      --text: #e8e8f0;
+      --text-dim: #8888a0;
+      --accent: #9b7dbd;
+      --accent-glow: rgba(155, 125, 189, 0.3);
+      --success: #5cb85c;
+      --danger: #e05555;
+      --warning: #f0ad4e;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--surface), var(--surface-2));
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(20px);
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), #c9a0dc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    header .status .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── Navigation tabs ────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+    }
+
+    .tab {
+      padding: 14px 24px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Main content ───────────────────────── */
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    /* ── Cards ──────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover { border-color: var(--accent); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-header .name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .card-header .time {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .card-body {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    /* ── Buttons ─────────────────────────────── */
+    button, .btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #b094d0;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover { background: rgba(224, 85, 85, 0.1); }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover { background: #4cae4c; }
+
+    /* ── Forms ───────────────────────────────── */
+    textarea, input[type="text"], input[type="file"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    textarea { min-height: 80px; }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    /* ── Knowledge Editor ─────────────────────── */
+    .json-editor {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      min-height: 300px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      tab-size: 2;
+    }
+
+    .file-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .file-tag {
+      padding: 6px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      transition: all 0.2s;
+    }
+
+    .file-tag:hover { border-color: var(--accent); color: var(--text); }
+    .file-tag.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* ── Toast ────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 24px;
+      font-size: 0.9rem;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--danger); }
+
+    /* ── Empty state ──────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-dim);
+    }
+
+    .empty .icon { font-size: 3rem; margin-bottom: 16px; }
+    .empty p { font-size: 0.95rem; }
+
+    /* ── Reply inline ─────────────────────────── */
+    .reply-box {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .reply-box input {
+      flex: 1;
+    }
+
+    /* ── Upload area ──────────────────────────── */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(155, 125, 189, 0.05);
+    }
+
+    .upload-area input[type="file"] {
+      display: none;
+    }
+
+    /* ── Responsive ───────────────────────────── */
+    @media (max-width: 768px) {
+      header { padding: 16px; }
+      main { padding: 16px; }
+      .tabs { padding: 0 16px; overflow-x: auto; }
+      .tab { padding: 12px 16px; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🤖 悅沐 LINE Bot 管理後台</h1>
+    <div class="status">
+      <div class="dot"></div>
+      <span>機器人運行中</span>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-panel="pending">📩 待回覆</div>
+    <div class="tab" data-panel="knowledge">📚 知識庫</div>
+    <div class="tab" data-panel="photos">📷 師傅照片</div>
+  </div>
+
+  <main>
+    <!-- ── 待回覆訊息面板 ─────────────────────── -->
+    <div id="pending" class="panel active">
+      <h2>📩 待回覆的客人訊息</h2>
+      <div id="pending-list">
+        <div class="empty">
+          <div class="icon">✨</div>
+          <p>目前沒有待回覆的訊息</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 知識庫編輯面板 ─────────────────────── -->
+    <div id="knowledge" class="panel">
+      <h2>📚 編輯知識庫</h2>
+      <div class="file-list" id="knowledge-files"></div>
+      <div class="card">
+        <div class="form-group">
+          <label id="editor-label">選擇一個知識庫檔案</label>
+          <textarea id="json-editor" class="json-editor" placeholder="選擇上方的檔案來編輯..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveKnowledge()">💾 儲存</button>
+      </div>
+    </div>
+
+    <!-- ── 師傅照片上傳面板 ────────────────────── -->
+    <div id="photos" class="panel">
+      <h2>📷 上傳師傅照片</h2>
+      <div class="card">
+        <div class="upload-area" onclick="document.getElementById('photo-input').click()">
+          <div style="font-size: 2rem; margin-bottom: 12px;">📸</div>
+          <p>點擊或拖放照片到此處上傳</p>
+          <input type="file" id="photo-input" accept="image/*" onchange="uploadPhoto(this)" />
+        </div>
+        <div id="upload-result" style="margin-top: 16px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let currentKnowledgeFile = null;
+
+    // ── Tabs ────────────────────────────────────
+
+    document.querySelectorAll('.tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.panel).classList.add('active');
+      });
+    });
+
+    // ── Toast ───────────────────────────────────
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = `toast show ${type}`;
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ── Pending Messages ────────────────────────
+
+    async function loadPending() {
+      try {
+        const res = await fetch(`${API_BASE}/api/pending`);
+        const data = await res.json();
+        renderPending(data);
+      } catch (err) {
+        console.error('載入待回覆訊息失敗:', err);
+      }
+    }
+
+    function renderPending(messages) {
+      const container = document.getElementById('pending-list');
+
+      if (!messages.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <div class="icon">✨</div>
+            <p>目前沒有待回覆的訊息</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = messages
+        .map(
+          (m) => `
+        <div class="card" id="msg-${m.id}">
+          <div class="card-header">
+            <span class="name">👤 ${m.displayName}</span>
+            <span class="time">${new Date(m.timestamp).toLocaleString('zh-TW')}</span>
+          </div>
+          <div class="card-body">💬 ${escapeHtml(m.text)}</div>
+          <div class="reply-box">
+            <input type="text" id="reply-${m.id}" placeholder="輸入回覆..." onkeydown="if(event.key==='Enter')replyMsg('${m.userId}','${m.id}')" />
+            <button class="btn btn-primary" onclick="replyMsg('${m.userId}','${m.id}')">發送</button>
+            <button class="btn btn-danger" onclick="dismissMsg('${m.id}')">忽略</button>
+          </div>
+        </div>`
+        )
+        .join('');
+    }
+
+    async function replyMsg(userId, msgId) {
+      const input = document.getElementById(`reply-${msgId}`);
+      const message = input.value.trim();
+      if (!message) return;
+
+      try {
+        await fetch(`${API_BASE}/api/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, message }),
+        });
+        showToast('✅ 已回覆客人');
+        loadPending();
+      } catch (err) {
+        showToast('❌ 回覆失敗', 'error');
+      }
+    }
+
+    async function dismissMsg(id) {
+      try {
+        await fetch(`${API_BASE}/api/pending/${id}`, { method: 'DELETE' });
+        document.getElementById(`msg-${id}`)?.remove();
+        showToast('已忽略');
+      } catch (err) {
+        showToast('❌ 操作失敗', 'error');
+      }
+    }
+
+    // ── Knowledge Base ──────────────────────────
+
+    const KNOWLEDGE_FILES = ['business-info', 'services', 'stylists', 'faq'];
+
+    function renderKnowledgeFiles() {
+      const container = document.getElementById('knowledge-files');
+      container.innerHTML = KNOWLEDGE_FILES.map(
+        (f) =>
+          `<div class="file-tag ${currentKnowledgeFile === f ? 'active' : ''}" onclick="loadKnowledgeFile('${f}')">${f}.json</div>`
+      ).join('');
+    }
+
+    async function loadKnowledgeFile(name) {
+      currentKnowledgeFile = name;
+      renderKnowledgeFiles();
+      document.getElementById('editor-label').textContent = `編輯 ${name}.json`;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/knowledge/${name}`);
+        const data = await res.json();
+        document.getElementById('json-editor').value = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('json-editor').value = '// 檔案不存在或載入失敗';
+      }
+    }
+
+    async function saveKnowledge() {
+      if (!currentKnowledgeFile) return showToast('請先選擇檔案', 'error');
+
+      const raw = document.getElementById('json-editor').value;
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch (err) {
+        return showToast('❌ JSON 格式錯誤', 'error');
+      }
+
+      try {
+        await fetch(`${API_BASE}/api/knowledge/${currentKnowledgeFile}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        showToast('✅ 已儲存');
+      } catch (err) {
+        showToast('❌ 儲存失敗', 'error');
+      }
+    }
+
+    // ── Photo Upload ────────────────────────────
+
+    async function uploadPhoto(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const form = new FormData();
+      form.append('photo', file);
+
+      try {
+        const res = await fetch(`${API_BASE}/api/upload-photo`, {
+          method: 'POST',
+          body: form,
+        });
+        const data = await res.json();
+
+        document.getElementById('upload-result').innerHTML = `
+          <div class="card">
+            <p>✅ 上傳成功！</p>
+            <p style="margin-top:8px;color:var(--text-dim);font-size:0.85rem;">
+              檔名：${data.filename}<br/>
+              URL：<code>${data.url}</code>
+            </p>
+            <p style="margin-top:8px;color:var(--text-dim);font-size:0.85rem;">
+              請在知識庫的 stylists.json 中更新 photo 欄位為：<code>${data.filename}</code>
+            </p>
+          </div>`;
+        showToast('✅ 照片上傳成功');
+      } catch (err) {
+        showToast('❌ 上傳失敗', 'error');
+      }
+
+      input.value = '';
+    }
+
+    // ── Helpers ──────────────────────────────────
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ── Init ────────────────────────────────────
+
+    renderKnowledgeFiles();
+    loadPending();
+    // 每 10 秒自動刷新待回覆
+    setInterval(loadPending, 10000);
+  </script>
+</body>
+</html>

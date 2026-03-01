@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Zap, LogOut, Plus, Trash2, Play, AlertCircle, CheckCircle2, Clock, HelpCircle, Cookie, Edit3 } from 'lucide-react';
+import { Zap, LogOut, Plus, Trash2, Play, AlertCircle, CheckCircle2, Clock, HelpCircle, Cookie, Edit3, Timer } from 'lucide-react';
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState([]);
@@ -11,6 +11,12 @@ export default function DashboardPage() {
   const [editCookieValue, setEditCookieValue] = useState('');
   const [editUsername, setEditUsername] = useState('');
   const [editPassword, setEditPassword] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const fetchApi = async (url, options = {}) => {
     const headers = {
@@ -225,15 +231,51 @@ export default function DashboardPage() {
                               </div>
                             );
                           })()}
-                          {task.free_status && (() => {
-                            const isFree = task.free_status.includes('現在有空');
+                          {(() => {
+                            let isFree = false;
+                            let countdownDisplay = "00:00";
+                            let progressPercent = 0;
+
+                            if (task.last_run && task.status !== 'failed') {
+                              const lastRunTime = new Date(task.last_run).getTime();
+                              const expiresTime = lastRunTime + (60 * 60 * 1000);
+                              const diffMs = expiresTime - currentTime.getTime();
+
+                              if (diffMs > 0) {
+                                isFree = true;
+                                const m = Math.floor(diffMs / 60000);
+                                const s = Math.floor((diffMs % 60000) / 1000);
+                                countdownDisplay = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                                progressPercent = (diffMs / (60 * 60 * 1000)) * 100;
+                              }
+                            } else if (task.free_status && task.free_status.includes('現在有空')) {
+                              isFree = true;
+                              countdownDisplay = "未知";
+                              progressPercent = 100;
+                            }
+
                             return (
-                              <div className="mt-1">
-                                <span className="text-gray-500 text-xs">營業狀態:</span><br />
-                                <span className={`inline-flex items-center gap-1 text-sm font-bold ${isFree ? 'text-green-400' : 'text-gray-400'}`}>
-                                  <span className={`w-2 h-2 rounded-full ${isFree ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`}></span>
-                                  {task.free_status}
-                                </span>
+                              <div className="mt-3 w-full bg-black/20 rounded-lg p-2.5 border border-white/5">
+                                <div className="flex justify-between items-center mb-2">
+                                  <span className="text-gray-400 text-xs font-medium flex items-center gap-1"><Timer className="w-3.5 h-3.5" /> 營業狀態</span>
+                                  <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${isFree ? 'text-green-400' : 'text-gray-500'}`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${isFree ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`}></span>
+                                    {isFree ? '現在有空' : '無狀態等待排程'}
+                                  </span>
+                                </div>
+                                {isFree && countdownDisplay !== "未知" && (
+                                  <div>
+                                    <div className="w-full bg-gray-900 rounded-full h-6 relative overflow-hidden border border-black/50 shadow-inner">
+                                      <div className="bg-gradient-to-r from-green-600 to-green-400 h-full transition-all duration-1000 ease-linear relative" style={{ width: `${progressPercent}%` }}>
+                                        <div className="absolute inset-0 bg-white/20 w-full h-1/2 rounded-t-full"></div>
+                                      </div>
+                                      <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] tracking-wider">
+                                        {countdownDisplay}
+                                      </div>
+                                    </div>
+                                    <div className="text-[10px] text-gray-500 text-center mt-1">剩下 {countdownDisplay}</div>
+                                  </div>
+                                )}
                               </div>
                             );
                           })()}

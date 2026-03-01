@@ -1,0 +1,20 @@
+[
+    {
+        "name": "精油按摩",
+        "duration": "60分鐘 / 90分鐘",
+        "price": "NT$1,500 / NT$2,000",
+        "description": "使用頂級精油，深層放鬆全身肌肉"
+    },
+    {
+        "name": "越式洗髮",
+        "duration": "45分鐘",
+        "price": "NT$800",
+        "description": "道地越式手法，搭配頭皮按摩"
+    },
+    {
+        "name": "全身SPA",
+        "duration": "120分鐘",
+        "price": "NT$3,000",
+        "description": "精油按摩 + 越式洗髮完整放鬆體驗"
+    }
+]
