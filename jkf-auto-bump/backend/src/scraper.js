@@ -219,29 +219,32 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
                     console.log(`[AutoBump] Detected success message in DOM.`);
                 }
 
-                // Extract free time (now)
+                // Extract Free Status first
                 const statusMatch = bodyText.match(/營業狀態[-.—\s]*([^\n]+)/);
                 if (statusMatch && statusMatch[1]) {
                     freeStatus = statusMatch[1].trim();
                     console.log(`[Scraped] Business status: ${freeStatus}`);
                 }
 
-                // Ensure we get the top expire text on Nuxt UI
-                const topTextMatch = bodyText.match(/一般置頂\s*時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
-                if (topTextMatch && topTextMatch[1]) {
-                    topExpiresAt = topTextMatch[1];
-                    console.log(`[Scraped] Top expires at: ${topExpiresAt}`);
+                // Try to find the time string directly without requiring "一般置頂" prefix
+                // It usually looks like "時間到：2026-03-29 14:18:00"
+                const timeMatch = bodyText.match(/時間到\s*[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
+                if (timeMatch && timeMatch[1]) {
+                    topExpiresAt = timeMatch[1];
+                    console.log(`[Scraped] Top expires at (from body text): ${topExpiresAt}`);
                 } else {
-                    // Try extracting from the top button directly if text split across elements
-                    const topBtn = page.locator('button:has-text("一般置頂")');
-                    const topBtnText = await topBtn.innerText().catch(() => '');
-                    const innerMatch = topBtnText.match(/時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
-                    if (innerMatch && innerMatch[1]) {
-                        topExpiresAt = innerMatch[1];
-                        console.log(`[Scraped] Top expires at (inner text): ${topExpiresAt}`);
-                    } else {
-                        const rawHtml = await topBtn.evaluate(node => node.innerHTML).catch(() => 'No button found');
-                        console.log(`[Debug] Top Button HTML is: ${rawHtml}`);
+                    // Fallback to searching inside button texts specifically
+                    const buttons = await page.locator('button').allInnerTexts();
+                    for (const text of buttons) {
+                        const btnMatch = text.match(/時間到\s*[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
+                        if (btnMatch && btnMatch[1]) {
+                            topExpiresAt = btnMatch[1];
+                            console.log(`[Scraped] Top expires at (from button list): ${topExpiresAt}`);
+                            break;
+                        }
+                    }
+                    if (!topExpiresAt) {
+                        console.log(`[Notice] Could not find expiration time in body text or buttons.`);
                     }
                 }
             } catch (e) {
@@ -273,18 +276,17 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
                         freeStatus = statusMatch[1].trim();
                     }
 
-                    const topMatch = bodyText.match(/一般置頂\s*時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
-                    if (topMatch && topMatch[1]) {
-                        topExpiresAt = topMatch[1];
+                    const timeMatch = bodyText.match(/時間到\s*[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
+                    if (timeMatch && timeMatch[1]) {
+                        topExpiresAt = timeMatch[1];
                     } else {
-                        const topBtn = page.locator('button:has-text("一般置頂")');
-                        const topBtnText = await topBtn.innerText().catch(() => '');
-                        const innerMatch = topBtnText.match(/時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
-                        if (innerMatch && innerMatch[1]) {
-                            topExpiresAt = innerMatch[1];
-                        } else {
-                            const rawHtml = await topBtn.evaluate(node => node.innerHTML).catch(() => '');
-                            console.log(`[Debug] Already Free Top Button HTML is: ${rawHtml}`);
+                        const buttons = await page.locator('button').allInnerTexts();
+                        for (const text of buttons) {
+                            const btnMatch = text.match(/時間到\s*[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
+                            if (btnMatch && btnMatch[1]) {
+                                topExpiresAt = btnMatch[1];
+                                break;
+                            }
                         }
                     }
                 } catch (e) { /* ignore */ }

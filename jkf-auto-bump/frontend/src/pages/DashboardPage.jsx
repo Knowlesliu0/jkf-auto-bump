@@ -221,13 +221,24 @@ export default function DashboardPage() {
                             <span className="text-gray-500 text-xs">下次執行:</span><br /> {new Date(task.next_run).toLocaleString()}
                           </div>
                           {task.top_expires_at && (() => {
-                            const expiresAt = new Date(task.top_expires_at);
-                            const diffHours = (expiresAt - new Date()) / (1000 * 60 * 60);
-                            const isExpiringSoon = diffHours <= 48;
+                            // Try to parse "YYYY-MM-DD HH:MM:SS" reliably
+                            const dateStr = task.top_expires_at.replace(' ', 'T');
+                            const expiresAt = new Date(dateStr);
+
+                            let isExpiringSoon = false;
+                            if (!isNaN(expiresAt.getTime())) {
+                              const diffHours = (expiresAt - new Date()) / (1000 * 60 * 60);
+                              isExpiringSoon = diffHours <= 48;
+                            }
 
                             return (
-                              <div className={`font-medium ${isExpiringSoon ? 'text-red-400' : 'text-gray-300'}`}>
-                                <span className={`${isExpiringSoon ? 'text-red-400/80' : 'text-gray-500'} text-xs font-normal`}>置頂到期:</span><br /> {expiresAt.toLocaleString()}
+                              <div className="mt-2 inline-flex items-center bg-[#2d2d2d] rounded px-3 py-1.5 border border-white/5 shadow-sm">
+                                <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded bg-black/40 ${isExpiringSoon ? 'text-red-400' : 'text-amber-400'} mr-2`}>
+                                  一般置頂
+                                </span>
+                                <span className="text-sm font-medium text-white tracking-wide">
+                                  時間到 : {task.top_expires_at}
+                                </span>
                               </div>
                             );
                           })()}
