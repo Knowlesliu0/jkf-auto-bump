@@ -24,8 +24,8 @@ export default function DashboardPage() {
       ...(options.headers || {})
     };
 
-    // Use VITE_API_URL set in Zeabur, or fallback to localhost
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    // Use VITE_API_URL if set, otherwise fallback to the Zeabur backend URL or localhost
+    const API_BASE_URL = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://back888.zeabur.app');
 
     const res = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
     return res;
