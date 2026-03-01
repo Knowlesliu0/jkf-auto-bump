@@ -23,7 +23,11 @@ export default function DashboardPage() {
       'Content-Type': 'application/json',
       ...(options.headers || {})
     };
-    const res = await fetch(`http://localhost:3001${url}`, { ...options, headers });
+
+    // Use VITE_API_URL set in Zeabur, or fallback to localhost
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+    const res = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
     return res;
   };
 
