@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #ff3b3b;
+  --color-primary-hover: #e02f2f;
+  --color-dark-bg: #0f172a; /* Slate 900 */
+  --color-dark-card: #1e293b; /* Slate 800 */
+}
+
+body {
+  background-color: var(--color-dark-bg);
+  color: #f8fafc;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Glassmorphism helpers */
+.glass {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
