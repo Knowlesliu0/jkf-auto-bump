@@ -233,11 +233,15 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
                     console.log(`[Scraped] Top expires at: ${topExpiresAt}`);
                 } else {
                     // Try extracting from the top button directly if text split across elements
-                    const topBtnText = await page.locator('button:has-text("一般置頂")').innerText().catch(() => '');
+                    const topBtn = page.locator('button:has-text("一般置頂")');
+                    const topBtnText = await topBtn.innerText().catch(() => '');
                     const innerMatch = topBtnText.match(/時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
                     if (innerMatch && innerMatch[1]) {
                         topExpiresAt = innerMatch[1];
                         console.log(`[Scraped] Top expires at (inner text): ${topExpiresAt}`);
+                    } else {
+                        const rawHtml = await topBtn.evaluate(node => node.innerHTML).catch(() => 'No button found');
+                        console.log(`[Debug] Top Button HTML is: ${rawHtml}`);
                     }
                 }
             } catch (e) {
@@ -273,9 +277,15 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
                     if (topMatch && topMatch[1]) {
                         topExpiresAt = topMatch[1];
                     } else {
-                        const topBtnText = await page.locator('button:has-text("一般置頂")').innerText().catch(() => '');
+                        const topBtn = page.locator('button:has-text("一般置頂")');
+                        const topBtnText = await topBtn.innerText().catch(() => '');
                         const innerMatch = topBtnText.match(/時間到[：:]\s*(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})/);
-                        if (innerMatch && innerMatch[1]) topExpiresAt = innerMatch[1];
+                        if (innerMatch && innerMatch[1]) {
+                            topExpiresAt = innerMatch[1];
+                        } else {
+                            const rawHtml = await topBtn.evaluate(node => node.innerHTML).catch(() => '');
+                            console.log(`[Debug] Already Free Top Button HTML is: ${rawHtml}`);
+                        }
                     }
                 } catch (e) { /* ignore */ }
 
