@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "build": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install chromium --with-deps",
+    "build": "npm i -g playwright && npx playwright install chromium --with-deps",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
