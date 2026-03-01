@@ -235,13 +235,15 @@ export default function DashboardPage() {
                               isExpiringSoon = diffHours <= 48;
                             }
 
+                            const formattedTime = task.top_expires_at.replace('T', ' ').replace('.000Z', '');
+
                             return (
                               <div className="mt-2 inline-flex items-center bg-[#2d2d2d] rounded px-3 py-1.5 border border-white/5 shadow-sm">
                                 <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded bg-black/40 ${isExpiringSoon ? 'text-red-400' : 'text-amber-400'} mr-2`}>
                                   一般置頂
                                 </span>
                                 <span className="text-sm font-medium text-white tracking-wide">
-                                  時間到 : {task.top_expires_at}
+                                  時間到 : {formattedTime}
                                 </span>
                               </div>
                             );
