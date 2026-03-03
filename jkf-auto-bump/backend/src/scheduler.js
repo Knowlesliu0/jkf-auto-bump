@@ -33,6 +33,19 @@ function startScheduler() {
                             SET status = ?, last_run = ?, next_run = ?, last_message = ?, cookie_string = ?, free_status = NULL
                             WHERE id = ?
                         `).run(newStatus, lastRun, nextRun, result.message, result.newCookieString, task.id);
+
+                        // 🔑 Sync cookies to ALL tasks with the same JKF account
+                        // This prevents the race condition where Task 1's cookie refresh
+                        // invalidates Task 2's old cookies
+                        if (task.jkf_username) {
+                            const synced = db.prepare(`
+                                UPDATE tasks SET cookie_string = ?
+                                WHERE jkf_username = ? AND id != ?
+                            `).run(result.newCookieString, task.jkf_username, task.id);
+                            if (synced.changes > 0) {
+                                console.log(`[Scheduler] 🔄 Synced cookies to ${synced.changes} other task(s) for account: ${task.jkf_username}`);
+                            }
+                        }
                     } else {
                         db.prepare(`
                             UPDATE tasks

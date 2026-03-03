@@ -1,6 +1,4 @@
-const { chromium } = require('playwright-extra');
-const stealth = require('puppeteer-extra-plugin-stealth')();
-chromium.use(stealth);
+const { chromium } = require('playwright');
 const { loginAndGetCookies } = require('./loginAndGetCookies');
 
 async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
@@ -71,14 +69,12 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
             console.log(`[AutoBump] Parsed ${cookies.length} cookies from raw string. Domain: ${cookieDomain}`);
         }
 
-        // Filter out expired cookies (expires is a Unix timestamp in seconds)
-        const nowSec = Date.now() / 1000;
-        cookies = cookies.filter(c => {
-            if (c.expires && c.expires > 0 && c.expires < nowSec) {
-                console.log(`[AutoBump] Dropping expired cookie: ${c.name}`);
-                return false;
+        // Fix domain for JSON cookies too - ensure '.' prefix
+        cookies = cookies.map(c => {
+            if (c.domain && !c.domain.startsWith('.')) {
+                c.domain = '.' + c.domain;
             }
-            return true;
+            return c;
         });
 
         if (cookies.length > 0) {
@@ -98,18 +94,10 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
         console.log("Waiting 5s for JKF specific rendering delays...");
         await page.waitForTimeout(5000);
 
-        // Check if we are logged in — use a strict heuristic:
-        // On JKF, the top-left user info area shows "訪客" and a login link ONLY for guests.
-        // We check the header/nav area specifically, not the full body (which may contain these words in ads).
+        // Check if we are logged in
         const isGuest = await page.evaluate(() => {
-            // Check multiple signals to be sure
-            const headerEl = document.querySelector('.left-user-info, .user-info, header, nav, .header');
-            const headerText = headerEl ? headerEl.innerText : '';
-            const hasGuestInHeader = headerText.includes('訪客') && headerText.includes('登入');
-            // Also check if there's NO user-specific element (like 個人空間, 我的帖子, 消息)
-            const bodyText = document.body.innerText;
-            const hasUserMenu = bodyText.includes('個人空間') || bodyText.includes('我的帖子') || bodyText.includes('消息') || bodyText.includes('退出');
-            return hasGuestInHeader && !hasUserMenu;
+            const body = document.body.innerText;
+            return body.includes('訪客') && body.includes('登入');
         });
         if (isGuest) {
             console.warn('[AutoBump] WARNING: Page loaded as GUEST - cookies expired!');

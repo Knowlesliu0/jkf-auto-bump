@@ -112,6 +112,17 @@ router.post('/:id/trigger', async (req, res) => {
                     SET status = ?, last_run = ?, next_run = ?, last_message = ?, top_expires_at = COALESCE(?, top_expires_at), free_status = COALESCE(?, free_status), name = COALESCE(?, name), cookie_string = ?
                     WHERE id = ?
                 `).run(newStatus, lastRun, nextRun, result.message, topExp, freeExp, result.threadTitle || null, result.newCookieString, task.id);
+
+                // 🔑 Sync cookies to ALL tasks with the same JKF account
+                if (task.jkf_username) {
+                    const synced = db.prepare(`
+                        UPDATE tasks SET cookie_string = ?
+                        WHERE jkf_username = ? AND id != ?
+                    `).run(result.newCookieString, task.jkf_username, task.id);
+                    if (synced.changes > 0) {
+                        console.log(`[Trigger] 🔄 Synced cookies to ${synced.changes} other task(s) for account: ${task.jkf_username}`);
+                    }
+                }
             } else {
                 db.prepare(`
                     UPDATE tasks
