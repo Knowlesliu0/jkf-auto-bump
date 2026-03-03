@@ -1,0 +1,799 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<noscript>
+<META HTTP-EQUIV="Refresh" CONTENT="0;URL=/Portal/index.aspx">
+<META HTTP-EQUIV="Window-target" CONTENT="_top">
+</noscript>
+		
+<script>var _vp = '/Portal/';var _up = 'https://www.sinjang.com.tw/Data/Portal/';var __d = document;</script>
+<link href="https://www.sinjang.com.tw/Data/Portal/Css/css.aspx?css=default&amp;ssl=Y" rel="stylesheet" type="text/css">
+<script src="/Portal/script/jquery-3.7.1.min.js"></script><script src="/Portal/script/Base.js"></script>
+
+
+<script>
+	var	ver	=	"2.0";
+	doImport('pageinit.js, SortTable.js, StringBuffer.js, ReSize.js, Form.js');
+	
+	$(document).ready
+	(
+		function(e)
+		{
+			//try{opener.document.forms[0].target	=	'';}catch(ex){}
+		}
+	);
+</script><style>.wrapper {border: 1px dashed #808080;}</style>
+
+<title>AIS成交行情</title><meta http-equiv="X-UA-Compatible" content="IE=9; requiresActiveX=true">
+    <link href="https://www.sinjang.com.tw/Data/Portal/Css/css.aspx?css=default&amp;ssl=Y" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+
+        var printpage = "BA0102_01.aspx"; //列印頁面名稱
+        /** 
+        網頁初始時處理 Client 的動作 
+        */
+        function page_init() {
+            page_init_start();
+
+            Form.iniFormColor();
+
+            //車體評價
+            funCheckAll_click();
+        }
+
+        function funCheckAll_click() {
+            //點擊車體評價
+            $("input[id*='Q_ALL_OUTSIDE_POINT']").click(function () {
+                if ($("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked")) {//如果全選按鈕有被選擇的話（被選擇是true）
+                    $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                        $(this).prop("checked", true);//把所有的核取方框的property都變成勾選
+                    })
+                } else {
+                    $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                        $(this).prop("checked", false);//把所有的核方框的property都取消勾選
+                    })
+                }
+            })
+
+            $("input[id*='Q_OUTSIDE_POINT']").click(function () {
+                var flag = true;
+                $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                    if ($(this).prop('checked') == false) {
+                        flag = false;
+                        $("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked", false);
+                    }
+                    if (flag == true)
+                        $("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked", true);
+                })
+
+            })
+        }
+
+        /** 
+        查詢功能時呼叫 
+        */
+        function doQuery() {
+            /** 顯示資料處理 */
+            Message.showProcess();
+
+            //=== 自定檢查 ===
+            //=== 資料檢核及設定, 當有錯誤處理方式為 Form.errAppend(Message) 累計錯誤訊息 ===
+            //if (_i(0, "M_SYS_CD") == "")
+            //	Form.errAppend("系統編號不可空白!!");
+            /** ================ */
+
+            //=== 檢查是否有錯誤訊息 ===
+            var needSend = valideMessage("Q_");
+
+            //=== 發生錯誤不處理 ===
+            if (!needSend) {
+                Message.hideProcess();
+                return false;
+            }
+
+            top.rowKey = null;
+
+            return true;
+        }
+
+        /** 存檔功能時呼叫 */
+        function doSave() {
+            /** 顯示資料處理 */
+            Message.showProcess();
+
+            /** === 自定檢查 === */
+            /** 資料檢核及設定, 當有錯誤處理方式為 Form.errAppend(Message) 累計錯誤訊息 */
+            //if (Form.getInput(0, "SYS_CD") == "")
+            //	Form.errAppend("系統編號不可空白!!");
+            /** ================ */
+
+
+            //		if (getBLen($('#M_NICKNAME').val()) > 10)
+            //			Form.errAppend("[暱稱]最多10碼!!(中文佔2碼)!");
+            //			
+            /** 檢查是否有錯誤訊息 */
+            var needSend = valideMessage("M_");
+            /** 發生錯誤不處理 */
+            if (!needSend) {
+                Message.hideProcess();
+                return false;
+            }
+        }
+
+
+
+
+
+        function showDetail(pkno) {
+            var argusNameAry = ["PKNO"];
+            var argusValueAry = [pkno];
+            sendData('BA0102_02.aspx', 'viewFrame', argusNameAry, argusValueAry);
+            top.showView();
+        }
+        //	/** 
+        //	清空查詢的資料
+        //	*/
+        //	function clearQueryForm() {
+
+        //		if (_i(0, 'SHOP_PKNO').value != "") {
+        //			_i(0, 'Q_SHOP_CODE').value = _i(0, 'SHOP_PKNO').value;
+        //			_i(0, 'Q_AUCTION_TIME').value = _i(0, 'AUCTION_TIME').value;
+        //		}
+        //		else {
+        //			_i(0, 'Q_SHOP_CODE').value = "";
+        //			_i(0, 'Q_AUCTION_TIME').value = "";
+        //		}
+        //	}
+
+        var result = new Object();
+
+        function doOpen02(TYPE, CAR_NUMBER, BID_DATE, BID_SERNO, HALL_NO, CAR_PKNO) {
+
+            var h = 800;
+            var w = 600;
+
+            if (TYPE == 'CHECK') {
+                h = 2000;
+                w = 2000;
+            }
+
+            doOpen('', h, w, 'Application/OP/OP0105_01.aspx?SOURCE_TYPE=H&TYPE=' + TYPE + '&CAR_NUMBER=' + CAR_NUMBER + '&BID_DATE=' + BID_DATE + '&BID_SERNO=' + BID_SERNO + '&HALL_NO=' + HALL_NO + '&CAR_PKNO=' + CAR_PKNO + '#');
+
+            if (result != null) {
+                //	        if (result["EN_NAME"] != null) {
+                //	           
+                //	            //_i(0, ZZZZZ_ID).value = result["EN_NAME"];
+                //	           
+                //	            //__doPostBack('AAA', '');
+                //	        }
+            }
+
+
+            result = null;
+        }
+
+        function doOpen03(BID_DATE, BID_SERNO, HALL_NO) {
+
+            doOpen('', 800, 600, 'Application/BA/BA0102_02.aspx?BID_DATE=' + BID_DATE + '&BID_SERNO=' + BID_SERNO + '&HALL_NO=' + HALL_NO + '#');
+
+            if (result != null) {
+                //	        if (result["EN_NAME"] != null) {
+                //	           
+                //	            //_i(0, ZZZZZ_ID).value = result["EN_NAME"];
+                //	           
+                //	            //__doPostBack('AAA', '');
+                //	        }
+            }
+
+
+            result = null;
+        }
+
+        function ChangeHeight() {
+            var div = document.getElementById("container");
+            var height = div.clientHeight;
+            //div.style.height = screen.height - 300;
+            div.style.height = screen.height * 0.60 + 'px';
+        } 
+        window.moveTo(0, 0);
+        window.resizeTo(screen.width, screen.height);
+
+        function ajBrowseLog(Xseq, Xpara) {
+
+            $.ajax({
+                type: "POST",
+                url: "./Services/PO/BrowseLog.aspx",
+                data: { seq: Xseq, para: Xpara },
+                success: function (response) {
+
+                },
+                error: OnErrorCall
+            });
+        }
+        function OnErrorCall(response) {
+
+        }
+    </script>
+    
+<script type="text/javascript">ChangeHeight();funCheckAll_click();try{$(_d()).ready(Grid.setGridEvent);$(_d()).ready(iniGridClickColor);$(_d()).ready(SortTable.sortables_init);}catch(ex){};try{reSize();}catch(ex){};try{switchLabel();}catch(ex){};var	proj	=	'PORTAL';try{$(_d()).ready(function(){try{gridOuterHTML=_('DataGrid').outerHTML;setColumnHide()}catch(ex){}})}catch(ex){};try{Form.iniFormColor();}catch(ex){};;</script></head>
+<body leftmargin="0" topmargin="0" style="overflow: hidden;">
+    <form name="QUERY" method="post" action="./BA0102_01.aspx" id="QUERY" style="margin: 0 0 0 0" onkeydown="backClick(event, ['Q_', 'QUERY_BTN1'], ['M_', 'SAVE_BTN1'])">
+<div>
+
+
+
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['QUERY'];
+if (!theForm) {
+    theForm = document.QUERY;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/Portal/WebResource.axd?d=e808Zcr2QG2KYbcIkSBQJNZacvpRYwCcwNrMPgUtPW2QOZlrVSFgQRvigVgiUGTsVbYHu8jylKqLcs-2pqDYN8LVG-81&amp;t=638942498819057530" type="text/javascript"></script>
+
+
+<script src="/Portal/ScriptResource.axd?d=L5UlbyJFf7k133-G1sgx6YhSxcCregVU8GU3MedHs0J-Kr_UwtnD7ojSl-LsgKT4Fu4MA5OkJs1Z1s0rna_izluQleuQM1U_yumZntWps-roXmdLSp0yMJ4odnSK1mkFzkqiC8_8Uu1G8iJnJAbtUP63g82bghzuKczSKHFJIPCRrBSw0&amp;t=32e5dfca" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構無法載入。');
+//]]>
+</script>
+
+<script src="/Portal/ScriptResource.axd?d=ORfztb99VXEkIr7a_PEyLHLrj5v-3oPcmFQjdvboDM5Bo4zWWs2Du04PYN3Jv45JM9XUVhUD7y2RaZUsUluQWlqTApLCKxJqi17TW2uHlEXaiZbBY-icBvG2cKxfjiY1FcAUrVgV_pZisQwa8z0wmU3Hu6MwZmVnK3Q8silRkTbyelhrPGinGB_OHg1WeH3l5LGudg2&amp;t=32e5dfca" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var PageMethods = function() {
+PageMethods.initializeBase(this);
+this._timeout = 0;
+this._userContext = null;
+this._succeeded = null;
+this._failed = null;
+}
+PageMethods.prototype = {
+_get_path:function() {
+ var p = this.get_path();
+ if (p) return p;
+ else return PageMethods._staticInstance.get_path();},
+AjaxError:function(succeededCallback, failedCallback, userContext) {
+/// <param name="succeededCallback" type="Function" optional="true" mayBeNull="true"></param>
+/// <param name="failedCallback" type="Function" optional="true" mayBeNull="true"></param>
+/// <param name="userContext" optional="true" mayBeNull="true"></param>
+return this._invoke(this._get_path(), 'AjaxError',false,{},succeededCallback,failedCallback,userContext); }}
+PageMethods.registerClass('PageMethods',Sys.Net.WebServiceProxy);
+PageMethods._staticInstance = new PageMethods();
+PageMethods.set_path = function(value) {
+PageMethods._staticInstance.set_path(value); }
+PageMethods.get_path = function() { 
+/// <value type="String" mayBeNull="true">The service url.</value>
+return PageMethods._staticInstance.get_path();}
+PageMethods.set_timeout = function(value) {
+PageMethods._staticInstance.set_timeout(value); }
+PageMethods.get_timeout = function() { 
+/// <value type="Number">The service timeout.</value>
+return PageMethods._staticInstance.get_timeout(); }
+PageMethods.set_defaultUserContext = function(value) { 
+PageMethods._staticInstance.set_defaultUserContext(value); }
+PageMethods.get_defaultUserContext = function() { 
+/// <value mayBeNull="true">The service default user context.</value>
+return PageMethods._staticInstance.get_defaultUserContext(); }
+PageMethods.set_defaultSucceededCallback = function(value) { 
+ PageMethods._staticInstance.set_defaultSucceededCallback(value); }
+PageMethods.get_defaultSucceededCallback = function() { 
+/// <value type="Function" mayBeNull="true">The service default succeeded callback.</value>
+return PageMethods._staticInstance.get_defaultSucceededCallback(); }
+PageMethods.set_defaultFailedCallback = function(value) { 
+PageMethods._staticInstance.set_defaultFailedCallback(value); }
+PageMethods.get_defaultFailedCallback = function() { 
+/// <value type="Function" mayBeNull="true">The service default failed callback.</value>
+return PageMethods._staticInstance.get_defaultFailedCallback(); }
+PageMethods.set_enableJsonp = function(value) { PageMethods._staticInstance.set_enableJsonp(value); }
+PageMethods.get_enableJsonp = function() { 
+/// <value type="Boolean">Specifies whether the service supports JSONP for cross domain calling.</value>
+return PageMethods._staticInstance.get_enableJsonp(); }
+PageMethods.set_jsonpCallbackParameter = function(value) { PageMethods._staticInstance.set_jsonpCallbackParameter(value); }
+PageMethods.get_jsonpCallbackParameter = function() { 
+/// <value type="String">Specifies the parameter name that contains the callback function name for a JSONP request.</value>
+return PageMethods._staticInstance.get_jsonpCallbackParameter(); }
+PageMethods.set_path("BA0102_01.aspx");
+PageMethods.AjaxError= function(onSuccess,onFailed,userContext) {
+/// <param name="succeededCallback" type="Function" optional="true" mayBeNull="true"></param>
+/// <param name="failedCallback" type="Function" optional="true" mayBeNull="true"></param>
+/// <param name="userContext" optional="true" mayBeNull="true"></param>
+PageMethods._staticInstance.AjaxError(onSuccess,onFailed,userContext); }
+//]]>
+</script>
+
+<div>
+
+	
+	
+	
+</div>
+    <div id="MAIN_DIV">
+        <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ScriptManager1', 'QUERY', ['tAjaxPanel',''], [], [], 90, '');
+//]]>
+</script>
+
+
+        <script>            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);</script>
+
+        <div id="AjaxPanel">
+                <input type="hidden" name="ActivePageControl" id="ActivePageControl">
+                <input type="hidden" name="ColumnFilter" id="ColumnFilter">
+                <input type="hidden" name="M_PKNO" id="M_PKNO">
+                <input type="hidden" name="Mode" id="Mode" value="ADD">
+                <input type="hidden" name="ROWSTAMP" id="ROWSTAMP">
+                <input type="hidden" name="TYPE" id="TYPE">
+                <input type="hidden" name="PASSWORD" id="PASSWORD">
+                <input type="hidden" name="PASSWORD_C" id="PASSWORD_C">
+                <input type="hidden" name="PAGE_ID" id="PAGE_ID" value="BA0102_">
+                <input type="hidden" name="TAB" id="TAB" value="1">
+                
+                <table width="100%" border="0" cellspacing="20" cellpadding="0">
+                    <tbody><tr>
+                        <td align="center" valign="top">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr>
+                                    <td>
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tbody><tr>
+                                                <td height="31" width="10">
+                                                    <img height="34" src="https://www.sinjang.com.tw/Data/Portal/images/frame02-2.gif" width="10"></td>
+                                                <td align="left" background="https://www.sinjang.com.tw/Data/Portal/images/frame02-2.gif" valign="middle">
+                                                    <img align="absmiddle" height="9" hspace="2" src="https://www.sinjang.com.tw/Data/Portal/images/point01.gif" width="9"><font color="white">AIS成交行情</font></td>
+                                                <td align="right" background="https://www.sinjang.com.tw/Data/Portal/images/frame02-2.gif">
+                                                     
+						                        </td>
+                                                   
+                                                <td width="10">
+                                                    <img height="34" src="https://www.sinjang.com.tw/Data/Portal/images/frame02-2.gif" width="10"></td>
+                                            </tr>
+                                        </tbody></table>
+                                        
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td valign="top" class="brdr-lr">
+                                        <span id="query_table">
+                                                   </span><table width="100%" border="0" cellspacing="0" cellpadding="3">
+                                            <tbody><tr>
+                                                   <td align="right" nowrap="">
+                                                        拍賣日期區間<font color="red">＊</font>：
+                                                    </td>
+                                                    <td align="left">
+                                                        <input name="Q_BID_DATE_S" type="text" value="2025/11/03" id="Q_BID_DATE_S" chkform="Q_BID_DATE_S" cname="拍賣日期-起" onfocus="_fe().formatDate(event);" onblur="_fe().chkDate(event)" dv="2026/02/23" style="width:75px;">
+                                                        <img src="https://www.sinjang.com.tw/Data/Portal/images/calendar.gif" alt="日曆圖示 " style="cursor: pointer" align="absmiddle" onkeypress="Calendar.showCalendar(this, _i(0, &quot;Q_BID_DATE_S&quot;));" onclick="Calendar.showCalendar(this, _i(0, &quot;Q_BID_DATE_S&quot;));">~
+                                                        <input name="Q_BID_DATE_E" type="text" value="2026/03/02" id="Q_BID_DATE_E" chkform="Q_BID_DATE_E" cname="拍賣日期-迄" onfocus="_fe().formatDate(event);" onblur="_fe().chkDate(event)" dv="2026/03/02" style="width:75px;">
+                                                        <img src="https://www.sinjang.com.tw/Data/Portal/images/calendar.gif" alt="日曆圖示 " style="cursor: pointer" align="absmiddle" onkeypress="Calendar.showCalendar(this, _i(0, &quot;Q_BID_DATE_E&quot;));" onclick="Calendar.showCalendar(this, _i(0, &quot;Q_BID_DATE_E&quot;));"> （查詢區間不可超過120天）
+                                                    </td>
+                                                   <td align="right">
+                                                        廠牌：
+                                                    </td>
+                                                    <td align="left">
+                                                        <select name="Q_BRAND_ID" onchange="javascript:setTimeout('__doPostBack(\'Q_BRAND_ID\',\'\')', 0)" id="Q_BRAND_ID">
+	<option value="">全部</option>
+	<option value="143">ABARTH</option>
+	<option value="01">ACURA</option>
+	<option value="133">ADIVA</option>
+	<option value="84">AEON</option>
+	<option value="02">ALFA ROMEO</option>
+	<option value="142">ALPINA</option>
+	<option value="03">AM GENERAL</option>
+	<option value="82">APRILIA</option>
+	<option value="04">ASIA</option>
+	<option value="126">ASTON MARTIN</option>
+	<option value="05">AUDI</option>
+	<option value="06">AUSTIN</option>
+	<option value="86">BENELLI</option>
+	<option value="83">BENTLEY</option>
+	<option value="07">BENZ</option>
+	<option value="08">BERTONE</option>
+	<option selected="selected" value="09">BMW</option>
+	<option value="150">BRABUS</option>
+	<option value="139">BRIXTON</option>
+	<option value="10">BUICK</option>
+	<option value="135">BYD</option>
+	<option value="11">CADILLAC</option>
+	<option value="12">CAMPRO</option>
+	<option value="105">CAN-AM</option>
+	<option value="134">CARBODIES</option>
+	<option value="146">CFMOTO</option>
+	<option value="13">CHERY</option>
+	<option value="14">CHEVROLET</option>
+	<option value="15">CHRYSLER</option>
+	<option value="115">CHYUSHYN</option>
+	<option value="16">CITROEN</option>
+	<option value="125">COUPE</option>
+	<option value="118">CPI</option>
+	<option value="17">DAEWOO</option>
+	<option value="106">DAF</option>
+	<option value="18">DAIHATSU</option>
+	<option value="103">DFSK</option>
+	<option value="123">DINLI</option>
+	<option value="19">DODGE</option>
+	<option value="20">DUCATI</option>
+	<option value="21">FAIRPLAY</option>
+	<option value="102">FERRARI</option>
+	<option value="22">FIAT</option>
+	<option value="23">FORD</option>
+	<option value="24">FORMOSA</option>
+	<option value="78">FOTON</option>
+	<option value="25">FUSO</option>
+	<option value="26">GEO</option>
+	<option value="148">GILERA</option>
+	<option value="27">GMC</option>
+	<option value="119">GOGORO</option>
+	<option value="155">GPX</option>
+	<option value="93">HARLEY-DAVIDSON</option>
+	<option value="117">HARTFORD</option>
+	<option value="28">HINO</option>
+	<option value="29">HONDA</option>
+	<option value="30">HUMMER</option>
+	<option value="129">HUSQVARNA</option>
+	<option value="31">HYUNDAI</option>
+	<option value="149">INDIAN</option>
+	<option value="32">INFINITI</option>
+	<option value="33">ISUZU</option>
+	<option value="34">IVECO</option>
+	<option value="36">JAGUAR</option>
+	<option value="151">JAWA</option>
+	<option value="37">JEEP</option>
+	<option value="38">KAWASAKI</option>
+	<option value="39">KIA</option>
+	<option value="113">KTM</option>
+	<option value="40">KYMCO</option>
+	<option value="121">LAMBORGHINI</option>
+	<option value="41">LANCIA</option>
+	<option value="42">LAND ROVER</option>
+	<option value="43">LEXUS</option>
+	<option value="77">LINCOLN</option>
+	<option value="108">LOTUS</option>
+	<option value="44">LUXGEN</option>
+	<option value="147">M440I</option>
+	<option value="104">MAHINDRA</option>
+	<option value="45">MAN</option>
+	<option value="87">MASERATI</option>
+	<option value="46">MAZDA</option>
+	<option value="47">MCC</option>
+	<option value="110">MCLAREN</option>
+	<option value="48">MERCURY</option>
+	<option value="145">MG</option>
+	<option value="107">MINI</option>
+	<option value="49">MITSUBISHI</option>
+	<option value="99">MORGAN</option>
+	<option value="130">MOTO GUZZI</option>
+	<option value="92">MV AGUSTA</option>
+	<option value="50">NISSAN</option>
+	<option value="51">OLDSMOBILE</option>
+	<option value="52">OPEL</option>
+	<option value="53">PEUGEOT</option>
+	<option value="111">PGO</option>
+	<option value="95">PIAGGIO</option>
+	<option value="54">PLYMOTTH</option>
+	<option value="55">PONTIAC</option>
+	<option value="56">PORSCHE</option>
+	<option value="57">PROTON</option>
+	<option value="58">RENAULT</option>
+	<option value="141">RIEJU</option>
+	<option value="137">ROLLS ROYCE</option>
+	<option value="59">ROVER</option>
+	<option value="60">SAAB</option>
+	<option value="61">SATURN</option>
+	<option value="62">SCANIA</option>
+	<option value="85">SCION</option>
+	<option value="63">SEAT</option>
+	<option value="140">SHANWONG</option>
+	<option value="116">SITRAK</option>
+	<option value="64">SKODA</option>
+	<option value="101">SMART</option>
+	<option value="65">SSANGYONG</option>
+	<option value="66">SUBARU</option>
+	<option value="67">SUZUKI</option>
+	<option value="68">SYM</option>
+	<option value="69">TAIWAN</option>
+	<option value="80">TESLA</option>
+	<option value="70">TOBE</option>
+	<option value="71">TOYOTA</option>
+	<option value="72">TRIUMPH</option>
+	<option value="138">TVS</option>
+	<option value="128">VICTORY</option>
+	<option value="73">VOLKSWAGEN</option>
+	<option value="74">VOLVO</option>
+	<option value="144">XXXX</option>
+	<option value="75">YAMAHA</option>
+	<option value="112">ZERO</option>
+	<option value="132">大中車屋</option>
+	<option value="127">台威</option>
+	<option value="114">吊桿車</option>
+	<option value="122">成運</option>
+	<option value="76">百盛</option>
+	<option value="98">沙灘車</option>
+	<option value="94">板台</option>
+	<option value="152">威速登</option>
+	<option value="131">益菖</option>
+	<option value="79">健益</option>
+	<option value="120">國瑞</option>
+	<option value="81">捷穎</option>
+	<option value="124">勝榮</option>
+	<option value="109">富豪</option>
+	<option value="153">裕隆東風</option>
+	<option value="100">遊覽車</option>
+	<option value="97">機具</option>
+	<option value="154">聯潤</option>
+
+</select>
+                                                    </td>
+                                                    <td align="right">
+                                                        車型：
+                                                    </td>
+                                                    <td align="left">
+                                                        <select name="Q_MODEL_ID" id="Q_MODEL_ID">
+	<option value=""></option>
+	<option value="133,135,48,49,51,53,56,61,03,04,01,02,74,87">1 SERIES</option>
+	<option value="108,57,63,64,76,77,80,152,156">2 SERIES</option>
+	<option value="146,11,115,12,121,13,137,138,44,05,08,06,07,09,10,101,66,71,73,88,92,93,98,62,154,153">3 SERIES</option>
+	<option value="145,58,59,60,94,97">4 SERIES</option>
+	<option value="14,141,15,16,17,18,19,20,21,22,106,111,113,119,120,125,127,136,54,65,68,70,72,86,89,91,95">5 SERIES</option>
+	<option value="130,134,23,47,50,55,84">6 SERIES</option>
+	<option value="116,117,122,126,24,26,25,27,28,29,30,52,105,96">7 SERIES</option>
+	<option value="149">8</option>
+	<option value="144,162">8 SERIES</option>
+	<option value="139,112,81,82,148,163,160,158,155,164">I SERIES</option>
+	<option value="31,32">K SERIES</option>
+	<option value="33">L SERIES</option>
+	<option value="140,143,110,128,131,132,34,35,36,69,78,79,150">M SERIES</option>
+	<option value="142,109,114,118,123,124,37,38,46,100,102,103,104,151,67,75,85,90,99,157,150,159,165,169,161,167,166">Motorcycle</option>
+	<option value="45">X1</option>
+	<option value="107">X2</option>
+	<option value="39">X3</option>
+	<option value="83">X4</option>
+	<option value="40">X5</option>
+	<option value="41">X6</option>
+	<option value="129">X7</option>
+	<option value="168">XM</option>
+	<option value="42,43">Z SERIES</option>
+
+</select>
+                                                    </td>
+                                                    <td align="right" nowrap="">
+                                                        出廠年份 ：
+                                                    </td>
+                                                    <td align="left" nowrap="">
+                                                           <input name="Q_CAR_AGE_S" type="text" maxlength="4" id="Q_CAR_AGE_S" iniformset="'N1'" onkeypress="_fe().onlyAllowNumPress1(event)" style="width:30px;ime-mode:disabled;">
+                                                                    ~
+                                                           <input name="Q_CAR_AGE_E" type="text" maxlength="4" id="Q_CAR_AGE_E" iniformset="'N1'" onkeypress="_fe().onlyAllowNumPress1(event)" style="width:30px;ime-mode:disabled;">
+                                                    </td>
+                                                    </tr>
+                                                    <tr>
+                                                    
+                                                    <td align="right">
+                                                         排檔：
+                                                     </td>
+                                                     <td align="left">
+                                                            <select name="Q_GEAR_TYPE" id="Q_GEAR_TYPE">
+	<option selected="selected" value="">全部</option>
+	<option value="手">手排</option>
+	<option value="自">自排</option>
+	<option value="手自">手自排</option>
+
+</select>
+                                                    </td>
+                                                   
+                                                    <td align="right" nowrap="">
+                                                        車門數：
+                                                    </td>
+                                                    <td align="left">
+                                                         <select name="Q_CAR_DOOR" id="Q_CAR_DOOR">
+	<option selected="selected" value="">全部</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+
+</select>
+                                                    </td>
+                                                   
+                                                    <td align="right" nowrap="">
+                                                        傳動方式：
+                                                    </td>
+                                                    <td align="left">
+                                                        <select name="Q_WD" id="Q_WD">
+	<option selected="selected" value="">全部</option>
+	<option value="2">2WD</option>
+	<option value="4">4WD</option>
+
+</select>
+                                                    </td>
+                                                    
+                                                        <td align="right">
+                                                        排氣量：
+                                                    </td>
+                                                    <td align="left" nowrap="">
+                                                        <input name="Q_TOLERANCE_S" type="text" id="Q_TOLERANCE_S" iniformset="'N1'" onkeypress="_fe().onlyAllowNumPress1(event)" style="width:50px;ime-mode:disabled;">
+                                                                    ~
+                                                         <input name="Q_TOLERANCE_E" type="text" id="Q_TOLERANCE_E" iniformset="'N1'" onkeypress="_fe().onlyAllowNumPress1(event)" style="width:50px;ime-mode:disabled;">
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <td align="right">
+                                                            燃油：
+                                                    </td>
+                                                    <td align="left">
+                                                        <select name="Q_OIL_TYPE" id="Q_OIL_TYPE">
+	<option selected="selected" value="">全部</option>
+	<option value="汽油">汽油</option>
+	<option value="柴油">柴油</option>
+	<option value="油電">油電</option>
+	<option value="電動">電動</option>
+	<option value="柴油電">柴油電</option>
+
+</select>
+                                                    </td>
+                                                    
+                                                     <td align="right">
+                                                            里程數：
+                                                        </td>
+                                                        <td align="left">
+                                                            <select name="Q_SPEEDOMETER" id="Q_SPEEDOMETER">
+	<option selected="selected" value="">全部</option>
+	<option value="-20000">2萬內</option>
+	<option value="-50000">5萬內</option>
+	<option value="-100000">10萬內</option>
+	<option value="-150000">15萬內</option>
+	<option value="-200000">20萬內</option>
+	<option value="200000-">20萬以上</option>
+
+</select>
+                                                        </td>
+
+                                                    <td align="right" nowrap="">
+                                                        車體評價：
+                                                    </td>
+                                                    <td align="left" colspan="3">
+                                                        <table>
+                                                            <tbody><tr>
+                                                                <td>
+                                                                    <input id="Q_ALL_OUTSIDE_POINT" type="checkbox" name="Q_ALL_OUTSIDE_POINT" checked="checked"><label for="Q_ALL_OUTSIDE_POINT">全選</label>        
+                                                                </td>
+                                                                 
+                                                            </tr>
+                                                            <tr>                                                               
+                                                                    <td>
+                                                                        <table id="Q_OUTSIDE_POINT" border="0">
+	<tbody><tr>
+		<td><input id="Q_OUTSIDE_POINT_0" type="checkbox" name="Q_OUTSIDE_POINT$0" checked="checked"><label for="Q_OUTSIDE_POINT_0">A+</label></td><td><input id="Q_OUTSIDE_POINT_1" type="checkbox" name="Q_OUTSIDE_POINT$1" checked="checked"><label for="Q_OUTSIDE_POINT_1">A</label></td><td><input id="Q_OUTSIDE_POINT_2" type="checkbox" name="Q_OUTSIDE_POINT$2" checked="checked"><label for="Q_OUTSIDE_POINT_2">B+</label></td><td><input id="Q_OUTSIDE_POINT_3" type="checkbox" name="Q_OUTSIDE_POINT$3" checked="checked"><label for="Q_OUTSIDE_POINT_3">B</label></td><td><input id="Q_OUTSIDE_POINT_4" type="checkbox" name="Q_OUTSIDE_POINT$4" checked="checked"><label for="Q_OUTSIDE_POINT_4">C</label></td><td><input id="Q_OUTSIDE_POINT_5" type="checkbox" name="Q_OUTSIDE_POINT$5" checked="checked"><label for="Q_OUTSIDE_POINT_5">D</label></td><td><input id="Q_OUTSIDE_POINT_6" type="checkbox" name="Q_OUTSIDE_POINT$6" checked="checked"><label for="Q_OUTSIDE_POINT_6">E</label></td><td><input id="Q_OUTSIDE_POINT_7" type="checkbox" name="Q_OUTSIDE_POINT$7" checked="checked"><label for="Q_OUTSIDE_POINT_7">N</label></td><td><input id="Q_OUTSIDE_POINT_8" type="checkbox" name="Q_OUTSIDE_POINT$8" checked="checked"><label for="Q_OUTSIDE_POINT_8">W</label></td>
+	</tr>
+</tbody></table>
+                                                                    </td>
+                                                            </tr>
+                                                        </tbody></table>    
+                                                    </td>
+                                                    <td align="right">
+                                                        <input type="submit" name="QCLEAR_BTN" value="清  除" id="QCLEAR_BTN">
+                                                        <input type="submit" name="QUERY_BTN1" value="查  詢" onclick="return doQuery();" id="QUERY_BTN1">
+                                                    </td>
+                                                </tr>
+                                            
+                                            
+                                        </tbody></table>
+                                        <table width="100%" border="0" cellspacing="0">
+                                            <tbody><tr>
+                                                <td>
+                                                    <!-- 查詢結果畫面起始 -->
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <!-- 查詢結果按鈕結束 -->
+                                                            <!-- 分頁字串起始 -->
+                                                            <td align="right" nowrap="">
+                                                                <div id="PC_ACER_PAGE_DIV" class="tablePage">
+	<b>
+		<span id="PC_PageStr"></span>
+		【每頁
+		<span class="tableSearchTD02">
+		<input name="PC$PageSize" type="text" value="50" id="PC_PageSize" size="1" iniformset="'N1';'NR'" onkeypress="_fe().onlyAllowNumPress1(event)" numberrange="1-100000" onblur="_fe().numberRngeCheck(event);if(_i(0, 'PC_PageSize').value == ''){Message.showMessage('129');_i(0, 'PC_PageSize').focus();};" style="width:30px;ime-mode:disabled;">
+		<input name="PC$ShowRows" type="button" id="PC_ShowRows" ml="CB_筆" value="筆">
+		</span>，第
+		<input name="PC$PageNo" type="text" value="1" id="PC_PageNo" size="1" iniformset="'N1';'NR'" onkeypress="_fe().onlyAllowNumPress1(event)" numberrange="1-100000" onblur="_fe().numberRngeCheck(event);if(_i(0, 'PC_PageNo').value == ''){Message.showMessage('130');_i(0, 'PC_PageNo').focus();}" style="width:30px;ime-mode:disabled;">
+		<input name="PC$ToGo" type="button" id="PC_ToGo" ml="CB_頁" value="頁">
+		<font size="2">
+			共 <span id="PC_TotalPage" class="txtPageHighLight"></span> 頁 		
+			<span id="PC_TotalRow" class="txtPageHighLight">0</span> <span ml="CL_筆" style="font-size:10pt">筆</span>】
+		</font>
+	</b>
+</div>
+                                                            </td>
+                                                            <!-- 分頁字串結束 -->
+                                                        </tr>
+                                                     </tbody></table>
+                                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                       <tbody><tr>
+                                                            <td>
+                                                                <div id="container" style="width: 100%; height: 432px; overflow-x: auto;">
+                                                                <table width="100%" border="0" cellspacing="0">
+                                                                    <tbody><tr>
+                                                                        <td align="left">
+                                                                            <!-- 查詢結果功能畫面起始 -->
+                                                                           
+                                                                           <div id="gridItem" style="overflow-x: auto; width: 100%">
+                                                                                <div>
+
+</div>
+                                                                           </div>
+                                                                            <!-- 查詢結果功能畫面結束 -->
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody></table>
+                                                                <div>
+                                                            </div></div></td>
+                                                        </tr>
+                                                     </tbody></table>
+                                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <!-- 分頁字串起始 -->
+                                                            <td align="right" nowrap="">
+                                                                <div id="PC2_ACER_PAGE_DIV" class="tablePage">
+	<b>
+		<span id="PC2_PageStr"></span>
+		【每頁
+		<span class="tableSearchTD02">
+		<input name="PC2$PageSize" type="text" value="50" id="PC2_PageSize" size="1" iniformset="'N1';'NR'" onkeypress="_fe().onlyAllowNumPress1(event)" numberrange="1-100000" onblur="_fe().numberRngeCheck(event);if(_i(0, 'PC2_PageSize').value == ''){Message.showMessage('129');_i(0, 'PC2_PageSize').focus();};" style="width:30px;ime-mode:disabled;">
+		<input name="PC2$ShowRows" type="button" id="PC2_ShowRows" ml="CB_筆" value="筆">
+		</span>，第
+		<input name="PC2$PageNo" type="text" value="1" id="PC2_PageNo" size="1" iniformset="'N1';'NR'" onkeypress="_fe().onlyAllowNumPress1(event)" numberrange="1-100000" onblur="_fe().numberRngeCheck(event);if(_i(0, 'PC2_PageNo').value == ''){Message.showMessage('130');_i(0, 'PC2_PageNo').focus();}" style="width:30px;ime-mode:disabled;">
+		<input name="PC2$ToGo" type="button" id="PC2_ToGo" ml="CB_頁" value="頁">
+		<font size="2">
+			共 <span id="PC2_TotalPage" class="txtPageHighLight"></span> 頁 		
+			<span id="PC2_TotalRow" class="txtPageHighLight">0</span> <span ml="CL_筆" style="font-size:10pt">筆</span>】
+		</font>
+	</b>
+</div>
+                                                            </td>
+                                                            <!-- 分頁字串結束 -->
+                                                        </tr>
+                                                    </tbody></table>
+                                                    <!-- 查詢結果畫面結束 -->
+                                                </td>
+                                            </tr>
+                                            
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+                <!-- 查詢結果畫面結束 -->
+                    <a id="ReQuery" href="javascript:__doPostBack('ReQuery','')"></a>
+            </div>
+
+        <script>
+            $(document).ready(page_init);
+        </script>
+
+    </div>
+    
+
+<script type="text/javascript">
+//<![CDATA[
+ChangeHeight();funCheckAll_click();try{$(_d()).ready(Grid.setGridEvent);$(_d()).ready(iniGridClickColor);$(_d()).ready(SortTable.sortables_init);}catch(ex){};try{reSize();}catch(ex){};try{switchLabel();}catch(ex){};var	proj	=	'PORTAL';try{$(_d()).ready(function(){try{gridOuterHTML=_('DataGrid').outerHTML;setColumnHide()}catch(ex){}})}catch(ex){};try{Form.iniFormColor();}catch(ex){};;//]]>
+</script>
+<span style="display: none !important;"><input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value=""></span><span style="display: none !important;"><input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value=""></span><span style="display: none !important;"><input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value=""></span><span style="display: none !important;"><input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="pJSTm7jANS4ipL0vmtyP/ARiG7mXz5j9c70ITRrDSfb13b1NLg/1GPmIaHy9bGJIWOA8BQtK5+o5SJk+RaGS8SiViCB9LqXaUf5o4y/QCDzUGZTumhmdRYIti4V1CgAzWBibECpsL7oU/OIqwDcFYuSqgtcX1mdiylZpB45/JPoUaqTqVMT1x2AtvlOiU7yV8okLB3/rLYONwYbzcMkDBiMsyRuGirfkmHuJSHomX3NqmKBCwpIj5fo48psyufoS8MKBbg4PZ0ZbFj0etdN1eZE+xkwVYmm6cF4xVZC7fi4wz9BWtiU8ihPwTVJkftaXQ4PUoIDnATFvgNUyrLphvV1dAK98AjoIV3JOQWremGO1V3KuPyoTRFlWhkPt6BAnzIzwWf2aRQUvXTmtxOLfySKF+7OpB++mIskcp8CVmFMSn3Y4Y/TCwHh64t6vBnL5bmTWt81geIC3hFK59LDjecZiQma9JBrN06J2hQ3d1MKwqrFK0pDfX93Nn5akEopEUiXpeasDP4+Uu3FMn6mKeux851gHqVFCQX9ptFds8YvctvKb2pHzp4X7NEa98Rerg5Pbx95e6ja/OCejTE5KuAGGabhkt3dK2H+ugpkOX0w0m0QfiHhSXWfO8+WiULjF0+CgfsV2/x5SzDLVFggqKEyAf0orKAxN2KfwXbKmk4MRva++p1NUE0UVrQYt14NMTqCfTNuQMn8ECcBTPi/2kJcKwkkJDsLUGpCzh+aqhi1C1UJDGX4TEGiJwptuZizYTWZfKTa1snPzoZ7WlB8Ii/QkzwJ4zQEX3Yve+SiiI355SziScK5lJWKR65EQkweqrTLG1iYebgb0B92KSOmLoG+5LG9Lf7WqerI7ckUvn6FlWIgRUNFse5lO9Om5tKAENkrxje5mWTV0vKZ4Ia3kRKCyxqZiqAMd308Ei7V+3jI/BssY+tXainhlFFghs7/frS+LI2bDMGkOQBxspB6lvsiUa+6k3cVY9PeXr+D4en5QsDeAZEs6VtjjmIc4SrKg6kxyNegYdm8Z5KypRQp0USRVXSN2GM8I8WEXiPVwucIRyoI65iTStF0LNq2qwVayvUNX4yFQw16TAn62hvSsIUKcahViLsggPCkr4cHP92RaDjnnFOj60l5MyLhuzrM/uO50vo9PAjgGnLYV/2JdHzDBtycG7ZwrwUJH83nwjsJQk3yWnieyKVaqjZ27jv4KNJZqJ+NPRbGkGx8J7adlCk6h5okpNPnZRFjZVJ+31w/9Fottp60aqIXW5CGe7YOaXGtHJb5lpK3J+dpAsuWSJx8OO3Ybkb/QcRexlzq8WfPinYozRAJD7qRmSaSDDguvrEd5Mp9BKSujE8yr8zgbdbp6sm7TIs7VwSAJoVfgB1PDPOcQPCqkvxCNcMp09eSdopCn/e57Yo1PZ6L90HFyCCCaRNX0hfnGYhzkCNinU6NBgQkGsLJ8DPVTbMUHYtce0ze9AJ+sTwIBWlVrL4OM18JaWjjf+9b1ZUbOfVkQ/3Z/h/aElV8vIYX3WKVgF9+x2doCrs0ySJm8oASiwGq54JTC/sPQ/N8dTtzqpoD6YWLfDVofqOL+RkhmWSeaVr8dE0TvLRgmfeN9l+PoMNLPKJblhQtgk4AzubR4SPDiavr6ZUDF1GZhrPoCsaDI0qgiJ7utwjYAYNjnT4xRz3l2sRNyZnTU+BzMaiVgtIS4vhUK/+MEe3NDdCAgV+/Dt/aDlilbdxlVx4+0mUt9Ok2DKWqC1uqz4Z2NO8y1MMgRg4MldST+J5LqD3PZXE7j+RZC4sp4wxkuhEmEOU+Lxw2hyr0MF+T27o7fknX/otwZs1kTLbUeI0877K9PCte8/jeA4F3GdZ4ECCeV9Ka6RBGPWO1tvegQmHVSo4B0OWCdBs+zYdHrtxNa1ou4vhsdxgUmplZm8bNcyKjy4lX3FNK8Kz+vM5Wte2GmK1MFflVkhW8mOpYfWXH5rx3RSzL9bBEJ+yGBUkVEXSllKjgRn2S+OJpRAWHAKkWLHa/ubC3ta+dJ9wOfEzgRxWJGkD9yfZuigUjZk7uFpsfdsarclmMs/pm+nP7L50knCJuH3HIk5hwT2K8OxBIOgAujSnWt1KM3rvs87k2vhTNBfby7/o4YTvkVfI5hACEHMPwGgzrNS3ps17IoSH9VW5XdbsFux4o67seZKa2MGJpGQipTQGBfKHXCfEcA6p3i9UcLLjRvVuM1+0m/x8wlJSaXeqraB101b8r6CpAvCjsWOqoTwrKep2E689yxKCFqRNrRtpBbZmjHfWHEIQsehR2LMYjQ/ebNvMVSs8CUsOegO5tXMJSSaGdWvCCJpicMzNBCgvGY8PejW+gwi1NKGfLsGv8sB3nvoQqwQt69oqEhotHoR1Q6uTxRSRNl+Q06BffuJH2NE8ERXKbrtlskpP/eWHh46LMfm8XVkvpMcJ+GWwHVEGmY6D1ciR/xzi2VzBW0/uJnvNj9buEmCOZ5Ofh1rcM1FI1xRCLa3HG0fy/JQJIi/QH0LM5vQkyrnxz1Jb/TO5ydqP3jlckMNZn44YSn8jihP/Cqps4zOmE7xvFm9kSVw19aH6p/UytGvEaGEvZQbIg/P14O1XIqbn2X9mNCVW0kWURpEJvMNHWUPXzXdpJ15+iywWmx8VavnXNNUf4N5PP6JyFHsIFEz8B6d33LTw+mx6ha2cGcLEY4JN7vmCaJLkTtDmfz60U+r4zuAPwmmDTAXYmXdUwTQct5dakG64OvykfHP43rLI/BBfjtMARda6edwQPx0iLHlRXjIuMBKq1MNYIveuBCMSKFPWucEk7K9OHWAUqP1JRkoHQTbrjGXn9JJresvsW/wPJOLwpRhfdw/tmN+SRJhiAbDJcKzCFRqfGMMTZF1vBFbzGJEFIbvoBBH52BlGldmdZHLflpxGdri2ApwE0Anq+jq/igeyKVqndF2fAi3aBCtVSBou8LzzhoQlIboSuo5dRhci8iyvGY/v3buWMhW1YB1G+tCC2T6DTE1mMiLV8ivTDXeH5rOy87oF9AdO/tkM6aMS0XKuUahhTeQ+siLZZLO+jN/+ynpXealbU9xcj3UsMrdhrHII1VcAcX4oDqy80sqZ4sNNpu9MYuhG0KTK33hygIMv6NTrxXcV4Y4+w48kNCC6Ejrk33EAp8PgYN9/9R3bL+yOj5kAjA+WEi+K+OIwrrZZouNsC0HqpF/rikW/ayMeZiy7cA7T7PXKkwRVunc/E2DIlA/m+9ttqGxhlx0TEHVOBOkc+MlzgdoHijzubZSK8TdqfVQiqOGvliP+ryg6jg0Qf2Uew7bH2trmYdm9UXtjp2PSd/bVWeUCQfPSU+noYYcTDX6AJRH4uWRPmT62MB9lmoCeai8UN8LPHqolfgrAzFJXI26q1Lmq+bbBQsSu+N5FYxW0te1HFsF5qCw0oQ4Uz+OogckQaL2KozkMYFU907bYSGO184Lvx5yCgKBazCTs0//AhgchsmsgqIXADmlq3gEt3eRVcJpmZ5j1dZOpKlc/s5LSZXmwRNAjHiXodwQCDiYPDg/77u8MVV8pU5uz3gvT8a0zOQ+Fd3PZkvZfF+kPkOE1JWJAEYx0Z2zNpZUSR34NhllkHqcYZA7HBDHGV6MhI2NXtSrit+JtIFN9Ccu748fcTJGBbdQS6vIhKsmbf4utCpjh8j/akTtfMX9JTwWVwbaqD7xebT26kTiQvJsga5H0ag3BDmeTkkjybBxzW46kh4krmqPlU9YCtzrdvbM/y4/uW+Z2HZNVVvNKsxXqbwz6cGwl0krpBKATOqWMwnybKRvq+nsfErAD5dh+blTCdm+8ErIKMZxOiDQ6RHya+AAW+vLNgadoA/LtK6xVTTCAsODlhfFXGvGvfrDFd/iWD1O96txtjkGXz4CMHUfJl6+PAp41UhndeIbOaozqGUc7iXWYx1m8ZtXr4YLcovQ72XP30ccjo2WO+GaBikXMajq6UlRSRUHG/OLmPzEVCxcR1Sz4wNoY1o2dBFD0Rv02pa+/FZtmH+LUQLMB7mmqAa5SG/iAST9YTOvhKupF8JWkRMbq24xTzzD19LNj+HBzpO58qAK95DaR1xZSh0sYPCl3Y5cp2oPH9L2Vw7K7DjKbF4HFaU42E3zP8y0fzAWyhTdMTmVdMlsYdNzilqyknvDWVZSy1mo/E7Wvg+dGaPBF6ieelfEqOcNWnUspIVBCdzdMzI0/8QjykLbTSAphk56BguteAeimgrox2iS02rVsu33721ehlwTSK4Xz3n2XIttcFcAsZEXNgZtPAmnhgFAdo7W7fe+UEvbDM5HWLHfbB0r1fWQQzpBeTXybZD3Yp8hkeVeNmX5ETNgdmkMGnyS/yWBim14ICO/aHN3+SRX8nKo4EQK/HwbfIJ6KQtMHge13OMkPN9HXpVY+tNYJBkPeLVjeOWtQ3hYhataZyd3Ptaw01uW6MO3SgbMXzvIs1WPfJIvuvdayi7g78QshB3k5BGXQNLXdpsD4huy1NmN4O+/pjGVfc4PKfOsAXglzGVAYPwsIJi7Hg60kuHjGZysAlnsSE1aDwxi83n/OuTNULGYrF6+ges/dqNn/5h/yY36qSXLpI6nYKIrodozHOE++oXUwTaGCP6si3DMeN/KzcrhWrTySMciZS5QGRB30ZRh3HB8BPhG90SAWu0NIFgojiHInuUSm18m0LDHPCXPxuqmlWrH7dRV0UmcRZrlpYRZJi4t141YfVhS4SKbgIS662MxPdGqOSksbjV/3W3jjhytUjryG5umQK2Q5Ton96nJPyKJeZ3dV8K44c9YdFnZ/UrnLyCecf1FGwkQZNsa7aDIsvjouD4qtyRqOwNo5nBAOqJJwl0kbil51zgfSncqij4RcJ4BOHsGnzbOqU19m/I6bnB78jmjpDv1MxrhakDwgHos2xImTP1sGNmwu4A9YO0jGxiLW9xCi8MQo+qs1PnjNvtlQW9k+zJeJpnoTGuxrS1K8TZJ0VCqU524eo/LvKqNzfqa72mZ/fQVjABpP9SYy/kmJ9k406dKK5FUQvilYqOe1h/jlDOsAf5gZ+BvrEy8bhxW5VvMUaIgyUbzXr0HAb8a9Ubl5Q26nE78fNhiIR0jmpylvbXWS4ChcOmdoiUNKk7JJk+j7F1oMomcQ9P06U1ckYCvbqtYyeAQrFEA0vhlr1Wq8Gdqgh47bakBGj7KX2nxAeVWCLyD5+nF4js6gZJzWmXMr+KAT2THPp+4opbtP6rHZUaYUYz4xq4jRwI20xvCfZPlV11KaRzDS2wtbk6AXdhiwC8IFWeKQzmvw5JJyPXDpPBNIRjFk3dQK2t/3sTS3eRvncxuil4crequGSt0Ugo9LqyoNn27F8earjBu4kADRbAtegzQHVjsNB7bVfqnPIWOj/fuUvlrmDFVm0Q9OcATSbtiZcsdUlPIAVZFV8rtoT1dcOYnPWWoZsA0G/LnFedNWU6q9n9sw44+3n4WEudQwnSMZT+URmEXwgSXDZXypvLbLNvT3SHYC3E23TS3ovUPLkXeQC+oIukZNTYxjAMLwphBwXFrk+/ivHwuMJUUR1gF2ISaiU4IK2ohlLhVlOKz7aLTx7rt2ANjTouedoMqWWMEp/hPkyrJ+chvgmuULK2A2/BZHE8bEYvQ1UwC0G6W/9fYELbp2VaRyI3XkvkcGhF12Im4DUEX7yPvjz5OEH3bWZU6CHDOYCmCPYaMG5q/DBhHt/7RpisPf/BkP81eX9a8Vr2FpFrKvdO5cZtcClJDo5yOECEwXXVQCMaGdTfaCEu1Ppaszbj7RTb7XCIP4H3N0zJdpf5XZIMKVxNxh3tbIgmAXsipQbbTpFWoEY1IQGouFglzPKSRo1c6MuhOMiGvHO7dP3JTVA5PyIp76d7hiUFeoXbucPnhVS/Mfy+doFdelJrBeSpw5WQRIcMoicL7QZ2JGNLFyLwg/12+li6Uo3bZEXCBqijJHB74hxqgqEEF5KR48MRGaY+JJAHMOYoV54Z3Ntu1rHJgV8pCHQipc6OtfFFxgOGY/3N0dT1SjL8KSEXzOfX6OUM7FR9LPMZnbF+kjqWlwVE+zgl7vmUTpYDkiAOZyCtt3Q8YlFRBltOu1Q3JzNSLpvNh/bL/umIXcDAo4gv8hn7qyAklRhz7U8wBYrAG6UyTOTj5hCWRiQxeJOVnuYa1N48MtpfczvCn9/wi7L7d54qxcbvHLxug4+7ToFM1DCzkx2PQvkDw72RHB77lQwPqCpYzSLNoxFy9TrjnA/YN7LfFhSotQ7g0cM8U189Q1ZEHaTUyC4AthuxNAYEjXTc/9Y7fNuxK8pkh76/5qSAX6kZ5z+gagt2kJkMzGDtCc+nYDZlzvPsnPydopQPd2lw4f+R/sMnqdIR55BTxBXcLBFM/vOIvfFl4x0iNWi4I3GbeYerfhyQg4h2TipvS2V9Lk6io/IhLkGg0MNeGv4TTPTqHK8eJ6yFQLXOcPnaa4HG/pEL0O//xw+7k0JZFAfzoOoPl+pMms0dmxNJ3YlvKOgu4MPMIzNzAUyl4yhbGSBg8f4/lCk5LKq8nHzp+sPoaXAbLy3zh3BY3vZJZAU+iZZv9v8Uu2vdIEWsfHbQgTX44ShZhBIET0r0C22i/ih9pIG8KlQgv7170wGuJEg0qFnvlFoj8W6FsNsiasuuXGEIIQzogYqdYZ9JrwF0aa0nRFesFjyLeXhwxnJTbHKa9jTfunmeJGF9oFpO4pTFTLUc9E9DTKDMRqp7sU4I2oRpgeNCL5ybNryhOYVVZIejUGkjXD731RtFZQ5irRF8R2luKw=="></span><span style="display: none !important;"><input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="C6CCD160"></span><span style="display: none !important;"><input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value=""></span><span style="display: none !important;"><input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="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"></span></form>
+
+
+<div id="__SuccessWindow" style="border-right: 1px solid rgb(69, 86, 144); border-left: 1px solid rgb(166, 180, 207); border-top: 1px solid rgb(166, 180, 207); z-index: 9999999; top: 0px; left: 64px; visibility: hidden; width: 168px; position: absolute; height: 115px; background-color: rgb(201, 211, 243);"></div><div id="__Calendar" style="position:absolute;top:0px;left:0px;display:none;z-index:99"><span id="__SelectYearSpan" style="position:absolute;top:3px;left:42px;"></span><span id="__SelectMonthSpan" style="position:absolute;top:3px;left:98px;"></span><table whdth="100%" border="1" cellspacing="0" cellpadding="0" width="200" height="160" bordercolor="#8080C0" bgcolor="#8080C0">	<tbody><tr>		<td bgcolor="#FFFFFF">			<table border="0" cellspacing="1" cellpadding="0" width="100%" height="23">				<tbody><tr align="center">					<td width="100" align="center" bgcolor="#8080C0" style="cursor:pointer;color:#ffffff" onclick="_c().prevMonth()" title="向前翻 1 月"><b>&lt;</b>					</td>					<td width="100" align="center" style="cursor:default" onmouseover="style.backgroundColor=&quot;#FFD700&quot;;" onmouseout="style.backgroundColor=&quot;white&quot;" onclick="_c().selectYear(_it(this)._s(0, 4))" title="點擊這裡選擇年份">						<span id="__YearHeader">2005 年</span>					</td>					<td width="100" align="center" style="cursor:default" onmouseover="style.backgroundColor='#FFD700';" onmouseout="style.backgroundColor='white'" onclick="_c().selectMonth(_it(_('__MonthHeader')).length==3?_it(this)._s(0, 1):_it(this)._s(0, 2))" title="點擊這裡選擇月份">						<span id="__MonthHeader">11 月</span>					</td>					<td width="100" bgcolor="#8080C0" align="center" style="cursor:pointer;color:#ffffff" onclick="_c().nextMonth()" title="向後翻 1 月"><b>&gt;</b></td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td>			<table border="1" cellspacing="0" cellpadding="0" bgcolor="#8080C0" bordercolorlight="#8080C0" bordercolordark="#FFFFFF" width="100%" height="20">				<tbody><tr align="center" style="color:#FFFFFF;font-size:12px;">					<td><font color="white">日</font></td>					<td><font color="white">一</font></td>					<td><font color="white">二</font></td>					<td><font color="white">三</font></td>					<td><font color="white">四</font></td>					<td><font color="white">五</font></td>					<td><font color="white">六</font></td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td height="120">			<table border="1" cellspacing="1" cellpadding="0" width="100%"><tbody><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day0">11</td><td height="20" id="__Day1">11</td><td height="20" id="__Day2">11</td><td height="20" id="__Day3">11</td><td height="20" id="__Day4">11</td><td height="20" id="__Day5">11</td><td height="20" id="__Day6">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day7">11</td><td height="20" id="__Day8">11</td><td height="20" id="__Day9">11</td><td height="20" id="__Day10">11</td><td height="20" id="__Day11">11</td><td height="20" id="__Day12">11</td><td height="20" id="__Day13">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day14">11</td><td height="20" id="__Day15">11</td><td height="20" id="__Day16">11</td><td height="20" id="__Day17">11</td><td height="20" id="__Day18">11</td><td height="20" id="__Day19">11</td><td height="20" id="__Day20">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day21">11</td><td height="20" id="__Day22">11</td><td height="20" id="__Day23">11</td><td height="20" id="__Day24">11</td><td height="20" id="__Day25">11</td><td height="20" id="__Day26">11</td><td height="20" id="__Day27">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day28">11</td><td height="20" id="__Day29">11</td><td height="20" id="__Day30">11</td><td height="20" id="__Day31">11</td><td height="20" id="__Day32">11</td><td height="20" id="__Day33">11</td><td height="20" id="__Day34">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day35">11</td><td height="20" id="__Day36">11</td><td height="20" id="__Day37">11</td><td height="20" id="__Day38">11</td>					<td colspan="3" align="right">						<span onclick="_c().closeCalendar();" style="font-size:12px;cursor:pointer;font-weight:normal;color:#ffffff;"><u>關閉</u></span>&nbsp;					</td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td>			<table border="0" cellspacing="1" cellpadding="0" width="100%" bgcolor="#FFFFFF">				<tbody><tr>					<td align="left" nowrap="">						<input type="button" value="&lt;&lt;" title="向前 1 年" onclick="_c().prevYear();" style="font-size:12px;height:20px;cursor:pointer">						<input type="button" value="&lt; " title="向前 1 月" onclick="_c().prevMonth();" style="font-size:12px;height:20px;cursor:pointer">					</td>					<td align="center">						<input type="button" value="Today" title="當前日期" onclick="_c().today();" style="font-size:12px;height:20px;cursor:pointer">					</td>					<td align="right" nowrap="">						<input type="button" value=" &gt;" title="向後 1 月" onclick="_c().nextMonth();" style="font-size:12px;height:20px;cursor:pointer">						<input type="button" value="&gt;&gt;" title="向後 1 年" onclick="_c().nextYear()" style="font-size:12px;height:20px;cursor:pointer">					</td>				</tr>			</tbody></table>		</td>	</tr></tbody></table></div><div id="__SuccessWindow" style="border-right: 1px solid rgb(69, 86, 144); border-left: 1px solid rgb(166, 180, 207); border-top: 1px solid rgb(166, 180, 207); z-index: 9999999; top: 0px; left: 64px; visibility: hidden; width: 168px; position: absolute; height: 115px; background-color: rgb(201, 211, 243);"></div><img src="https://www.sinjang.com.tw/Data/Portal/images/space.jpg" id="__SCREEN" style="position: absolute; width: 1280px; height: 720px; opacity: 0.5; top: 0px; left: 0px;"><img src="https://www.sinjang.com.tw/Data/Portal/images/loading.gif" style="z-index: 1000; position: absolute; top: 360px; left: 640px;" id="__LOADINGBAR"></body></html>

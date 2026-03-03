@@ -1,0 +1,218 @@
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<noscript>
+<META HTTP-EQUIV="Refresh" CONTENT="0;URL=/Portal/index.aspx">
+<META HTTP-EQUIV="Window-target" CONTENT="_top">
+</noscript>
+		
+<script>var _vp = '/Portal/';var _up = 'https://www.sinjang.com.tw/Data/Portal/';var __d = document;</script>
+<link href="https://www.sinjang.com.tw/Data/Portal/Css/css.aspx?css=default&amp;ssl=Y" rel="stylesheet" type="text/css">
+<script src="/Portal/script/jquery-3.7.1.min.js"></script><script src="/Portal/script/Base.js"></script>
+
+
+<script>
+	var	ver	=	"2.0";
+	doImport('pageinit.js, SortTable.js, StringBuffer.js, ReSize.js, Form.js');
+	
+	$(document).ready
+	(
+		function(e)
+		{
+			//try{opener.document.forms[0].target	=	'';}catch(ex){}
+		}
+	);
+</script><style>.wrapper {border: 1px dashed #808080;}</style>
+
+<title>AIS成交行情</title><meta http-equiv="X-UA-Compatible" content="IE=9; requiresActiveX=true">
+    <link href="https://www.sinjang.com.tw/Data/Portal/Css/css.aspx?css=default&amp;ssl=Y" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+
+        var printpage = "BA0102_01.aspx"; //列印頁面名稱
+        /** 
+        網頁初始時處理 Client 的動作 
+        */
+        function page_init() {
+            page_init_start();
+
+            Form.iniFormColor();
+
+            //車體評價
+            funCheckAll_click();
+        }
+
+        function funCheckAll_click() {
+            //點擊車體評價
+            $("input[id*='Q_ALL_OUTSIDE_POINT']").click(function () {
+                if ($("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked")) {//如果全選按鈕有被選擇的話（被選擇是true）
+                    $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                        $(this).prop("checked", true);//把所有的核取方框的property都變成勾選
+                    })
+                } else {
+                    $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                        $(this).prop("checked", false);//把所有的核方框的property都取消勾選
+                    })
+                }
+            })
+
+            $("input[id*='Q_OUTSIDE_POINT']").click(function () {
+                var flag = true;
+                $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                    if ($(this).prop('checked') == false) {
+                        flag = false;
+                        $("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked", false);
+                    }
+                    if (flag == true)
+                        $("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked", true);
+                })
+
+            })
+        }
+
+        /** 
+        查詢功能時呼叫 
+        */
+        function doQuery() {
+            /** 顯示資料處理 */
+            Message.showProcess();
+
+            //=== 自定檢查 ===
+            //=== 資料檢核及設定, 當有錯誤處理方式為 Form.errAppend(Message) 累計錯誤訊息 ===
+            //if (_i(0, "M_SYS_CD") == "")
+            //	Form.errAppend("系統編號不可空白!!");
+            /** ================ */
+
+            //=== 檢查是否有錯誤訊息 ===
+            var needSend = valideMessage("Q_");
+
+            //=== 發生錯誤不處理 ===
+            if (!needSend) {
+                Message.hideProcess();
+                return false;
+            }
+
+            top.rowKey = null;
+
+            return true;
+        }
+
+        /** 存檔功能時呼叫 */
+        function doSave() {
+            /** 顯示資料處理 */
+            Message.showProcess();
+
+            /** === 自定檢查 === */
+            /** 資料檢核及設定, 當有錯誤處理方式為 Form.errAppend(Message) 累計錯誤訊息 */
+            //if (Form.getInput(0, "SYS_CD") == "")
+            //	Form.errAppend("系統編號不可空白!!");
+            /** ================ */
+
+
+            //		if (getBLen($('#M_NICKNAME').val()) > 10)
+            //			Form.errAppend("[暱稱]最多10碼!!(中文佔2碼)!");
+            //			
+            /** 檢查是否有錯誤訊息 */
+            var needSend = valideMessage("M_");
+            /** 發生錯誤不處理 */
+            if (!needSend) {
+                Message.hideProcess();
+                return false;
+            }
+        }
+
+
+
+
+
+        function showDetail(pkno) {
+            var argusNameAry = ["PKNO"];
+            var argusValueAry = [pkno];
+            sendData('BA0102_02.aspx', 'viewFrame', argusNameAry, argusValueAry);
+            top.showView();
+        }
+        //	/** 
+        //	清空查詢的資料
+        //	*/
+        //	function clearQueryForm() {
+
+        //		if (_i(0, 'SHOP_PKNO').value != "") {
+        //			_i(0, 'Q_SHOP_CODE').value = _i(0, 'SHOP_PKNO').value;
+        //			_i(0, 'Q_AUCTION_TIME').value = _i(0, 'AUCTION_TIME').value;
+        //		}
+        //		else {
+        //			_i(0, 'Q_SHOP_CODE').value = "";
+        //			_i(0, 'Q_AUCTION_TIME').value = "";
+        //		}
+        //	}
+
+        var result = new Object();
+
+        function doOpen02(TYPE, CAR_NUMBER, BID_DATE, BID_SERNO, HALL_NO, CAR_PKNO) {
+
+            var h = 800;
+            var w = 600;
+
+            if (TYPE == 'CHECK') {
+                h = 2000;
+                w = 2000;
+            }
+
+            doOpen('', h, w, 'Application/OP/OP0105_01.aspx?SOURCE_TYPE=H&TYPE=' + TYPE + '&CAR_NUMBER=' + CAR_NUMBER + '&BID_DATE=' + BID_DATE + '&BID_SERNO=' + BID_SERNO + '&HALL_NO=' + HALL_NO + '&CAR_PKNO=' + CAR_PKNO + '#');
+
+            if (result != null) {
+                //	        if (result["EN_NAME"] != null) {
+                //	           
+                //	            //_i(0, ZZZZZ_ID).value = result["EN_NAME"];
+                //	           
+                //	            //__doPostBack('AAA', '');
+                //	        }
+            }
+
+
+            result = null;
+        }
+
+        function doOpen03(BID_DATE, BID_SERNO, HALL_NO) {
+
+            doOpen('', 800, 600, 'Application/BA/BA0102_02.aspx?BID_DATE=' + BID_DATE + '&BID_SERNO=' + BID_SERNO + '&HALL_NO=' + HALL_NO + '#');
+
+            if (result != null) {
+                //	        if (result["EN_NAME"] != null) {
+                //	           
+                //	            //_i(0, ZZZZZ_ID).value = result["EN_NAME"];
+                //	           
+                //	            //__doPostBack('AAA', '');
+                //	        }
+            }
+
+
+            result = null;
+        }
+
+        function ChangeHeight() {
+            var div = document.getElementById("container");
+            var height = div.clientHeight;
+            //div.style.height = screen.height - 300;
+            div.style.height = screen.height * 0.60 + 'px';
+        } 
+        window.moveTo(0, 0);
+        window.resizeTo(screen.width, screen.height);
+
+        function ajBrowseLog(Xseq, Xpara) {
+
+            $.ajax({
+                type: "POST",
+                url: "./Services/PO/BrowseLog.aspx",
+                data: { seq: Xseq, para: Xpara },
+                success: function (response) {
+
+                },
+                error: OnErrorCall
+            });
+        }
+        function OnErrorCall(response) {
+
+        }
+    </script>
+    
+<script type="text/javascript">ChangeHeight();funCheckAll_click();try{$(_d()).ready(Grid.setGridEvent);$(_d()).ready(iniGridClickColor);$(_d()).ready(SortTable.sortables_init);}catch(ex){};try{reSize();}catch(ex){};try{switchLabel();}catch(ex){};var	proj	=	'PORTAL';try{$(_d()).ready(function(){try{gridOuterHTML=_('DataGrid').outerHTML;setColumnHide()}catch(ex){}})}catch(ex){};try{Form.iniFormColor();}catch(ex){};;</script><script type="text/javascript">ChangeHeight();funCheckAll_click();Message.hideProcess();;try{$(_d()).ready(Grid.setGridEvent);$(_d()).ready(iniGridClickColor);$(_d()).ready(SortTable.sortables_init);}catch(ex){};try{reSize();}catch(ex){};try{switchLabel();}catch(ex){};var	proj	=	'PORTAL';try{$(_d()).ready(function(){try{gridOuterHTML=_('DataGrid').outerHTML;setColumnHide()}catch(ex){}})}catch(ex){};try{Form.iniFormColor();}catch(ex){};;</script></head>

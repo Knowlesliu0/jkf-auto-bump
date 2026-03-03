@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAA 智慧找車助理</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>SAA 智慧找車助理</h1>
+            <p>請輸入您的帳號密碼，並告訴我客人的需求</p>
+        </header>
+
+        <form id="searchForm">
+            <div class="section login-section">
+                <h2>登入資訊</h2>
+                <div class="form-group">
+                    <label for="username">SAA 帳號</label>
+                    <input type="text" id="username" name="username" placeholder="請輸入帳號" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">SAA 密碼</label>
+                    <input type="password" id="password" name="password" placeholder="請輸入密碼" required>
+                </div>
+            </div>
+
+            <div class="section condition-section">
+                <h2>客人需求 (查詢條件)</h2>
+                <div class="form-group">
+                    <label for="need">口語需求描述 (選填)</label>
+                    <input type="text" id="need" name="need" placeholder="例如：預算80萬內，找BMW 3系列">
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="brand">廠牌</label>
+                        <select id="brand" name="brand">
+                            <option value="">（不限）</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="model">車型</label>
+                        <select id="model" name="model">
+                            <option value="">(請先選擇廠牌)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="year">出廠年份</label>
+                        <input type="text" id="year" name="year" placeholder="例如: 2018">
+                    </div>
+                    <div class="form-group">
+                        <label>預算區間 (萬元)</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="budgetMin" name="budgetMin" placeholder="下限, 例: 50">
+                            <span>~</span>
+                            <input type="number" id="budgetMax" name="budgetMax" placeholder="上限, 例: 80">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">開始自動查詢 🚀</button>
+        </form>
+
+        <div id="loading" class="hidden">
+            <div class="spinner"></div>
+            <p>🤖 助理正在為您登入並抓取資料，請稍後...</p>
+        </div>
+
+        <div id="result" class="hidden">
+            <h2>🎉 查詢完成！</h2>
+            <p id="resultMsg"></p>
+            <div id="productionPeriodInfo" class="hidden"
+                style="background-color: #e8f4fd; padding: 10px; margin: 10px 0; border-radius: 5px; color: #0056b3; font-weight: bold; font-size: 1.1em;">
+                🚘 特徵知識：該車款的出廠期間大約為 <span id="productionPeriodText"></span>
+            </div>
+            <div id="tableContainer" style="overflow-x: auto; margin-top: 15px;"></div>
+            <a id="downloadBtn" href="#" class="btn-download" target="_blank">下載 Excel/CSV 報表</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/api/config');
+                const config = await res.json();
+                if (config.username) {
+                    document.getElementById('username').value = config.username;
+                }
+                if (config.password) {
+                    document.getElementById('password').value = config.password;
+                }
+            } catch (err) {
+                console.error('無法載入帳號密碼設定:', err);
+            }
+
+            // 載入廠牌與車系資料
+            try {
+                const bRes = await fetch('/brands_models.json');
+                const carData = await bRes.json();
+                const brandSelect = document.getElementById('brand');
+                const modelSelect = document.getElementById('model');
+
+                // 填入廠牌
+                Object.keys(carData).forEach(brand => {
+                    const opt = document.createElement('option');
+                    opt.value = brand;
+                    opt.textContent = brand;
+                    brandSelect.appendChild(opt);
+                });
+
+                // 當廠牌改變時，更新車系列表
+                brandSelect.addEventListener('change', (e) => {
+                    const selectedBrand = e.target.value;
+                    modelSelect.innerHTML = '<option value="">(不限)</option>';
+
+                    if (selectedBrand && carData[selectedBrand]) {
+                        carData[selectedBrand].forEach(model => {
+                            const opt = document.createElement('option');
+                            opt.value = model;
+                            opt.textContent = model;
+                            modelSelect.appendChild(opt);
+                        });
+                    } else if (!selectedBrand) {
+                        modelSelect.innerHTML = '<option value="">(請先選擇廠牌)</option>';
+                    }
+                });
+            } catch (err) {
+                console.error('無法載入廠牌車型資料:', err);
+            }
+        });
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const tableContainer = document.getElementById('tableContainer');
+            const mainContainer = document.querySelector('.container');
+
+            // 隱藏按鈕、顯示 Loading、收合版面
+            mainContainer.classList.remove('expanded');
+            btn.style.display = 'none';
+            loading.classList.remove('hidden');
+            result.classList.add('hidden');
+            document.getElementById('productionPeriodInfo').classList.add('hidden');
+            tableContainer.innerHTML = '';
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/scrape', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const resData = await response.json();
+
+                loading.classList.add('hidden');
+                result.classList.remove('hidden');
+
+                if (resData.success) {
+                    document.getElementById('resultMsg').innerText = resData.message;
+
+                    if (resData.productionPeriod) {
+                        document.getElementById('productionPeriodText').innerText = resData.productionPeriod;
+                        document.getElementById('productionPeriodInfo').classList.remove('hidden');
+                    } else {
+                        document.getElementById('productionPeriodInfo').classList.add('hidden');
+                    }
+
+                    document.getElementById('downloadBtn').href = resData.reportUrl;
+
+                    // 繪製表格
+                    if (resData.data && resData.data.headers && resData.data.rows) {
+                        mainContainer.classList.add('expanded');
+                        let tableHTML = '<table class="styled-table"><thead><tr>';
+                        resData.data.headers.forEach(h => {
+                            tableHTML += `<th>${h}</th>`;
+                        });
+                        tableHTML += '</tr></thead><tbody>';
+
+                        resData.data.rows.forEach(row => {
+                            tableHTML += '<tr>';
+                            resData.data.headers.forEach(h => {
+                                tableHTML += `<td>${row[h] || ''}</td>`;
+                            });
+                            tableHTML += '</tr>';
+                        });
+                        tableHTML += '</tbody></table>';
+                        tableContainer.innerHTML = tableHTML;
+                    }
+
+                    btn.style.display = 'block';
+                    btn.innerText = '再次查詢';
+                } else {
+                    document.getElementById('resultMsg').innerText = '❌ 錯誤：' + resData.message;
+                    btn.style.display = 'block';
+                    document.getElementById('downloadBtn').style.display = 'none';
+                }
+            } catch (err) {
+                loading.classList.add('hidden');
+                result.classList.remove('hidden');
+                document.getElementById('resultMsg').innerText = '❌ 系統發生錯誤：無法連線到伺服器';
+                btn.style.display = 'block';
+                document.getElementById('downloadBtn').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
