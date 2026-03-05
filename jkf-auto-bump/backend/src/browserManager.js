@@ -179,9 +179,11 @@ class BrowserManager {
                         domain: c.domain,
                         path: c.path || '/'
                     };
+                    // Handle both "expires" (Playwright format) and "expirationDate" (Cookie-Editor format)
+                    const exp = c.expires !== undefined ? c.expires : c.expirationDate;
                     // Don't pass expires: -1, let it be a session cookie
-                    if (c.expires !== undefined && c.expires !== -1) {
-                        sanitized.expires = Number(c.expires);
+                    if (exp !== undefined && exp !== -1) {
+                        sanitized.expires = Number(exp);
                     }
                     if (typeof c.httpOnly === 'boolean') sanitized.httpOnly = c.httpOnly;
                     if (typeof c.secure === 'boolean') sanitized.secure = c.secure;
