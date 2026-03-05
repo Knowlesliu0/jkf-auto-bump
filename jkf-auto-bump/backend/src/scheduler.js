@@ -37,7 +37,7 @@ function startScheduler() {
                         // 🔑 Sync cookies to ALL tasks with the same JKF account
                         // This prevents the race condition where Task 1's cookie refresh
                         // invalidates Task 2's old cookies
-                        if (task.jkf_username) {
+                        if (result.success && task.jkf_username) {
                             const synced = db.prepare(`
                                 UPDATE tasks SET cookie_string = ?
                                 WHERE jkf_username = ? AND id != ?
