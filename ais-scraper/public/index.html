@@ -29,41 +29,292 @@
                 </div>
             </div>
 
-            <div class="section condition-section">
-                <h2>客人需求 (查詢條件)</h2>
-                <div class="form-group">
-                    <label for="need">口語需求描述 (選填)</label>
-                    <input type="text" id="need" name="need" placeholder="例如：預算80萬內，找BMW 3系列">
-                </div>
+            <div class="tabs">
+                <button type="button" class="tab-btn active" data-target="history">成交行情查詢</button>
+                <button type="button" class="tab-btn" data-target="auction">近期拍賣車輛比對</button>
+            </div>
 
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label for="brand">廠牌</label>
-                        <select id="brand" name="brand">
-                            <option value="">（不限）</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="model">車型</label>
-                        <select id="model" name="model">
-                            <option value="">(請先選擇廠牌)</option>
-                        </select>
-                    </div>
-                </div>
+            <input type="hidden" id="searchMode" name="searchMode" value="history">
 
-                <div class="grid-2">
+            <div id="history" class="tab-content active">
+                <div class="section condition-section">
+                    <h2>客人需求 (歷史成交行情)</h2>
                     <div class="form-group">
-                        <label for="year">出廠年份</label>
-                        <input type="text" id="year" name="year" placeholder="例如: 2018">
+                        <label for="need">口語需求描述 (選填)</label>
+                        <input type="text" id="need" name="need" placeholder="例如：預算80萬內，找BMW 3系列">
                     </div>
-                    <div class="form-group">
-                        <label>預算區間 (萬元)</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="number" id="budgetMin" name="budgetMin" placeholder="下限, 例: 50">
-                            <span>~</span>
-                            <input type="number" id="budgetMax" name="budgetMax" placeholder="上限, 例: 80">
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="brand">廠牌</label>
+                            <select id="brand" name="brand">
+                                <option value="">（不限）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="model">車型</label>
+                            <select id="model" name="model">
+                                <option value="">(請先選擇廠牌)</option>
+                            </select>
                         </div>
                     </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="year">出廠年份</label>
+                            <input type="text" id="year" name="year" placeholder="例如: 2018">
+                        </div>
+                        <div class="form-group">
+                            <label>預算區間 (萬元)</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="number" id="budgetMin" name="budgetMin" placeholder="下限, 例: 50">
+                                <span>~</span>
+                                <input type="number" id="budgetMax" name="budgetMax" placeholder="上限, 例: 80">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="doors">車門數</label>
+                            <select id="doors" name="doors">
+                                <option value="">全部</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mileage">里程數</label>
+                            <select id="mileage" name="mileage">
+                                <option value="">全部</option>
+                                <option value="M1">5萬以下</option>
+                                <option value="M2">5-10萬</option>
+                                <option value="M3">10-15萬</option>
+                                <option value="M4">15-20萬</option>
+                                <option value="M5">20萬以上</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="transmission">傳動方式</label>
+                            <select id="transmission" name="transmission">
+                                <option value="">全部</option>
+                                <option value="2WD">2WD</option>
+                                <option value="4WD">4WD</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>排氣量 (cc)</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="number" id="ccStart" name="ccStart" placeholder="下限">
+                                <span>~</span>
+                                <input type="number" id="ccEnd" name="ccEnd" placeholder="上限">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="gear">排檔</label>
+                            <select id="gear" name="gear">
+                                <option value="">全部</option>
+                                <option value="A">自排</option>
+                                <option value="M">手排</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fuel">燃油</label>
+                            <select id="fuel" name="fuel">
+                                <option value="">全部</option>
+                                <option value="G">汽油</option>
+                                <option value="D">柴油</option>
+                                <option value="H">油電</option>
+                                <option value="E">純電</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>車體評價 (複選，若要全選請直接勾選「全部」按鈕或全部勾選)</label>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px;">
+                            <label><input type="checkbox" id="gradeAll" value="ALL"> <b>全選</b></label>
+                            <label><input type="checkbox" name="grades" value="A+" checked> A+</label>
+                            <label><input type="checkbox" name="grades" value="A" checked> A</label>
+                            <label><input type="checkbox" name="grades" value="B+" checked> B+</label>
+                            <label><input type="checkbox" name="grades" value="B" checked> B</label>
+                            <label><input type="checkbox" name="grades" value="C" checked> C</label>
+                            <label><input type="checkbox" name="grades" value="D"> D</label>
+                            <label><input type="checkbox" name="grades" value="E"> E</label>
+                            <label><input type="checkbox" name="grades" value="N"> N</label>
+                            <label><input type="checkbox" name="grades" value="W"> W</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="auction" class="tab-content">
+                <div class="section condition-section"
+                    style="background: transparent; border: none; box-shadow: none; padding: 0;">
+                    <h2 style="margin-bottom: 15px;">尋車需求 (近期拍賣場次自動比對)</h2>
+
+                    <div id="auctionClientsContainer">
+                        <div class="auction-client-card section" data-index="1"
+                            style="background: #f8fafc; border: 1px dashed #cbd5e1; margin-bottom: 20px; position: relative;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h3 class="client-title" style="margin: 0; color: #2c3e50; font-size: 16px;">👤 客戶需求 #1
+                                </h3>
+                                <button type="button" class="remove-client-btn"
+                                    style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; display: none;">移除</button>
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label>客戶名稱/代號 (必填)</label>
+                                    <input type="text" class="aucClientName" placeholder="例如：張先生 A案" required>
+                                </div>
+                            </div>
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>廠牌</label>
+                                    <select class="aucBrand">
+                                        <option value="">（不限）</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>車型</label>
+                                    <select class="aucModel">
+                                        <option value="">(請先選擇廠牌)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>出廠年份區間</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="number" class="aucYearStart" placeholder="例: 2010">
+                                        <span>~</span>
+                                        <input type="number" class="aucYearEnd" placeholder="例: 2015">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>拍賣編號</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="number" class="aucNoStart" placeholder="例: 81001">
+                                        <span>~</span>
+                                        <input type="number" class="aucNoEnd" placeholder="例: 85001">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>排氣量 (CC)</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="number" class="aucCCStart" placeholder="例: 1800">
+                                        <span>~</span>
+                                        <input type="number" class="aucCCEnd" placeholder="例: 2400">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>車號</label>
+                                    <input type="text" class="aucCarNo" placeholder="完整或部分車牌號碼">
+                                </div>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>燃油</label>
+                                    <select class="aucFuel">
+                                        <option value="">全部</option>
+                                        <option value="汽油">汽油</option>
+                                        <option value="柴油">柴油</option>
+                                        <option value="油電">油電</option>
+                                        <option value="純電">純電</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>傳動方式</label>
+                                    <select class="aucTransmission">
+                                        <option value="">全部</option>
+                                        <option value="2WD">2WD</option>
+                                        <option value="4WD">4WD</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>車色 (勾選可複選)</label>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;"
+                                        class="aucColorGroup">
+                                        <label><input type="checkbox" value="白"> 白</label>
+                                        <label><input type="checkbox" value="黑"> 黑</label>
+                                        <label><input type="checkbox" value="銀"> 銀</label>
+                                        <label><input type="checkbox" value="灰"> 灰</label>
+                                        <label><input type="checkbox" value="紅"> 紅</label>
+                                        <label><input type="checkbox" value="藍"> 藍</label>
+                                        <label><input type="checkbox" value="黃"> 黃</label>
+                                        <label><input type="checkbox" value="其他"> 其他</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>車門數</label>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;"
+                                        class="aucDoorsGroup">
+                                        <label><input type="checkbox" value="2"> 2門</label>
+                                        <label><input type="checkbox" value="3"> 3門</label>
+                                        <label><input type="checkbox" value="4"> 4門</label>
+                                        <label><input type="checkbox" value="5"> 5門</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>車體評價</label>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;"
+                                    class="aucGradesGroup">
+                                    <label><input type="checkbox" value="A+" checked> A+</label>
+                                    <label><input type="checkbox" value="A" checked> A</label>
+                                    <label><input type="checkbox" value="B+" checked> B+</label>
+                                    <label><input type="checkbox" value="B" checked> B</label>
+                                    <label><input type="checkbox" value="C" checked> C</label>
+                                    <label><input type="checkbox" value="D"> D</label>
+                                    <label><input type="checkbox" value="E"> E</label>
+                                    <label><input type="checkbox" value="N"> N</label>
+                                    <label><input type="checkbox" value="W"> W</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>車種</label>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;"
+                                    class="aucCarTypeGroup">
+                                    <label><input type="checkbox" value="白牌機車"> 白牌機車</label>
+                                    <label><input type="checkbox" value="重型機車"> 重型機車</label>
+                                    <label><input type="checkbox" value="大貨車"> 大貨車</label>
+                                    <label><input type="checkbox" value="小客車"> 小客車</label>
+                                    <label><input type="checkbox" value="小客貨"> 小客貨</label>
+                                    <label><input type="checkbox" value="小貨車"> 小貨車</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>特殊配備/備註要求 (文字比對)</label>
+                                <input type="text" class="aucParams" placeholder="例如：天窗 (將針對備註文字進行過濾)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" id="addClientBtn"
+                        style="width: 48%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin-bottom: 20px;">➕
+                        新增一位客戶需求</button>
+                    <button type="button" id="clearClientsBtn"
+                        style="width: 48%; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin-bottom: 20px; margin-left: 4%;">🗑️
+                        清除所有記憶</button>
                 </div>
             </div>
 
@@ -82,6 +333,10 @@
                 style="background-color: #e8f4fd; padding: 10px; margin: 10px 0; border-radius: 5px; color: #0056b3; font-weight: bold; font-size: 1.1em;">
                 🚘 特徵知識：該車款的出廠期間大約為 <span id="productionPeriodText"></span>
             </div>
+            <div id="aiRecommendationInfo" class="hidden"
+                style="background-color: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 5px; color: #856404; font-weight: bold; font-size: 1.1em;">
+                💡 AI 車款推薦：<span id="aiRecommendationText"></span>
+            </div>
             <div id="tableContainer" style="overflow-x: auto; margin-top: 15px;"></div>
             <a id="downloadBtn" href="#" class="btn-download" target="_blank">下載 Excel/CSV 報表</a>
         </div>
@@ -92,10 +347,11 @@
             try {
                 const res = await fetch('/api/config');
                 const config = await res.json();
-                if (config.username) {
+                // 只在 localStorage 沒有存過時才用 config 的值
+                if (config.username && !localStorage.getItem('saa_username')) {
                     document.getElementById('username').value = config.username;
                 }
-                if (config.password) {
+                if (config.password && !localStorage.getItem('saa_password')) {
                     document.getElementById('password').value = config.password;
                 }
             } catch (err) {
@@ -106,10 +362,13 @@
             try {
                 const bRes = await fetch('/brands_models.json');
                 const carData = await bRes.json();
+                window.carDataCache = carData; // 保存到全域
+
+                // History Tab
                 const brandSelect = document.getElementById('brand');
                 const modelSelect = document.getElementById('model');
 
-                // 填入廠牌
+                // 填入廠牌 (History)
                 Object.keys(carData).forEach(brand => {
                     const opt = document.createElement('option');
                     opt.value = brand;
@@ -117,7 +376,7 @@
                     brandSelect.appendChild(opt);
                 });
 
-                // 當廠牌改變時，更新車系列表
+                // 當廠牌改變時，更新車系列表 (History)
                 brandSelect.addEventListener('change', (e) => {
                     const selectedBrand = e.target.value;
                     modelSelect.innerHTML = '<option value="">(不限)</option>';
@@ -133,9 +392,124 @@
                         modelSelect.innerHTML = '<option value="">(請先選擇廠牌)</option>';
                     }
                 });
+
+                // 綁定 Auction 卡片連動邏輯
+                window.populateAuctionCard = function (card) {
+                    const aucBrandSelect = card.querySelector('.aucBrand');
+                    const aucModelSelect = card.querySelector('.aucModel');
+
+                    aucBrandSelect.innerHTML = '<option value="">（不限）</option>';
+                    Object.keys(window.carDataCache).forEach(brand => {
+                        const opt = document.createElement('option');
+                        opt.value = brand;
+                        opt.textContent = brand;
+                        aucBrandSelect.appendChild(opt);
+                    });
+
+                    aucBrandSelect.addEventListener('change', (e) => {
+                        const selectedBrand = e.target.value;
+                        aucModelSelect.innerHTML = '<option value="">(不限)</option>';
+                        if (selectedBrand && window.carDataCache[selectedBrand]) {
+                            window.carDataCache[selectedBrand].forEach(model => {
+                                const opt = document.createElement('option');
+                                opt.value = model;
+                                opt.textContent = model;
+                                aucModelSelect.appendChild(opt);
+                            });
+                        } else if (!selectedBrand) {
+                            aucModelSelect.innerHTML = '<option value="">(請先選擇廠牌)</option>';
+                        }
+                    });
+                };
+
+                // 初始化第一張卡片
+                populateAuctionCard(document.querySelector('.auction-client-card'));
             } catch (err) {
                 console.error('無法載入廠牌車型資料:', err);
             }
+
+            // 動態新增客戶需求卡片
+            document.getElementById('addClientBtn').addEventListener('click', () => {
+                const container = document.getElementById('auctionClientsContainer');
+                const cards = container.querySelectorAll('.auction-client-card');
+                const lastCard = cards[cards.length - 1];
+                const newCard = lastCard.cloneNode(true);
+
+                const newIndex = cards.length + 1;
+                newCard.setAttribute('data-index', newIndex);
+                newCard.querySelector('.client-title').innerText = `👤 客戶需求 #${newIndex}`;
+
+                // 清空 input 內容
+                newCard.querySelectorAll('input').forEach(input => {
+                    if (input.type === 'checkbox') input.checked = false;
+                    else input.value = '';
+                });
+                newCard.querySelectorAll('select').forEach(sel => sel.selectedIndex = 0);
+                newCard.querySelector('.aucModel').innerHTML = '<option value="">(請先選擇廠牌)</option>';
+
+                // 顯示移除按鈕 (超過一張就顯示)
+                newCard.querySelector('.remove-client-btn').style.display = 'block';
+                if (cards.length === 1) {
+                    lastCard.querySelector('.remove-client-btn').style.display = 'block';
+                }
+
+                // 重新綁定事件
+                populateAuctionCard(newCard);
+                bindCardChangeEvents(newCard);
+
+                newCard.querySelector('.remove-client-btn').addEventListener('click', (e) => {
+                    e.target.closest('.auction-client-card').remove();
+                    updateCardIndexes();
+                    saveClientCards();
+                });
+
+                container.appendChild(newCard);
+                saveClientCards();
+            });
+
+            // 綁定第一張卡片的移除按鈕
+            document.querySelector('.remove-client-btn').addEventListener('click', (e) => {
+                e.target.closest('.auction-client-card').remove();
+                updateCardIndexes();
+                saveClientCards();
+            });
+
+            function updateCardIndexes() {
+                const cards = document.querySelectorAll('.auction-client-card');
+                cards.forEach((card, i) => {
+                    card.setAttribute('data-index', i + 1);
+                    card.querySelector('.client-title').innerText = `👤 客戶需求 #${i + 1}`;
+                });
+                // 剩下一張時隱藏刪除按鈕
+                if (cards.length === 1) {
+                    cards[0].querySelector('.remove-client-btn').style.display = 'none';
+                }
+            }
+
+            // 頁籤切換邏輯
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // 移除所有 active
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                    // 當前 active
+                    e.target.classList.add('active');
+                    const targetId = e.target.getAttribute('data-target');
+                    document.getElementById(targetId).classList.add('active');
+
+                    // 更新隱藏的 searchMode
+                    document.getElementById('searchMode').value = targetId;
+
+                    // 更換按鈕文字
+                    const submitBtn = document.getElementById('submitBtn');
+                    if (targetId === 'auction') {
+                        submitBtn.innerText = '開始比對近期拍賣 🚀';
+                    } else {
+                        submitBtn.innerText = '開始自動查詢 🚀';
+                    }
+                });
+            });
         });
 
         document.getElementById('searchForm').addEventListener('submit', async (e) => {
@@ -153,16 +527,55 @@
             loading.classList.remove('hidden');
             result.classList.add('hidden');
             document.getElementById('productionPeriodInfo').classList.add('hidden');
+            document.getElementById('aiRecommendationInfo').classList.add('hidden');
             tableContainer.innerHTML = '';
 
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
 
+            // 特別處理多選 checkbox (車體評價)
+            data.grades = formData.getAll('grades');
+
+            let postBody = data;
+
+            if (data.searchMode === 'auction') {
+                const requests = [];
+                const cards = document.querySelectorAll('.auction-client-card');
+                cards.forEach(card => {
+                    requests.push({
+                        aucClientName: card.querySelector('.aucClientName').value,
+                        aucBrand: card.querySelector('.aucBrand').value,
+                        aucModel: card.querySelector('.aucModel').value,
+                        aucYearStart: card.querySelector('.aucYearStart').value,
+                        aucYearEnd: card.querySelector('.aucYearEnd').value,
+                        aucNoStart: card.querySelector('.aucNoStart').value,
+                        aucNoEnd: card.querySelector('.aucNoEnd').value,
+                        aucCCStart: card.querySelector('.aucCCStart').value,
+                        aucCCEnd: card.querySelector('.aucCCEnd').value,
+                        aucCarNo: card.querySelector('.aucCarNo').value,
+                        aucFuel: card.querySelector('.aucFuel').value,
+                        aucTransmission: card.querySelector('.aucTransmission').value,
+                        aucParams: card.querySelector('.aucParams').value,
+                        aucColors: Array.from(card.querySelectorAll('.aucColorGroup input:checked')).map(cb => cb.value),
+                        aucDoors: Array.from(card.querySelectorAll('.aucDoorsGroup input:checked')).map(cb => cb.value),
+                        aucGrades: Array.from(card.querySelectorAll('.aucGradesGroup input:checked')).map(cb => cb.value),
+                        aucCarTypes: Array.from(card.querySelectorAll('.aucCarTypeGroup input:checked')).map(cb => cb.value)
+                    });
+                });
+                postBody = {
+                    searchMode: 'auction',
+                    username: data.username,
+                    password: data.password,
+                    requests: requests
+                };
+            }
+
             try {
-                const response = await fetch('/api/scrape', {
+                const url = data.searchMode === 'auction' ? '/api/scrape-auction' : '/api/scrape';
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(postBody)
                 });
 
                 const resData = await response.json();
@@ -171,13 +584,20 @@
                 result.classList.remove('hidden');
 
                 if (resData.success) {
-                    document.getElementById('resultMsg').innerText = resData.message;
+                    document.getElementById('resultMsg').innerHTML = resData.message.replace(/\n/g, '<br>');
 
                     if (resData.productionPeriod) {
                         document.getElementById('productionPeriodText').innerText = resData.productionPeriod;
                         document.getElementById('productionPeriodInfo').classList.remove('hidden');
                     } else {
                         document.getElementById('productionPeriodInfo').classList.add('hidden');
+                    }
+
+                    if (resData.aiRecommendation) {
+                        document.getElementById('aiRecommendationText').innerText = resData.aiRecommendation;
+                        document.getElementById('aiRecommendationInfo').classList.remove('hidden');
+                    } else {
+                        document.getElementById('aiRecommendationInfo').classList.add('hidden');
                     }
 
                     document.getElementById('downloadBtn').href = resData.reportUrl;
@@ -194,7 +614,24 @@
                         resData.data.rows.forEach(row => {
                             tableHTML += '<tr>';
                             resData.data.headers.forEach(h => {
-                                tableHTML += `<td>${row[h] || ''}</td>`;
+                                const val = row[h] || '';
+                                // 偵測是否包含查看資料連結
+                                if (val.startsWith && val.startsWith('{"__links"')) {
+                                    try {
+                                        const linkData = JSON.parse(val);
+                                        let icons = '';
+                                        linkData.__links.forEach(l => {
+                                            if (l.type === 'record') icons += `<a href="${l.url}" target="_blank" title="監理資料" style="margin:0 2px;cursor:pointer;">📋</a>`;
+                                            else if (l.type === 'photo') icons += `<a href="${l.url}" target="_blank" title="照片" style="margin:0 2px;cursor:pointer;">📸</a>`;
+                                            else if (l.type === 'check') icons += `<a href="${l.url}" target="_blank" title="查定表" style="margin:0 2px;cursor:pointer;">📊</a>`;
+                                        });
+                                        tableHTML += `<td>${icons}</td>`;
+                                    } catch (e) {
+                                        tableHTML += `<td>${val}</td>`;
+                                    }
+                                } else {
+                                    tableHTML += `<td>${val}</td>`;
+                                }
                             });
                             tableHTML += '</tr>';
                         });
@@ -217,6 +654,146 @@
                 document.getElementById('downloadBtn').style.display = 'none';
             }
         });
+
+        // 車體評價「全選」連動邏輯
+        const gradeAllCb = document.getElementById('gradeAll');
+        const gradeCbs = document.querySelectorAll('input[name="grades"]');
+
+        gradeAllCb.addEventListener('change', (e) => {
+            gradeCbs.forEach(cb => {
+                cb.checked = e.target.checked;
+            });
+        });
+
+        gradeCbs.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const allChecked = Array.from(gradeCbs).every(c => c.checked);
+                gradeAllCb.checked = allChecked;
+            });
+        });
+        // 帳號密碼自動記憶（延遲載入避免被瀏覽器 autofill 覆蓋）
+        const usernameEl = document.getElementById('username');
+        const passwordEl = document.getElementById('password');
+        setTimeout(() => {
+            const savedUser = localStorage.getItem('saa_username');
+            const savedPass = localStorage.getItem('saa_password');
+            if (savedUser) usernameEl.value = savedUser;
+            if (savedPass) passwordEl.value = savedPass;
+        }, 500);
+        usernameEl.addEventListener('input', () => localStorage.setItem('saa_username', usernameEl.value));
+        passwordEl.addEventListener('input', () => localStorage.setItem('saa_password', passwordEl.value));
+        // 送出表單時也存一次
+        document.getElementById('searchForm').addEventListener('submit', () => {
+            localStorage.setItem('saa_username', usernameEl.value);
+            localStorage.setItem('saa_password', passwordEl.value);
+            saveClientCards();
+        });
+
+        // ========== 客戶需求卡片記憶功能 ==========
+        function serializeCard(card) {
+            return {
+                clientName: card.querySelector('.aucClientName')?.value || '',
+                brand: card.querySelector('.aucBrand')?.value || '',
+                model: card.querySelector('.aucModel')?.value || '',
+                yearStart: card.querySelector('.aucYearStart')?.value || '',
+                yearEnd: card.querySelector('.aucYearEnd')?.value || '',
+                noStart: card.querySelector('.aucNoStart')?.value || '',
+                noEnd: card.querySelector('.aucNoEnd')?.value || '',
+                ccStart: card.querySelector('.aucCCStart')?.value || '',
+                ccEnd: card.querySelector('.aucCCEnd')?.value || '',
+                carNo: card.querySelector('.aucCarNo')?.value || '',
+                fuel: card.querySelector('.aucFuel')?.value || '',
+                transmission: card.querySelector('.aucTransmission')?.value || '',
+                params: card.querySelector('.aucParams')?.value || '',
+                colors: Array.from(card.querySelectorAll('.aucColorGroup input:checked')).map(cb => cb.value),
+                doors: Array.from(card.querySelectorAll('.aucDoorsGroup input:checked')).map(cb => cb.value),
+                grades: Array.from(card.querySelectorAll('.aucGradesGroup input:checked')).map(cb => cb.value),
+                carTypes: Array.from(card.querySelectorAll('.aucCarTypeGroup input:checked')).map(cb => cb.value),
+            };
+        }
+
+        function saveClientCards() {
+            const cards = document.querySelectorAll('.auction-client-card');
+            const data = Array.from(cards).map(c => serializeCard(c));
+            localStorage.setItem('saa_client_cards', JSON.stringify(data));
+        }
+
+        function restoreCard(card, data) {
+            card.querySelector('.aucClientName').value = data.clientName || '';
+            // 先設 brand，觸發 model 更新
+            const brandSel = card.querySelector('.aucBrand');
+            brandSel.value = data.brand || '';
+            brandSel.dispatchEvent(new Event('change'));
+            // 延遲設 model（等 brand change 填完 model options）
+            setTimeout(() => {
+                card.querySelector('.aucModel').value = data.model || '';
+            }, 100);
+            card.querySelector('.aucYearStart').value = data.yearStart || '';
+            card.querySelector('.aucYearEnd').value = data.yearEnd || '';
+            card.querySelector('.aucNoStart').value = data.noStart || '';
+            card.querySelector('.aucNoEnd').value = data.noEnd || '';
+            card.querySelector('.aucCCStart').value = data.ccStart || '';
+            card.querySelector('.aucCCEnd').value = data.ccEnd || '';
+            card.querySelector('.aucCarNo').value = data.carNo || '';
+            card.querySelector('.aucFuel').value = data.fuel || '';
+            card.querySelector('.aucTransmission').value = data.transmission || '';
+            card.querySelector('.aucParams').value = data.params || '';
+            // checkbox groups
+            (data.colors || []).forEach(v => { const cb = card.querySelector(`.aucColorGroup input[value="${v}"]`); if (cb) cb.checked = true; });
+            (data.doors || []).forEach(v => { const cb = card.querySelector(`.aucDoorsGroup input[value="${v}"]`); if (cb) cb.checked = true; });
+            (data.grades || []).forEach(v => { const cb = card.querySelector(`.aucGradesGroup input[value="${v}"]`); if (cb) cb.checked = true; });
+            (data.carTypes || []).forEach(v => { const cb = card.querySelector(`.aucCarTypeGroup input[value="${v}"]`); if (cb) cb.checked = true; });
+        }
+
+        function bindCardChangeEvents(card) {
+            card.querySelectorAll('input, select').forEach(el => {
+                el.addEventListener('input', saveClientCards);
+                el.addEventListener('change', saveClientCards);
+            });
+        }
+
+        // 載入已儲存的客戶需求
+        function loadClientCards() {
+            const saved = localStorage.getItem('saa_client_cards');
+            if (!saved) return;
+            try {
+                const cardsData = JSON.parse(saved);
+                if (!Array.isArray(cardsData) || cardsData.length === 0) return;
+
+                // 還原第一張卡
+                const firstCard = document.querySelector('.auction-client-card');
+                restoreCard(firstCard, cardsData[0]);
+                bindCardChangeEvents(firstCard);
+
+                // 多張卡：模擬點擊新增
+                for (let i = 1; i < cardsData.length; i++) {
+                    document.getElementById('addClientBtn').click();
+                }
+                // 延遲還原後續卡片
+                setTimeout(() => {
+                    const allCards = document.querySelectorAll('.auction-client-card');
+                    for (let i = 1; i < cardsData.length && i < allCards.length; i++) {
+                        restoreCard(allCards[i], cardsData[i]);
+                    }
+                }, 200);
+            } catch (e) {
+                console.error('載入客戶需求失敗:', e);
+            }
+        }
+
+        // 綁定第一張卡的 change 事件
+        bindCardChangeEvents(document.querySelector('.auction-client-card'));
+
+        // 清除記憶按鈕
+        document.getElementById('clearClientsBtn').addEventListener('click', () => {
+            if (confirm('確定要清除所有已記憶的客戶需求嗎？')) {
+                localStorage.removeItem('saa_client_cards');
+                location.reload();
+            }
+        });
+
+        // 頁面載入時還原
+        setTimeout(loadClientCards, 600);
     </script>
 </body>
 

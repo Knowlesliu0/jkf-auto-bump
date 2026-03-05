@@ -1,0 +1,950 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>行將企業｜SAA車輛競拍中心｜SAVE認證車聯盟</title>
+<meta http-equiv="X-UA-Compatible" content="IE=9; requiresActiveX=true"><link href="https://www.sinjang.com.tw/Data/Portal/Css/css.aspx?css=default_new&amp;ssl=Y" rel="stylesheet" type="text/css"><link href="https://www.sinjang.com.tw/Data/Portal/Css/css.aspx?css=style&amp;ssl=Y" rel="stylesheet" type="text/css"><script async="" src="//www.google-analytics.com/analytics.js"></script><script defer="" type="text/javascript" src="script/MSIE.PNG.js"></script><script type="text/javascript" src="Script/Base.js"></script><script type="text/javascript" src="Script/jquery-3.7.1.min.js"></script><script type="text/javascript" src="https://www.sinjang.com.tw/Data/Portal/include/js/jquery.backgroundpos.min.js"></script>
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-71721053-1', 'auto');
+        ga('send', 'pageview');
+
+</script>
+
+ 	<meta name="alexaVerifyID" content="s9nc2L5FJq3Q4Z0nc1ByLQJbtZY"><meta name="description" content="中古車,二手車首選品牌:行將企業SAA競拍中心,提供中古車與二手車,中古車拍賣,二手車拍賣,三大保證,,買車,賣車,二手車訊,中古車買賣,二手車買賣,中古車行情,二手車資訊"><meta name="keywords" content="中古車,二手車,中古車買賣,二手車買賣,二手車訊,二手車網,中古車商,中古車行,二手車商,中古汽車,二手汽車,查定,認證,里程保證,買車,賣車,汽車,首頁,收購,保證,保固,中古車行情,中古車價格"><meta name="author" content="裕隆企業集團,行將企業,SAA車輛競拍中心">
+    
+     <script type="text/javascript">
+         var printpage = "Application/ME/ME0102_01.aspx"; //列印頁面名稱
+            
+         var _vp = '/Portal/';
+         var __d = document;
+		doImport('pageinit.js, SortTable.js, StringBuffer.js, ReSize.js, Form.js');
+
+		var base = 'ctl00_BodyContent_';
+		var hasLogin = 'true';
+
+		function doLogin()
+		{
+			if (_i(0, base + 'ACCOUNT').value == '')
+			{
+				alert('帳號必須輸入!');
+				_i(0, base + 'ACCOUNT').focus();
+				return false;
+			}
+
+			if (_i(0, base + 'PASSWORD').value == '')
+			{
+				alert('密碼必須輸入!');
+				_i(0, base + 'PASSWORD').focus();
+				return false;
+			}
+			//__doPostBack('ctl00$BodyContent$LOGIN_BTN', '')
+			return true;
+		}
+
+		function page_init()
+		{
+		    //blink('aText');
+		}
+        //變更密碼檢查
+        function UpdateChk(obj) {
+            if (_i(0, base + 'oldpwd').value == '') {
+                alert('請輸入原密碼!');
+                _i(0, base + 'oldpwd').focus();
+                return;
+            }
+
+            if (_i(0, base + 'newpwd').value == '') {
+                alert('請輸入新密碼!');
+                _i(0, base + 'newpwd').focus();
+                return;
+            }
+
+            if (_i(0, base + 'comfpwd').value == '') {
+                alert('請輸入確認密碼!');
+                _i(0, base + 'comfpwd').focus();
+                return;
+               }
+               if (_i(0, base + 'comfpwd').value != _i(0, base + 'newpwd').value) 
+             {
+                alert('請輸入與新密碼相同的確認密碼!');
+                _i(0, base + 'comfpwd').focus();
+                return;
+            }
+            __doPostBack('ctl00$BodyContent$UPDATE_BTN', '')
+        }
+
+        function changeMonthClick(month) {
+            //alert(month);
+            _i(0, base + 'monthflag').value = month;
+
+            __doPostBack('ctl00$BodyContent$ReQuery', '')
+        }
+        //登出
+        function reLogin() {
+            self.location.href = 'Admin.aspx';
+        }
+         //刷新
+         function reFresh() {
+             self.location.href = self.location.href;
+         }  
+         //到最新消息頁
+         function toEvent(url) {
+             self.location.replace(url);
+         }          
+         function reLoginForConfirm() {
+             __doPostBack('ctl00$BodyContent$LOGIN_BTN2', '');
+         } 
+
+        //文字閃爍特效
+        function blink(elId) {
+                var html = '';
+                if (document.all)
+                    html += 'var el = document.all.' + elId + ';';
+                else if (document.getElementById)
+                    html += 'var el = document.getElementById("' + elId + '");';
+                    html += 'el.style.visibility = ' + 'el.style.visibility == "hidden" ? "visible" : "hidden"';
+                if (document.all || document.getElementById)
+                    setInterval(html, 500)
+            }
+           /** 
+            處理列印動作 
+            @param	gridID		GridID
+            @param	checkBoxName	要核選的 名稱
+            @param	exportType	匯出種類, CHECK 表示多筆刪除
+            */
+            var hasLogin = 'true';
+            function doPrint1(gridID, checkBoxName, printType) {
+                if (hasLogin != "true") {
+                    alert('請登入會員否則無法使用此功能!');
+                    return;
+                }
+                //=== 減核錯誤處理 ===
+//                if (!valideMessage("Q_"))
+//                    return;
+
+//                var checkCount = 0;
+
+//                if (printType == "CHECK") {
+//                    checkCount = getGridCheckCount(gridID, checkBoxName)
+
+//                    if (checkCount == 0) {
+//                        Message.showMessage("必須選擇資料再進行處理!!");
+//                        return false;
+//                    }
+//                }
+//                else {
+//                    if (!doQuery())
+//                        return;
+//                    Message.hideProcess();
+//                }
+                var formObj;
+                var printWin;
+
+                //if (hasReportServerLincese == 'Y')
+                var printTarget = "Print" + (new Date()).getTime();
+                printWin = openPrintWindow("", printTarget);
+                printWin.document.write("報表列印須花費幾分鐘計算，請您稍等！");
+                printpage = StrUtil.setPageArgument(printpage, "TYPE", "PRINT_ALL");
+//                printpage = StrUtil.setPageArgument(printpage, "START_DATE", _i(0, "Q_START_DATE").value);
+//                printpage = StrUtil.setPageArgument(printpage, "END_DATE", _i(0, "Q_END_DATE").value);
+//                printpage = StrUtil.setPageArgument(printpage, "HALL_NO", _i(0, "Q_HALL_NO").value);
+                formObj = createTmpForm('', '');
+
+                //if (hasReportServerLincese == 'Y')
+                Form.doSubmit(1, printpage, "post", printTarget);
+                //else
+                //	Form.doSubmit(1, printpage, "post", "actionFrame");
+
+                _d().body.removeChild(formObj);
+                //if (hasReportServerLincese == 'Y')
+                printWin.focus();
+            }
+            function openPrintWindow(url_, windowName) {
+                return window.open(url_, windowName, '', '');
+            }
+         //-->          
+        
+            function ajcallRecomend(newsurl) {
+
+                $.ajax({
+                    type: "POST",
+                    url: "AUC2101_.aspx",
+                    data: { AJTYPE: '1',  },
+                    success: function (response) {
+                        $('#recommend_close_ad').click(function () {
+
+                            $('#recommend_ad').hide();
+                            self.location.href = self.location.href;
+                            if (newsurl != "")
+                                self.location.replace(newsurl);
+
+                        });
+
+                        $('#myFrameID').attr('src', 'Application/ME/ME0106_01.aspx');
+                        $('#recommend_ad').show();
+                        $('#recommend_ad').width(screen.width * 0.75);
+                        $('#recommend_ad').height(screen.height * 0.75);
+                        $('#recommend_ad').css('left', screen.width * 0.125);
+                        $('#myFrameID').width(screen.width * 0.75);
+                        $('#myFrameID').height(screen.height * 0.75);                       
+                      
+                    },
+                    error: OnErrorCall
+                });
+            }
+            function OnSuccess(response) {
+                
+                $('#myFrameID').attr('src', 'Application/ME/ME0106_01.aspx');
+                $('#recommend_ad').show();
+                $('#recommend_ad').width(screen.width * 0.75);
+                $('#recommend_ad').height(screen.height * 0.75);
+                $('#recommend_ad').css('left', screen.width * 0.125);
+                $('#myFrameID').width(screen.width * 0.75);
+                $('#myFrameID').height(screen.height * 0.75);
+                       
+                if (response.indexOf('OK') >= 0) {
+                   
+                    return;
+                }
+                else {
+                    try { jQuery.globalEval(response); } catch (e) { }
+                }
+
+
+            }
+            function OnErrorCall(response) {
+
+            }           
+     </script><style>.wrapper {border: 1px dashed #808080;}</style>
+	
+    <script type="text/javascript">
+
+        function MM_openBrWindow(theURL, winName, features) { //v2.0
+            window.open(theURL, winName, features);
+        }
+
+//        //文字閃爍特效
+//        function blink(elId) {
+//            if ($("[id$=hidCheColor]").val() == "") {
+//                var html = '';
+
+//                if (document.all)
+//                    html += 'var el = document.all.' + elId + ';';
+//                else if (document.getElementById)
+//                    html += 'var el = document.getElementById("' + elId + '");';
+//                html += 'el.style.visibility = ' + 'el.style.visibility == "hidden" ? "visible" : "hidden"';
+//                if (document.all || document.getElementById)
+//                    setInterval(html, 500)
+//                $("[id$=hidCheColor]").attr("value", "1");
+
+//            }
+//        }
+
+//        function countDown(idx) {
+//            timerCountDown(idx);
+//        }
+
+//        //倒數計時器
+//        function timerCountDown(idx) {
+
+
+//            var times = countdown;
+//            countdown--;
+//            if (countdown <= 0) {
+//                //拍賣結束，禁止再出價
+//                $('#time').text("拍賣結束");
+//                //$('#BTN_NEXT').hide();
+//                return;
+//            }
+
+//            //若倒數時間已小於等於投標倒數時間，將時間文字閃爍
+//            if (countdown <= $('#hidALERTTIME').val()) {
+//                $('#time').attr('style', 'color:red;');
+//                if (($('#hidTIMEFLAG').val() != '1')) {
+//                    blink('time');
+//                    $('#hidTIMEFLAG').attr('value', '1');
+//                }
+//            }
+
+//            var result = '';
+//            var h = Math.floor(times / (60 * 60));
+//            if (h < 10)
+//                result += '0' + h + '：';
+//            else
+//                result += h + '：';
+//            times = times - h * (60 * 60);
+
+//            var m = Math.floor(times / (60));
+//            if (m < 10)
+//                result += '0' + m + '：';
+//            else
+//                result += m + '：';
+//            times = times - (m * 60);
+
+//            var s = times;
+//            if (s < 10)
+//                result += '0' + s;
+//            else
+//                result += s;
+
+//            $('#time' + idx).text(result);
+
+//            t = window.setTimeout("timerCountDown(" + idx + ")", 1000);
+//        }
+
+      
+
+        //倒數計時器  
+        //countdownId:剩餘時間Id
+        //countdown:倒數時間
+        //statusLabelId:出價狀況Id
+        function timerCountDown(countdownId, countdown, statusLabelId,stop_yn) {
+      
+            var times = countdown;
+            countdown--;
+            if (countdown < 0) {
+              
+                
+                document.getElementById(countdownId).innerHTML = "00:00:00";
+                statusLabelId.innerHTML = "拍賣結束";  
+                return;
+            } else {
+
+                var result = '';
+                var h = Math.floor(times / (60 * 60));
+                if (h < 10)
+                    result += '0' + h + '：';
+                else
+                    result += h + '：';
+                times = times - h * (60 * 60);
+
+                var m = Math.floor(times / (60));
+                if (m < 10)
+                    result += '0' + m + '：';
+                else
+                    result += m + '：';
+                times = times - (m * 60);
+
+                var s = times;
+                if (s < 10)
+                    result += '0' + s;
+                else
+                    result += s;
+
+                //countdownId.innerHTML = result;
+                document.getElementById(countdownId).innerHTML = result ;
+                statusLabelId.innerHTML = "拍賣中";
+                if (stop_yn == "Y")
+                    statusLabelId.innerHTML = "停拍";
+
+                if (countdown <= 300)
+                    statusLabelId.innerHTML = "即將結束";
+
+
+                window.setTimeout("timerCountDown('" + countdownId + "'," + countdown + "," + statusLabelId.id + ",'" + stop_yn + "')", 1000);
+            }
+        }
+</script>
+ <style type="text/css">
+#ctl00_BodyContent_DataGrid img{
+padding-right:0 !important;
+margin-right:0 !important;
+}
+
+ </style>
+
+	<script type="text/javascript">
+	    var hasLogin = 'true';
+
+	    function doLink(type, url) {
+	        if (type == 4) {
+	            window.open(url, '', 'resizable=yes,scrollbars=yes,location=no,menubar=no');
+	        }
+	        else if (type == 0 || hasLogin == "true") 
+	        {
+	            if (type == 2) 
+	            {
+	                window.open(url, '', 'resizable=yes,scrollbars=yes');
+	            }
+	            else if (type == 3) {
+	                window.open(url, '', 'height=469, width=499'); //競拍行情電子書若要用開窗剛好的大小用這個!
+	            }
+	            else 
+	            {
+	                top.location.href = url;
+	            }
+	        }
+	        else
+	            alert('請登入會員否則無法使用此功能!');
+	    }
+	    
+	    $(init);
+	    function init() {
+	        /**************************/
+	        /*變換圖片效果*/
+	        /**************************/
+	        $(".imgSwap").hover(
+			  function() { this.src = this.src.replace("_off", "_on"); },
+			  function() {
+			      this.src = this.src.replace("_on", "_off");
+			  });
+
+
+	        /**************************/
+	        /*MENU效果*/
+	        /**************************/
+
+	        $('.menu').stop().animate({ backgroundPosition: '0px -29px' }, 150);
+	        $('.menu').hover(
+             function() {
+                 $(this).stop().animate({ backgroundPosition: '0px 0px' }, 150);
+
+             }
+        ,
+             function() {
+                 $(this).stop().animate({ backgroundPosition: '0px -29px' }, 150);
+
+             }
+       );
+
+
+	    }
+	//<!--
+		var _vp = '/uTiki/';
+	//-->
+    </script>
+
+<title>
+
+</title></head>
+<body style="background-image: none;">
+<form name="aspnetForm" method="post" action="./AUC2101_.aspx?EventPop=N" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/Portal/WebResource.axd?d=e808Zcr2QG2KYbcIkSBQJNZacvpRYwCcwNrMPgUtPW2QOZlrVSFgQRvigVgiUGTsVbYHu8jylKqLcs-2pqDYN8LVG-81&amp;t=638942498819057530" type="text/javascript"></script>
+
+
+<script src="/Portal/ScriptResource.axd?d=L5UlbyJFf7k133-G1sgx6YhSxcCregVU8GU3MedHs0J-Kr_UwtnD7ojSl-LsgKT4Fu4MA5OkJs1Z1s0rna_izluQleuQM1U_yumZntWps-roXmdLSp0yMJ4odnSK1mkFzkqiC8_8Uu1G8iJnJAbtUP63g82bghzuKczSKHFJIPCRrBSw0&amp;t=32e5dfca" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構無法載入。');
+//]]>
+</script>
+
+<script src="/Portal/ScriptResource.axd?d=ORfztb99VXEkIr7a_PEyLHLrj5v-3oPcmFQjdvboDM5Bo4zWWs2Du04PYN3Jv45JM9XUVhUD7y2RaZUsUluQWlqTApLCKxJqi17TW2uHlEXaiZbBY-icBvG2cKxfjiY1FcAUrVgV_pZisQwa8z0wmU3Hu6MwZmVnK3Q8silRkTbyelhrPGinGB_OHg1WeH3l5LGudg2&amp;t=32e5dfca" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="A5EF8A42">
+	<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="">
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="GFjcHKrS4k3DGM3Nsn9yp5dUjGRYXPiM7ix7E4bjpnVACHA6AZvRNH3hL32ZvLSCqYttwTYbFCJPaIqcphchItUg2ikOgNkNPxs1XBb3z5DP+fc/8s6KcUkf3ZiBbScqGjSVgmXF53oll1LRILe+QX0HN8g98o07/COpY97eqyYsbtXV/H5WugtTlPZiBNiXD0tfYTTs3GTzlBNBkljJ9gA1EeObMv9QVLkUD8+gQbL11OVpVdWnFqQSwtyvRDxQT3aMq1KouUeUl8rMq+UUud7nXaSnc/tiaUP9z4960Rrgiu5gMrezpf0I6Tfh83QLrHREyq+wlAZ+3LlvUfrSOspBF5s=">
+</div>
+<script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager1', 'aspnetForm', ['tctl00$BodyContent$AjaxPanel',''], [], [], 90, 'ctl00');
+//]]>
+</script>
+
+    
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tbody><tr>
+    <td align="right" background="https://www.sinjang.com.tw/Data/Portal/images/line2.gif"><img src="https://www.sinjang.com.tw/Data/Portal/images/line1.gif" width="1218" height="4"></td>
+  </tr>
+  <tr>
+    <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tbody><tr>
+        <td height="76"><div style="background-image:url(https://www.sinjang.com.tw/Data/Portal//images/menu_bg1.png);height:76px;">&nbsp;</div></td>
+        <td width="960" height="76"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tbody><tr>
+              <td width="348"><a href="javascript:doLink(0, 'AUC2101_.aspx?EventPop=N');"><img src="https://www.sinjang.com.tw/Data/Portal/images/menu_bg2.png" width="348" height="76"></a></td>
+              <td align="right" valign="top">
+              <div style="background-image:url(https://www.sinjang.com.tw/Data/Portal//images/menu_bg3.png);height:76px;">
+              
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tbody><tr>
+                  <td height="25" align="right" valign="middle"></td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                      <td height="35" align="center" valign="bottom"><a href="javascript:doLink(0, 'COMPANY.aspx');">
+                        <div class="menu" style="background-image: url(&quot;https://www.sinjang.com.tw/Data/Portal/images/menu1.png&quot;); width: 55px; background-position: 0px -29px;"></div>
+                      </a></td>
+                      <td width="14" height="35" align="center" valign="bottom"><img src="https://www.sinjang.com.tw/Data/Portal/images/line3.png" width="2" height="31"></td>
+                      <td height="35" align="center" valign="bottom"><a href="javascript:doLink(0, 'SERVICES1a.aspx');">
+                        <div class="menu" style="background-image: url(&quot;https://www.sinjang.com.tw/Data/Portal/images/menu2.png&quot;); width: 55px; background-position: 0px -29px;"></div>
+                      </a></td>
+                      <td width="14" height="35" align="center" valign="bottom"><img src="https://www.sinjang.com.tw/Data/Portal/images/line3.png" width="2" height="31"></td>
+                      <td height="35" align="center" valign="bottom"><a href="javascript:doLink(1, 'EPRICE.aspx');">
+                        <div class="menu" style="background-image: url(&quot;https://www.sinjang.com.tw/Data/Portal/images/menu3.png&quot;); width: 56px; background-position: 0px -29px;"></div>
+                      </a></td>
+                      <td width="14" height="35" align="center" valign="bottom"><img src="https://www.sinjang.com.tw/Data/Portal/images/line3.png" width="2" height="31"></td>
+                      <td height="35" align="center" valign="bottom"><a href="javascript:doLink(2, 'CARQUOTES.aspx');">
+                        <div class="menu" style="background-image: url(&quot;https://www.sinjang.com.tw/Data/Portal/images/menu4.png&quot;); width: 55px; background-position: 0px -29px;"></div>
+                      </a></td>
+                      <td width="14" height="35" align="center" valign="bottom"><img src="https://www.sinjang.com.tw/Data/Portal/images/line3.png" width="2" height="31"></td>
+                      <td height="35" align="center" valign="bottom"><a href="javascript:doLink(3, 'QUOTATIONS.aspx');">
+                        <div class="menu" style="background-image: url(&quot;https://www.sinjang.com.tw/Data/Portal/images/menu5.png&quot;); width: 98px; background-position: 0px -29px;"></div>
+                      </a></td>
+                      <td width="14" height="35" align="center" valign="bottom"><img src="https://www.sinjang.com.tw/Data/Portal/images/line3.png" width="2" height="31"></td>
+                      <td height="35" align="center" valign="bottom"><a href="javascript:doLink(0, 'EVENT01.aspx?TYPE=DOWNLOAD');">
+                        <div class="menu" style="background-image: url(&quot;https://www.sinjang.com.tw/Data/Portal/images/menu6.png&quot;); width: 56px; background-position: 0px -29px;"></div>
+                      </a></td>
+                      <td width="14" height="35" align="center" valign="bottom"><img src="https://www.sinjang.com.tw/Data/Portal/images/line3.png" width="2" height="31"></td>
+                      <td height="35" align="center" valign="bottom"><a href="javascript:doLink(0, 'RULE2.aspx');">
+                        <div class="menu" style="background-image: url(&quot;https://www.sinjang.com.tw/Data/Portal/images/menu7.png&quot;); width: 86px; background-position: 0px -29px;"></div>
+                      </a></td>
+                    </tr>
+                  </tbody></table></td>
+                </tr>
+              </tbody></table>
+              
+              
+              </div>
+              </td>
+            </tr>
+        </tbody></table></td>
+        <td height="76"><div style="background-image:url(https://www.sinjang.com.tw/Data/Portal//images/menu_bg3.png);height:76px;">&nbsp;</div></td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+</tbody></table>
+
+
+<!--首頁Banner開始-->
+
+<script>
+  $(function (){
+    var index = 0;
+    var pager = $('.pager').find('li');
+    var timer;
+
+    timer = setInterval(function (){
+      if(index < $('.slideFade').find('img').length - 1){
+        index++
+      }else{
+        index = 0;
+      }
+      $('.slideFade').find('img').eq(index).stop().fadeIn(400).siblings().stop().fadeOut(400);
+      pager.eq(index).addClass('current').siblings().removeClass();
+    },5000);
+
+    $('.bannerTd').hover(function (){
+      clearInterval(timer)
+    },function (){
+      timer = setInterval(function (){
+        if(index < $('.slideFade').find('img').length - 1){
+          index++
+        }else{
+          index = 0;
+        }
+        $('.slideFade').find('img').eq(index).stop().fadeIn(400).siblings().stop().fadeOut(400);
+        pager.eq(index).addClass('current').siblings().removeClass();
+      },5000);
+    })
+
+    $('.arrRight').on('click',function (){
+      if(index < $('.slideFade').find('img').length - 1){
+        index++
+      }else{
+        index = 0;
+      }
+      pager.eq(index).addClass('current').siblings().removeClass();
+      $('.slideFade').find('img').eq(index).stop().fadeIn(400).siblings().stop().fadeOut(400)
+    });
+
+    pager.on('click',function (){
+      $(this).addClass('current').siblings().removeClass();
+      index = $(this).index();
+      $('.slideFade').find('img').eq(index).stop().fadeIn(400).siblings().stop().fadeOut(400)
+    });
+
+    $('.arrLeft').on('click',function (){
+      if(index > 0){
+        index--
+      }else{
+        index = $('.slideFade').find('img').length - 1;
+      }
+      pager.eq(index).addClass('current').siblings().removeClass();
+      $('.slideFade').find('img').eq(index).stop().fadeIn(400).siblings().stop().fadeOut(400)
+    });
+  });
+</script>
+
+<table width="960" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tbody><tr>
+    <td id="ctl00_td_Banner" class="bannerTd">      <img src="https://www.sinjang.com.tw/Data/Portal/images/arrLeft.png" class="arrLeft">
+                                        <img src="https://www.sinjang.com.tw/Data/Portal/images/arrRight.png" class="arrRight">
+                                        <ul class="pager">
+                                                <li class="current"></li>
+                                        </ul>
+                                        <div class="slideFade">
+                                                <img src="https://www.sinjang.com.tw/Data/ADMIN/Images/ADImages/202012240435118406SAA官網BN(png).PNG" style="cursor: auto;">
+                                        </div></td>
+
+  </tr>
+</tbody></table>
+<!--首頁Banner結束-->
+
+
+    <div id="ctl00_BodyContent_AjaxPanel">
+	
+
+    <input type="hidden" name="ctl00$BodyContent$H_MONTH" id="ctl00_BodyContent_H_MONTH" value="3">
+	<input type="hidden" name="ctl00$BodyContent$H_YEAR" id="ctl00_BodyContent_H_YEAR" value="2026">
+	<input type="hidden" name="ctl00$BodyContent$monthflag" id="ctl00_BodyContent_monthflag">
+    <input type="hidden" name="ctl00$BodyContent$H_HAPPY_URL" id="ctl00_BodyContent_H_HAPPY_URL" value="https://fun.sinjang.com.tw/">
+    <input type="hidden" name="ctl00$BodyContent$hidCOUNTDOWN" id="ctl00_BodyContent_hidCOUNTDOWN">
+    <input type="hidden" name="ctl00$BodyContent$hidALERTTIME" id="ctl00_BodyContent_hidALERTTIME">
+    <input type="hidden" name="ctl00$BodyContent$hidTIMEFLAG" id="ctl00_BodyContent_hidTIMEFLAG">
+    <input type="hidden" name="ctl00$BodyContent$timer_idx" id="ctl00_BodyContent_timer_idx">
+        
+        
+        <!--浮動推薦清單開始-->
+<div id="recommend_ad" class="pop_Recommend" style="display:none;">
+   
+    <div style="text-align:right;">
+        <input id="recommend_close_ad" type="submit" value="關  閉">
+    </div>    
+    <iframe id="myFrameID" scrolling="yes" frameborder="0" marginwidth="1" marginheight="1"></iframe>
+</div>
+<style type="text/css">  
+.pop_Recommend {
+    background: white;
+    position: fixed;
+    top: 10px;    
+    color: black;
+    left:180px;  
+    border-width:2px;
+      border-color:black;
+      border-style:ridge;
+      
+}
+.recommend_close_ad 
+{
+    background: white;
+	display: block;
+	text-align: right;
+	cursor: pointer;
+	font-size: 16px;
+}
+</style>
+
+<!--浮動推薦清單開始結束-->
+
+<table width="960" border="0" align="center" cellpadding="10" cellspacing="0" class="box sd mt2 mb2">
+  <tbody><tr>
+    <td height="195" align="left" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+      <tbody><tr>
+        <td width="600" align="left" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="mb2">
+          <tbody><tr>
+            <td height="30" align="left" valign="middle"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tbody><tr>
+                  <td align="left"><img src="https://www.sinjang.com.tw/Data/Portal/images/title5.gif" width="193" height="30"><a id="ctl00_BodyContent_HyperLink1"></a></td>
+                  <td align="right"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon5.gif" width="219" height="23"></td>
+              </tr>
+            </tbody></table></td>
+          </tr>
+          <tr>
+            <td><table width="100%" border="0" cellpadding="0" cellspacing="0" class="box5">
+              <tbody><tr>
+                <td colspan="2" align="left" valign="top"><table width="100%" border="0" cellpadding="0" cellspacing="2">
+                  <tbody><tr>
+                    <td align="left"><a href="javaScript:changeMonthClick(-1)"><img src="https://www.sinjang.com.tw/Data/Portal/images/btn3_off.gif" width="30" height="29" class="imgSwap"></a></td>
+                    <td align="center" class="calendar_Title"><span id="ctl00_BodyContent_YearMonth">2026年3月</span></td>
+                    <td align="right"><a href="javaScript:changeMonthClick(1)"><img src="https://www.sinjang.com.tw/Data/Portal/images/btn2_off.gif" width="30" height="29" class="imgSwap"></a></td>
+                  </tr>
+                </tbody></table>
+                  <div>
+		<table cellspacing="0" cellpadding="3" rules="all" border="0" id="ctl00_BodyContent_DataGrid" style="border-width:0px;width:100%;border-collapse:collapse;">
+			<tbody><tr align="center" valign="middle" style="height:25px;width:14%;">
+				<th class="calendar_week" resize="on" scope="col">一</th><th class="calendar_week" resize="on" scope="col">二</th><th class="calendar_week" resize="on" scope="col">三</th><th class="calendar_week" resize="on" scope="col">四</th><th class="calendar_week" resize="on" scope="col">五</th><th class="calendar_weekend" resize="on" scope="col">六</th><th class="calendar_weekend" resize="on" scope="col">日</th>
+			</tr><tr align="left" class="undefined">
+				<td class="calendar_dayDisabled" align="left" valign="top" style="height:50px;width:14%;">23<br></td><td class="calendar_dayDisabled" align="left" valign="top" style="height:50px;width:14%;">24<br></td><td class="calendar_dayDisabled" align="left" valign="top" style="height:50px;width:14%;">25<br><img src="https://www.sinjang.com.tw/Data/Portal/images/icon6.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'BULLETIN.aspx?PKNO=J00MU2ZO&amp;BID_DATE=20260225')"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon8.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'TICARDETAIL.aspx?BID_DATE=20260225')"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon7.png" style="cursor:pointer" border="0" onclick="window.open('CARPDF.aspx?BID_DATE=20260225','yyy','resizable=yes,scrollbars=yes');"></td><td class="calendar_dayDisabled" align="left" valign="top" style="height:50px;width:14%;">26<br></td><td class="calendar_dayDisabled" align="left" valign="top" style="height:50px;width:14%;">27<br><img src="https://www.sinjang.com.tw/Data/Portal/images/icon6.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'BULLETIN.aspx?PKNO=J00MUW2T&amp;BID_DATE=20260227')"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon8.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'TICARDETAIL.aspx?BID_DATE=20260227')"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon7.png" style="cursor:pointer" border="0" onclick="window.open('CARPDF.aspx?BID_DATE=20260227','yyy','resizable=yes,scrollbars=yes');"></td><td class="calendar_dayDisabled" align="left" valign="top" style="height:50px;width:14%;">28<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">1<br></td>
+			</tr><tr align="left" class="undefined">
+				<td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">2<br></td><td class="calendar_dayOn" align="left" valign="top" style="height:50px;width:14%;">3<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">4<br><img src="https://www.sinjang.com.tw/Data/Portal/images/icon8.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'TICARDETAIL.aspx?BID_DATE=20260304')"></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">5<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">6<br><img src="https://www.sinjang.com.tw/Data/Portal/images/icon8.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'TICARDETAIL.aspx?BID_DATE=20260306')"></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">7<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">8<br></td>
+			</tr><tr align="left" class="undefined">
+				<td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">9<br><img src="https://www.sinjang.com.tw/Data/Portal/images/icon8.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'TICARDETAIL.aspx?BID_DATE=20260309')"></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">10<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">11<br><img src="https://www.sinjang.com.tw/Data/Portal/images/icon8.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'TICARDETAIL.aspx?BID_DATE=20260311')"></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">12<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">13<br><img src="https://www.sinjang.com.tw/Data/Portal/images/icon8.png" style="cursor:pointer" border="0" onclick="javascript:doLink(4,'TICARDETAIL.aspx?BID_DATE=20260313')"></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">14<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">15<br></td>
+			</tr><tr align="left" class="undefined">
+				<td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">16<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">17<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">18<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">19<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">20<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">21<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">22<br></td>
+			</tr><tr align="left" class="undefined">
+				<td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">23<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">24<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">25<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">26<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">27<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">28<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">29<br></td>
+			</tr><tr align="left" class="undefined">
+				<td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">30<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">31<br></td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">&nbsp;</td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">&nbsp;</td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">&nbsp;</td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">&nbsp;</td><td class="calendar_dayOff" align="left" valign="top" style="height:50px;width:14%;">&nbsp;</td>
+			</tr>
+		</tbody></table>
+	</div></td>
+              </tr>
+            </tbody></table></td>
+          </tr>
+        </tbody></table>
+          
+
+                                              <!---競拍實況--->
+                                    
+                                    <a href="https://fun.sinjang.com.tw/" class="spec_link2" style="display:none">
+                                    <div id="list_wrapper" onclick="self.location.href = 'https://fun.sinjang.com.tw/';">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                      <tbody>
+                                        <tr>
+                                          <td align="left"><img src="https://www.sinjang.com.tw/Data/Portal/images/title11.gif" width="225" height="30"></td>
+                                        </tr>
+                                        <tr>
+                                          <td align="left" class="box5" height="5">&nbsp;</td>
+                                        </tr>
+                                      </tbody>
+                                    </table>                                  
+                                    
+                                    
+                                      <div id="ctl00_BodyContent_happy_grid" class="list">
+                                        <div id="output-container">
+                                          <div>
+
+	</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </a>
+                                
+                                     
+                                    <!---競拍實況--->
+          </td>
+        <td width="20" valign="top">&nbsp;</td>
+        <td width="320" align="right" valign="top">
+        
+        
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mb2">
+          <tbody><tr>
+            <td height="30" align="left" valign="middle"><img src="https://www.sinjang.com.tw/Data/Portal/images/title.gif" width="320" height="30"></td>
+          </tr>
+          <tr>
+            <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+               
+                     
+                          <tbody><tr>
+                            <td><table width="100%" border="0" cellspacing="0" cellpadding="0" class="box3">
+                              <tbody><tr>
+                                <td width="31%" align="center" class="bg"><table width="100%" border="0" cellpadding="0" cellspacing="5">
+                                  <tbody><tr>
+                                    <td height="25" align="center" class="content_w2">劉子元 歡迎光臨 登入次數：6045次</td>
+                                  </tr>
+                                  <tr>
+                                    <td height="25" align="center" class="content_w2">會員到期日：2026/03/22</td>
+                                  </tr>
+                                  <tr>
+                                    <td height="35" align="center"><a href="AUC2101_.aspx?state=update&amp;EventPop=N" class="button style1 medium" style="width:75px;">修改密碼</a>
+                                                                      
+                                                                   <a href="admin.aspx" class="button style1 medium" style="width:75px;">登出</a>
+                                                                       
+                                                                   
+                                    </td>
+                                  </tr>
+                                </tbody></table></td>
+                                </tr>
+                            </tbody></table></td>
+                          </tr>
+                      
+            </tbody></table>
+            </td>
+          </tr>
+        </tbody></table>
+           
+        <br>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mb2">
+          <tbody><tr>
+            <td height="30" align="left" valign="middle"><img src="https://www.sinjang.com.tw/Data/Portal/images/title2.gif" width="320" height="30"></td>
+          </tr>
+          <tr>
+            <td>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="box4 bg">
+              <tbody><tr>
+                <td colspan="2" align="left" valign="top">
+                <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="line" id="mbLoginMenu_3" style="">
+                  <tbody><tr>
+                    <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td>
+                    <td width="91%" class="content_w2"><a href="javascript:doLink(2, 'Application/ME/ME0101_01.aspx');">查詢會員買賣台數</a></td>
+                  </tr>
+                  </tbody></table>
+                  
+                    <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="line" id="mbLoginMenu_5" style="">
+                      <tbody><tr>
+                        <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td>
+                        <td width="91%" class="content_w2"><a href="javascript:doLink(2, 'Application/ME/ME0107_01.aspx','','width=1000,height=800,resizable=yes,scrollbars=yes');">您的預標車輛清單</a></td>
+                      </tr>
+                  </tbody></table>
+                  
+                    <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="line" id="mbLoginMenu_1" style="">
+                  <tbody><tr>
+                    <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td>
+                    <td width="91%" class="content_w2"><a href="javascript:doLink(2, 'Application/ME/ME0202_01.aspx');">下載買賣合約</a></td>
+                  </tr>
+                  </tbody></table>
+                     <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="line" id="mbLoginMenu_2" style="">
+                  <tbody><tr>
+                    <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td>
+                    <td width="91%" class="content_w2"><a href="javascript:doLink(2, 'Application/ME/ME0203_01.aspx');">證件進度查詢</a></td>
+                  </tr>                  
+                  </tbody></table>
+                  <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="line" id="mbLoginMenu_2" style="">
+                    <tbody><tr>
+                    <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td>
+                    <td width="91%" class="content_w2"><a href="javascript:doLink(2, 'Application/ME/ME0204_01.aspx');">電子發票查詢</a></td>
+                  </tr>
+                  </tbody></table>
+                  <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="line" id="mbLoginMenu_2" style="">
+                    <tbody><tr>
+                    <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td>
+                    <td width="91%" class="content_w2"><a href="javascript:doLink(2, 'Application/ME/ME0205_01.aspx');">您的上架資料確認清單</a></td>
+                  </tr>
+                  </tbody></table>
+                  </td>
+              </tr>
+              </tbody></table>
+              </td>
+          </tr>
+            <tr>
+                <td>
+                    
+                </td>
+            </tr>
+        </tbody></table>
+            
+                
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mb2">
+          <tbody><tr>
+            <td height="30" align="left" valign="middle"><img src="https://www.sinjang.com.tw/Data/Portal/images/title3.gif" width="320" height="30"></td>
+          </tr>
+          <tr>
+            <td>
+               <table width="100%" border="0" cellpadding="0" cellspacing="0" class="box4 bg">
+                <tbody><tr>
+                <td colspan="2" align="left" valign="top"><table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="line">
+                              <tbody><tr>
+                                <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td><td width="91%" class="content_w2"><a href="EVENT.aspx?pkno=J00CP6VI">2023/2/15起實施電子發票(發票不寄送)</a></td>
+                            </tr>
+                          </tbody></table><table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="line">
+                              <tbody><tr>
+                                <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td><td width="91%" class="content_w2"><a href="EVENT.aspx?pkno=J008EIQT">NEW!!2026/03-2026/06中古車車況鑑定技術培訓課程招生簡章</a></td>
+                            </tr>
+                          </tbody></table><table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="line">
+                              <tbody><tr>
+                                <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td><td width="91%" class="content_w2"><a href="EVENT.aspx?pkno=J00HJL46">【公告】SAA車輛內部環景影片_詳細操作說明</a></td>
+                            </tr>
+                          </tbody></table><table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="line">
+                              <tbody><tr>
+                                <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td><td width="91%" class="content_w2"><a href="EVENT.aspx?pkno=J00ML7MB">NEW!!「格上一手車」全新入庫共有庫存</a></td>
+                            </tr>
+                          </tbody></table><table width="95%" align="center" border="0" cellpadding="0" cellspacing="0" class="line">
+                              <tbody><tr>
+                                <td width="9%" height="38" align="center"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon.gif" width="12" height="15"></td><td width="91%" class="content_w2"><a href="EVENT.aspx?pkno=J00MVNBB">3/6(五)拍賣會暫停，調整至3/9(一)11:30拍賣
+
+ </a><img src="https://www.sinjang.com.tw/Data/Portal/images/new.gif" width="26" height="11"></td>
+                            </tr>
+                          </tbody></table></td>
+              </tr>
+            </tbody></table></td>
+          </tr>
+        </tbody></table>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mb2">
+          <tbody><tr>
+            <td height="30" align="left" valign="middle"><img src="https://www.sinjang.com.tw/Data/Portal/images/title4.gif" width="320" height="30"></td>
+          </tr>
+          <tr>
+            <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tbody><tr>
+                <td width="33%" align="left" valign="top"><a href="https://eatm.firstbank.com.tw/nsap/sap2010s?naMID=c00707822511"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon2_off.gif" width="100" height="38" class="imgSwap"></a></td>
+                <td width="33%" align="center" valign="top"><a href="https://eatm.firstbank.com.tw/nsap/sap2010s?naMID=c00707822512"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon3_off.gif" width="100" height="38" class="imgSwap"></a></td>
+                <td width="33%" align="right" valign="top"><a href="https://eatm.firstbank.com.tw/nsap/sap2010s?naMID=c00707822513"><img src="https://www.sinjang.com.tw/Data/Portal/images/icon4_off.gif" width="100" height="38" class="imgSwap"></a></td>
+              </tr>
+              </tbody></table>
+             </td>
+          </tr>
+        </tbody></table>
+       
+        
+        </td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+</tbody></table>
+
+
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="box2">
+  <tbody><tr>
+    <td height="90" align="center"><table width="960" border="0" cellspacing="0" cellpadding="0">
+      <tbody><tr>
+        <td width="25%" align="center">  <a href="https://www.tac.com.tw/" target="_blank"><img src="https://www.sinjang.com.tw/Data/Admin/Images/NE0101/A00VW3CP/A00VW3CP.JPG?ts=20260303 041521" width="185" height="60"></a></td><td width="25%" align="center">  <a href="https://www.isave.com.tw" target="_blank"><img src="https://www.sinjang.com.tw/Data/Admin/Images/NE0101/A00VW3NT/A00VW3NT.PNG?ts=20260303 041521" width="185" height="60"></a></td><td width="25%" align="center">  <a href="https://www.saacheck.com.tw" target="_blank"><img src="https://www.sinjang.com.tw/Data/Admin/Images/NE0101/U01TXF2X/U01TXF2X.JPG?ts=20260303 041521" width="185" height="60"></a></td><td width="25%" align="center">  <a href="https://share.sinjang.com.tw/VIP/Application/VP/VIP0001.aspx" target="_blank"><img src="https://www.sinjang.com.tw/Data/Admin/Images/NE0101/U01VBWWL/U01VBWWL.JPG?ts=20260303 041521" width="185" height="60"></a></td><td width="25%" align="center">  <a href="https://share.sinjang.com.tw" target="_blank"><img src="https://www.sinjang.com.tw/Data/Admin/Images/NE0101/J00MLOQX/J00MLOQX.PNG?ts=20260303 041521" width="185" height="60"></a></td>
+        </tr>
+    </tbody></table></td>
+  </tr>
+</tbody></table>
+
+
+
+    <a id="ctl00_BodyContent_ReQuery" href="javascript:__doPostBack('ctl00$BodyContent$ReQuery','')"></a>
+    <a id="ctl00_BodyContent_UPDATE_BTN" href="javascript:__doPostBack('ctl00$BodyContent$UPDATE_BTN','')"></a>
+    <a id="ctl00_BodyContent_LOGIN_BTN2" href="javascript:__doPostBack('ctl00$BodyContent$LOGIN_BTN2','')"></a>
+
+</div>
+
+  	
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="footer">
+  <tbody><tr>
+    <td height="30" align="center"><table width="960" border="0" cellspacing="0" cellpadding="0">
+      <tbody><tr>
+        <td align="center">
+            　　
+            　　
+            台北:<span id="ctl00_M_TEL_TP">02-26086789</span>　　
+            桃園:<span id="ctl00_M_TEL_TA">03-4391765</span>　　
+            台中:<span id="ctl00_M_TEL_TC">04-26911988</span>　　
+            台南:<span id="ctl00_M_TEL_TN">06-2791597</span>　　
+            高雄:<span id="ctl00_M_TEL_KA">07-3733966</span>
+            
+
+        </td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+</tbody></table>
+
+  
+
+<script type="text/javascript">
+//<![CDATA[
+$('body').css({'background-image' : 'none'});$('table[id^="mbLoginMenu_"]').show();;Message.hideProcess();;Message.hideProcess();;Message.hideProcess();;try{$(_d()).ready(Grid.setGridEvent);$(_d()).ready(iniGridClickColor);$(_d()).ready(SortTable.sortables_init);}catch(ex){};try{reSize();}catch(ex){};try{switchLabel();}catch(ex){};var	proj	=	'PORTAL';try{$(_d()).ready(function(){try{gridOuterHTML=_('DataGrid').outerHTML;setColumnHide()}catch(ex){}})}catch(ex){};try{Form.iniFormColor();}catch(ex){};;//]]>
+</script>
+</form>
+	
+	<script>
+	$(document).ready(page_init);
+	</script>
+
+
+<div id="__SuccessWindow" style="border-right: 1px solid rgb(69, 86, 144); border-left: 1px solid rgb(166, 180, 207); border-top: 1px solid rgb(166, 180, 207); z-index: 9999999; top: 0px; left: 64px; visibility: hidden; width: 168px; position: absolute; height: 115px; background-color: rgb(201, 211, 243);"></div><div id="__Calendar" style="position:absolute;top:0px;left:0px;display:none;z-index:99"><span id="__SelectYearSpan" style="position:absolute;top:3px;left:42px;"></span><span id="__SelectMonthSpan" style="position:absolute;top:3px;left:98px;"></span><table whdth="100%" border="1" cellspacing="0" cellpadding="0" width="200" height="160" bordercolor="#8080C0" bgcolor="#8080C0">	<tbody><tr>		<td bgcolor="#FFFFFF">			<table border="0" cellspacing="1" cellpadding="0" width="100%" height="23">				<tbody><tr align="center">					<td width="100" align="center" bgcolor="#8080C0" style="cursor:pointer;color:#ffffff" onclick="_c().prevMonth()" title="向前翻 1 月"><b>&lt;</b>					</td>					<td width="100" align="center" style="cursor:default" onmouseover="style.backgroundColor=&quot;#FFD700&quot;;" onmouseout="style.backgroundColor=&quot;white&quot;" onclick="_c().selectYear(_it(this)._s(0, 4))" title="點擊這裡選擇年份">						<span id="__YearHeader">2005 年</span>					</td>					<td width="100" align="center" style="cursor:default" onmouseover="style.backgroundColor='#FFD700';" onmouseout="style.backgroundColor='white'" onclick="_c().selectMonth(_it(_('__MonthHeader')).length==3?_it(this)._s(0, 1):_it(this)._s(0, 2))" title="點擊這裡選擇月份">						<span id="__MonthHeader">11 月</span>					</td>					<td width="100" bgcolor="#8080C0" align="center" style="cursor:pointer;color:#ffffff" onclick="_c().nextMonth()" title="向後翻 1 月"><b>&gt;</b></td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td>			<table border="1" cellspacing="0" cellpadding="0" bgcolor="#8080C0" bordercolorlight="#8080C0" bordercolordark="#FFFFFF" width="100%" height="20">				<tbody><tr align="center" style="color:#FFFFFF;font-size:12px;">					<td><font color="white">日</font></td>					<td><font color="white">一</font></td>					<td><font color="white">二</font></td>					<td><font color="white">三</font></td>					<td><font color="white">四</font></td>					<td><font color="white">五</font></td>					<td><font color="white">六</font></td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td height="120">			<table border="1" cellspacing="1" cellpadding="0" width="100%"><tbody><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day0">11</td><td height="20" id="__Day1">11</td><td height="20" id="__Day2">11</td><td height="20" id="__Day3">11</td><td height="20" id="__Day4">11</td><td height="20" id="__Day5">11</td><td height="20" id="__Day6">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day7">11</td><td height="20" id="__Day8">11</td><td height="20" id="__Day9">11</td><td height="20" id="__Day10">11</td><td height="20" id="__Day11">11</td><td height="20" id="__Day12">11</td><td height="20" id="__Day13">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day14">11</td><td height="20" id="__Day15">11</td><td height="20" id="__Day16">11</td><td height="20" id="__Day17">11</td><td height="20" id="__Day18">11</td><td height="20" id="__Day19">11</td><td height="20" id="__Day20">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day21">11</td><td height="20" id="__Day22">11</td><td height="20" id="__Day23">11</td><td height="20" id="__Day24">11</td><td height="20" id="__Day25">11</td><td height="20" id="__Day26">11</td><td height="20" id="__Day27">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day28">11</td><td height="20" id="__Day29">11</td><td height="20" id="__Day30">11</td><td height="20" id="__Day31">11</td><td height="20" id="__Day32">11</td><td height="20" id="__Day33">11</td><td height="20" id="__Day34">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day35">11</td><td height="20" id="__Day36">11</td><td height="20" id="__Day37">11</td><td height="20" id="__Day38">11</td>					<td colspan="3" align="right">						<span onclick="_c().closeCalendar();" style="font-size:12px;cursor:pointer;font-weight:normal;color:#ffffff;"><u>關閉</u></span>&nbsp;					</td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td>			<table border="0" cellspacing="1" cellpadding="0" width="100%" bgcolor="#FFFFFF">				<tbody><tr>					<td align="left" nowrap="">						<input type="button" value="&lt;&lt;" title="向前 1 年" onclick="_c().prevYear();" style="font-size:12px;height:20px;cursor:pointer">						<input type="button" value="&lt; " title="向前 1 月" onclick="_c().prevMonth();" style="font-size:12px;height:20px;cursor:pointer">					</td>					<td align="center">						<input type="button" value="Today" title="當前日期" onclick="_c().today();" style="font-size:12px;height:20px;cursor:pointer">					</td>					<td align="right" nowrap="">						<input type="button" value=" &gt;" title="向後 1 月" onclick="_c().nextMonth();" style="font-size:12px;height:20px;cursor:pointer">						<input type="button" value="&gt;&gt;" title="向後 1 年" onclick="_c().nextYear()" style="font-size:12px;height:20px;cursor:pointer">					</td>				</tr>			</tbody></table>		</td>	</tr></tbody></table></div><div id="__SuccessWindow" style="border-right: 1px solid rgb(69, 86, 144); border-left: 1px solid rgb(166, 180, 207); border-top: 1px solid rgb(166, 180, 207); z-index: 9999999; top: 0px; left: 64px; visibility: hidden; width: 168px; position: absolute; height: 115px; background-color: rgb(201, 211, 243);"></div></body></html>

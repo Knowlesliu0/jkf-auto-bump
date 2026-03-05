@@ -79,6 +79,34 @@ function startScheduler() {
         }
     });
 
+    // Cookie keep-alive: visit JKF every 20 minutes with each active context
+    // to prevent server-side session expiration
+    cron.schedule('*/20 * * * *', async () => {
+        const browserManager = require('./browserManager');
+        for (const [accountKey, context] of browserManager.contexts) {
+            try {
+                const page = await context.newPage();
+                await page.goto('https://www.jkforum.net/', {
+                    waitUntil: 'domcontentloaded',
+                    timeout: 30000
+                });
+                await page.waitForTimeout(3000);
+                const isLoggedIn = await page.evaluate(() => {
+                    const text = document.body?.innerText || '';
+                    return !text.includes('訪客') || text.includes('個人空間');
+                });
+                await page.close();
+                if (isLoggedIn) {
+                    console.log(`[KeepAlive] ✅ Session alive for "${accountKey}"`);
+                } else {
+                    console.log(`[KeepAlive] ⚠️ Session expired for "${accountKey}"`);
+                }
+            } catch (e) {
+                console.log(`[KeepAlive] Error for "${accountKey}":`, e.message);
+            }
+        }
+    });
+
     console.log('Scheduler started.');
 }
 

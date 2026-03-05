@@ -18,8 +18,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tasks', tasksRoutes);
 
 const { startScheduler } = require('./scheduler');
+const browserManager = require('./browserManager');
 
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`Backend API listening on port ${port}`);
+
+    // Pre-launch the persistent browser so first bump is fast
+    await browserManager.ensureBrowser().catch(err => {
+        console.error('[Startup] Failed to pre-launch browser:', err.message);
+    });
+
     startScheduler();
 });

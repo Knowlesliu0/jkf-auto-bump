@@ -1,0 +1,2119 @@
+<!DOCTYPE html><html><head>
+    
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<noscript>
+<META HTTP-EQUIV="Refresh" CONTENT="0;URL=/Portal/index.aspx">
+<META HTTP-EQUIV="Window-target" CONTENT="_top">
+</noscript>
+		
+<script>var _vp = '/Portal/';var _up = 'https://www.sinjang.com.tw/Data/Portal/';var __d = document;</script>
+<link href="https://www.sinjang.com.tw/Data/Portal/Css/css.aspx?css=default&amp;ssl=Y" rel="stylesheet" type="text/css">
+<script src="/Portal/script/jquery-3.7.1.min.js"></script><script src="/Portal/script/Base.js"></script>
+
+
+<script>
+	var	ver	=	"2.0";
+	doImport('pageinit.js, SortTable.js, StringBuffer.js, ReSize.js, Form.js');
+	
+	$(document).ready
+	(
+		function(e)
+		{
+			//try{opener.document.forms[0].target	=	'';}catch(ex){}
+		}
+	);
+</script><style>.wrapper {border: 1px dashed #808080;}</style>
+
+
+    <!-- Basic Page Needs
+  ================================================== -->
+    <meta charset="utf-8">
+    <title>車輛明細</title>
+
+    <meta id="viewport" name="viewport" content=" width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+
+    
+    <link href="http://fonts.googleapis.com/css?family=Maven+Pro:900,400" rel="stylesheet" type="text/css">
+    <link href="https://www.sinjang.com.tw/Data/Portal/Css/css.aspx?css=lightbox&amp;ssl=Y" rel="stylesheet" type="text/css">
+
+    <!-- Scripts
+	================================================== -->
+    
+
+    <!-- to top smoth-scrolling -->
+    
+
+    <script type="text/javascript">
+        //jQuery(document).ready(function ($) {
+        //    $(".scroll").click(function (event) {
+        //        event.preventDefault();
+        //        $('html,body').animate({ scrollTop: $(this.hash).offset().top }, 1000);
+        //    });
+        //});
+
+        //頁籤切換
+        $(function () {
+            var $li = $('ul.tab-title li');
+            //$($li.eq(0).addClass('active').find('a').attr('href')).siblings('.tab-inner').hide();
+
+            $li.click(function () {
+                $($(this).find('a').attr('href')).show().siblings('.tab-inner').hide();
+                $(this).addClass('active').siblings('.active').removeClass('active');
+
+                if ($(this).find('a').attr('href') == '#tab01')
+                    $('#div_search_all').show();
+                else
+                    $('#div_search_all').hide();
+            });
+        });
+
+        function page_init() {
+            //page_init_start();
+
+            //Form.iniFormColor();
+
+            pinit();
+        }
+
+        jQuery(document).ready(function ($) {
+
+            funCheckAll_click();
+
+        });
+
+
+        function pinit() {
+
+            //$('#Q_BID_SERNO_S').val('例:8100');
+            //$('#Q_BID_SERNO_S').css('color', '#C0C0C0');
+            $('#Q_BID_SERNO_S').css('width', '25vw');
+            //$('#Q_BID_SERNO_E').val('例:8500');
+            //$('#Q_BID_SERNO_E').css('color', '#C0C0C0');
+            $('#Q_BID_SERNO_E').css('width', '25vw');
+
+            //$('#Q_CAR_AGE_S').val('例:2010');
+            //$('#Q_CAR_AGE_S').css('color', '#C0C0C0');
+            $('#Q_CAR_AGE_S').css('width', '25vw');
+            //$('#Q_CAR_AGE_E').val('例:2015');
+            //$('#Q_CAR_AGE_E').css('color', '#C0C0C0');
+            $('#Q_CAR_AGE_E').css('width', '25vw');
+
+            //$('#Q_TOLERANCE_S').val('例:1800');
+            //$('#Q_TOLERANCE_S').css('color', '#C0C0C0');
+            $('#Q_TOLERANCE_S').css('width', '25vw');
+            //$('#Q_TOLERANCE_E').val('例:2400');
+            //$('#Q_TOLERANCE_E').css('color', '#C0C0C0');
+            $('#Q_TOLERANCE_E').css('width', '25vw');
+
+            $('#QUERY_BTN').css('width', '27vw');
+            $('#QUERY_BTN').css('height', '9vw');
+            $('#QUERY_BTN').css('font-size', '12pt');
+            $('#QCLEAR_BTN2').css('width', '27vw');
+            $('#QCLEAR_BTN2').css('height', '9vw');
+            $('#QCLEAR_BTN2').css('font-size', '12pt');
+        }
+
+        // 回到錨點
+        function yd_goRepeat() {
+            $('html,body').stop().animate({
+                scrollTop: $("#div_list_data").offset().top - 150
+            }, 600);
+        };
+
+        function yd_goRepeat2() {
+            $('html,body').stop().animate({
+                scrollTop: $("#div_list_data2").offset().top - 150
+            }, 600);
+        };
+
+        function funCheckAll_click() {
+            //點擊車體評價
+            $("input[id*='Q_ALL_OUTSIDE_POINT']").click(function () {
+                if ($("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked")) {//如果全選按鈕有被選擇的話（被選擇是true）
+                    $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                        $(this).prop("checked", true);//把所有的核取方框的property都變成勾選
+                    })
+                } else {
+                    $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                        $(this).prop("checked", false);//把所有的核方框的property都取消勾選
+                    })
+                }
+            })
+
+            $("input[id*='Q_OUTSIDE_POINT']").click(function () {
+                var flag = true;
+                $("input[id*='Q_OUTSIDE_POINT']").each(function () {
+                    if ($(this).prop('checked') == false) {
+                        flag = false;
+                        $("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked", false);
+                    }
+                    if (flag == true)
+                        $("input[id*='Q_ALL_OUTSIDE_POINT']").prop("checked", true);
+                })
+
+            })
+
+            //點擊車門數
+            $("input[id*='Q_ALL_CAR_DOOR']").click(function () {
+                if ($("input[id*='Q_ALL_CAR_DOOR']").prop("checked")) {//如果全選按鈕有被選擇的話（被選擇是true）
+                    $("input[id*='Q_CAR_DOOR']").each(function () {
+                        $(this).prop("checked", true);//把所有的核取方框的property都變成勾選
+                    })
+                } else {
+                    $("input[id*='Q_CAR_DOOR']").each(function () {
+                        $(this).prop("checked", false);//把所有的核方框的property都取消勾選
+                    })
+                }
+            })
+
+            $("input[id*='Q_CAR_DOOR']").click(function () {
+                var flag = true;
+                $("input[id*='Q_CAR_DOOR']").each(function () {
+                    if ($(this).prop('checked') == false) {
+                        flag = false;
+                        $("input[id*='Q_ALL_CAR_DOOR']").prop("checked", false);
+                    }
+                    if (flag == true)
+                        $("input[id*='Q_ALL_CAR_DOOR']").prop("checked", true);
+                })
+
+            })
+
+            //點擊車色
+            $("input[id*='Q_ALL_COLOR']").click(function () {
+                if ($("input[id*='Q_ALL_COLOR']").prop("checked")) {//如果全選按鈕有被選擇的話（被選擇是true）
+                    $("input[id*='Q_COLOR']").each(function () {
+                        $(this).prop("checked", true);//把所有的核取方框的property都變成勾選
+                    })
+                } else {
+                    $("input[id*='Q_COLOR']").each(function () {
+                        $(this).prop("checked", false);//把所有的核方框的property都取消勾選
+                    })
+                }
+            })
+
+            $("input[id*='Q_COLOR']").click(function () {
+                var flag = true;
+                $("input[id*='Q_COLOR']").each(function () {
+                    if ($(this).prop('checked') == false) {
+                        flag = false;
+                        $("input[id*='Q_ALL_COLOR']").prop("checked", false);
+                    }
+                    if (flag == true)
+                        $("input[id*='Q_ALL_COLOR']").prop("checked", true);
+                })
+
+            })
+
+            //點擊車種
+            $("input[id*='Q_ALL_TYPE']").click(function () {
+                if ($("input[id*='Q_ALL_TYPE']").prop("checked")) {//如果全選按鈕有被選擇的話（被選擇是true）
+                    $("input[id*='Q_TYPE']").each(function () {
+                        $(this).prop("checked", true);//把所有的核取方框的property都變成勾選
+                    })
+                } else {
+                    $("input[id*='Q_TYPE']").each(function () {
+                        $(this).prop("checked", false);//把所有的核方框的property都取消勾選
+                    })
+                }
+            })
+
+            $("input[id*='Q_TYPE']").click(function () {
+                var flag = true;
+                $("input[id*='Q_TYPE']").each(function () {
+                    if ($(this).prop('checked') == false) {
+                        flag = false;
+                        $("input[id*='Q_ALL_TYPE']").prop("checked", false);
+                    }
+                    if (flag == true)
+                        $("input[id*='Q_ALL_TYPE']").prop("checked", true);
+                })
+
+            })
+        }
+
+        function ajaxGetLogin(bid_date, bid_serno, channel, account, prebid, stop_yn) {
+
+            ////$('#notice_content').html('')
+            ////showProcess();
+
+            if ('B1012' == '') {
+                $('#notice').show();
+                $('#aLogin').attr('href', '#notice');
+                $('#aLogin')[0].click();
+            }
+            else {
+                //取消預標不觸發開窗
+                if ($('#PreBidCancelFlag').val() != '') {
+                    $('#PreBidCancelFlag').val('')
+                    return false;
+                }
+
+                if (stop_yn == 'Y') {
+                    alert('車輛停拍中!');
+                    return false;
+                }
+
+                var url = '';
+
+                $.ajax({
+                    type: "POST",
+                    url: "TICARDETAIL.aspx",
+                    data: "temp=1" +
+                        "&bid_date=" + bid_date +
+                        "&bid_serno=" + bid_serno +
+                        "&channel=" + channel +
+                        "&account=" + account +
+                        "&prebid=" + prebid +
+                        "&sender=jquery",
+                    async: false,
+                    success: function (data, text) {
+                        //hideProcess();
+                        //$('#notice_content').html(data);
+                        url = data;
+                    },
+                    error: function (xhr, desc, err) { alert(xhr.responseText + "\r\nDesc: " + desc + "\r\nErr:" + err); hideProcess(); }
+                });
+
+                if (url != '') {
+                    window.open(url, '', 'resizable=yes,scrollbars=yes,location=no,menubar=no');
+                }
+                else {
+                    $('#notice').show();
+                    $('#aLogin').attr('href', '#notice');
+                    $('#aLogin')[0].click();
+                }
+
+            }
+
+        }
+
+        function doLogin() {
+            if (_i(0, 'ACCOUNT').value == '') {
+                alert('帳號必須輸入!');
+                _i(0, 'ACCOUNT').focus();
+                return false;
+            }
+
+            if (_i(0, 'PASSWORD').value == '') {
+                alert('密碼必須輸入!');
+                _i(0, 'PASSWORD').focus();
+                return false;
+            }
+            __doPostBack('LOGIN_BTN', '')
+            return true;
+        }
+
+        function reLoginForConfirm() {
+
+            __doPostBack('LOGIN_BTN2', '');
+        }
+    </script>
+    
+
+    <style>
+        #toggle_wrapper {
+            /**/ clear: both;
+            width: 100%;
+            margin: 0 auto;
+            /**/ display: table;
+            background-color: #ffffff;
+            font-family: "微軟正黑體", "Arial";
+            font-size: 15px;
+        }
+
+        #toggle_content {
+            width: 96%;
+            margin: 0 auto;
+        }
+        /* toggle pane */
+
+        .pane {
+            border-top: none;
+            overflow: hidden;
+            clear: both;
+            padding: 2%;
+        }
+
+        .toggle .pane-page {
+        }
+
+        #tab {
+            margin: 0;
+            padding: 0;
+            line-height: 50px;
+        }
+
+        .title {
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            outline: none;
+            color: #ffffff;
+            font-size: 20px;
+        }
+
+        .toggle .title span.title_content {
+            display: block;
+            /*background: url(../images/plus.png) no-repeat center right 2%;*/
+            /*background-color: #ffc000;*/
+            background-color: #65a6db;
+            padding: 0 2%;
+            border-bottom: 1px solid #fff;
+        }
+
+            .toggle .title span.title_content:hover {
+                /*background: url(../images/plus_hov.png) no-repeat center right 2%;*/
+                /*background-color: #ffc000;*/
+                background-color: #65a6db;
+                color: #fff;
+            }
+
+        .toggle .active span.title_content {
+            /*background: url(../images/minus.png) no-repeat center right 2%;*/
+            /*background-color: #ffc000;*/
+            background-color: #65a6db;
+            color: #fff;
+        }
+
+            .toggle .active span.title_content:hover {
+                /*background: url(../images/minus.png) no-repeat center right 2%;*/
+                /*background-color: #ffc000;*/
+                background-color: #65a6db;
+                color: #fff;
+            }
+
+        .pane-page img {
+            width: 100%;
+            text-align: center;
+        }
+
+        /*搜尋結果*/
+        .title.brand {
+            font-size: 18px;
+            margin-top: 22px;
+        }
+
+        .list-table {
+            width: 100%;
+            border: none;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+            .list-table th {
+                background: #e6e6e6;
+                color: #fff;
+                padding: 10px 5px;
+            }
+
+            .list-table td {
+                text-align: center;
+                padding: 10px 5px;
+                border-bottom: solid 1px;
+            }
+        /*.list-table th:nth-child(n+4){border-left: 2px solid #fff;}
+.list-table td:nth-child(n+4){border-left: 2px solid #ccc;}*/
+
+        .list-wrapper {
+            position: relative;
+        }
+
+        .list-table .list-sticky-col {
+            border-right: 2px solid #ccc;
+            padding: 10px 5px;
+        }
+
+        .list-table td.list-sticky-col {
+            height: 22px;
+            white-space: nowrap;
+        }
+
+        .list-table th.list-sticky-col {
+            border-right: 2px solid #fff;
+        }
+
+        .carPic {
+            display: block;
+            text-align: center;
+            overflow: hidden;
+            min-width: 112px;
+            height: 105px; /* margin-bottom: 30px; */
+        }
+        /*.service{ display: block; width: 22px; height: 22px; background-image: url("../images/line.png"); background-size:cover; margin: 0 auto;}*/
+
+        .pageNum {
+            margin: 0 auto;
+            text-align: right;
+        }
+
+            .pageNum a {
+                padding: 3px;
+                background: #eee;
+                color: #333;
+            }
+
+            .pageNum .active {
+                background: #f88617;
+                color: #fff;
+            }
+
+            .pageNum span {
+                margin: 0 5px;
+                white-space: nowrap;
+            }
+
+        /*footer*/
+        .linkBar {
+            background: #dadada;
+            padding-top: 15px;
+        }
+
+        .footer {
+            width: 100%;
+            background: #7eadd9;
+            padding: 5px 0;
+        }
+
+            .linkBar .wrapper, .footer .wrapper {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-around;
+                flex-wrap: wrap
+            }
+
+        .linkBar img {
+            padding-bottom: 15px;
+            width: 15%;
+        }
+
+        .footer .wrapper {
+            justify-content: space-between;
+        }
+
+            .footer .wrapper span {
+                flex-grow: 1;
+                color: #fff;
+                font-size: 12px;
+            }
+
+        .copyright {
+            text-align: right;
+        }
+    </style>
+
+    <style>
+        /*原SAA的default_new.css*/
+        .mb2 {
+            margin-bottom: 10px;
+        }
+
+        .bg2 {
+            background-color: #f6f6f6;
+            background-repeat: no-repeat;
+            background-position: left top;
+        }
+
+        .box3 {
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 3px;
+            border-top-style: solid;
+            border-right-style: solid;
+            border-bottom-style: solid;
+            border-left-style: solid;
+            border-top-color: #dcdcdc;
+            border-right-color: #dcdcdc;
+            border-bottom-color: #dcdcdc;
+            border-left-color: #8dbfe6;
+        }
+
+        .content_w2 {
+            padding: 3px;
+            font-family: "�L�n������";
+            font-size: 15px;
+            font-style: normal;
+            font-weight: normal;
+            color: #000000;
+            margin: 0px;
+            line-height: 150%;
+        }
+
+        .form_input {
+            background-color: transparent;
+            border-top-style: none;
+            border-right-style: none;
+            border-bottom-style: none;
+            border-left-style: none;
+            width: 140px;
+            line-height: 16px;
+            text-indent: 10px;
+            letter-spacing: 1px;
+        }
+
+        button.button {
+            display: inline-block;
+        }
+
+            button.button.style1:link {
+                color: #FFFFFF;
+                text-decoration: none;
+                /*background-image: url(../images/btn4_off.gif) !important;*/
+                background-color: #528ecc !important;
+                background-repeat: repeat-x;
+                background-position: left top;
+                border: 1px solid #558ec3 !important;
+            }
+
+            button.button.style1:visited {
+                color: #FFFFFF;
+                text-decoration: none;
+                /*background-image: url(../images/btn4_off.gif) !important;*/
+                background-color: #528ecc !important;
+                background-repeat: repeat-x;
+                background-position: left top;
+                border: 1px solid #558ec3 !important;
+            }
+
+            button.button.style1:hover {
+                color: #FFFFFF;
+                text-decoration: none;
+                /*background-image: url(../images/btn4_on.gif) !important;*/
+                background-color: #65a6da !important;
+                background-repeat: repeat-x;
+                background-position: left top;
+                border: 1px solid #558ec3 !important;
+            }
+
+            button.button.style1:active {
+                color: #FFFFFF;
+                text-decoration: none;
+                /*background-image: url(../images/btn4_off.gif) !important;*/
+                background-color: #528ecc !important;
+                background-repeat: repeat-x;
+                background-position: left top;
+                border: 1px solid #558ec3 !important;
+            }
+
+            button.button.large {
+                font-family: Arial;
+                color: #ffffff;
+                background-color: #297ec2;
+                font-size: 20px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            button.button.medium {
+                font-size: 14px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            button.button.small {
+                font-size: 12px;
+                padding-top: 2px;
+                padding-bottom: 2px;
+                padding-left: 7px;
+                padding-right: 7px;
+            }
+    </style>
+
+    <style>
+        /* 頁籤css */
+        /*#tab-demo{ width:350px; height:200px;}*/
+        #tab-demo > ul {
+            display: block;
+            margin: 0;
+            list-style: none;
+        }
+
+        .tab-title {
+            list-style: none;
+        }
+
+        #tab-demo > ul > li {
+            display: inline-block;
+            vertical-align: top;
+            font-family: '微軟正黑體';
+            margin: 0 -1px -1px 0;
+            border: 1px solid #BCBCBC;
+            height: 25px;
+            line-height: 25px;
+            background: #ffffff;
+            padding: 0 15px;
+            list-style: none;
+            box-sizing: border-box;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+            #tab-demo > ul > li a {
+                color: #000;
+                text-decoration: none;
+            }
+
+            #tab-demo > ul > li.active {
+                border-bottom: 1px solid #fff;
+                background: #6897cd;
+            }
+
+        #tab-demo > .tab-inner {
+            clear: both;
+            color: #000;
+            border: 1px #BCBCBC solid;
+        }
+        /*.tab-inner{ padding:15px; height:50px;}*/
+    </style>
+
+</head>
+<body style="background-color: white;">
+    <form name="form1" method="post" action="./TICARDETAIL.aspx?BID_DATE=20260225" id="form1">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJMjkxNjE4NjEyDxYKHgtDdXJyZW50UGFnZQIBHgtQUkVCSURfRkxBRwUBWR4KVG90YWxQYWdlcwIaHgxDdXJyZW50UGFnZTICAR4LVG90YWxQYWdlczJmFgRmD2QWBmYPFgIeBFRleHQFbTxzY3JpcHQ+dmFyIF92cCA9ICcvUG9ydGFsLyc7dmFyIF91cCA9ICdodHRwczovL3d3dy5zaW5qYW5nLmNvbS50dy9EYXRhL1BvcnRhbC8nO3ZhciBfX2QgPSBkb2N1bWVudDs8L3NjcmlwdD5kAgEPFgIfBQV0PGxpbmsgaHJlZj0naHR0cHM6Ly93d3cuc2luamFuZy5jb20udHcvRGF0YS9Qb3J0YWwvQ3NzL2Nzcy5hc3B4P2Nzcz1kZWZhdWx0JnNzbD1ZJyByZWw9J3N0eWxlc2hlZXQnIHR5cGU9J3RleHQvY3NzJz5kAgIPFgIfBQVoPHNjcmlwdCBzcmM9Jy9Qb3J0YWwvc2NyaXB0L2pxdWVyeS0zLjcuMS5taW4uanMnPjwvc2NyaXB0PjxzY3JpcHQgc3JjPScvUG9ydGFsL3NjcmlwdC9CYXNlLmpzJz48L3NjcmlwdD5kAgEPZBYeAgEPEA9kFgIeAkRWBQgyMDI2MDIyNQ8WAWYWARAFCDIwMjYwMjI1BQgyMDI2MDIyNWcWAWZkAgYPDxYCHwUFCjIwMjYvMDIvMjVkZAIHDxAPFgYeDURhdGFUZXh0RmllbGQFCkJSQU5EX05BTUUeDkRhdGFWYWx1ZUZpZWxkBQhCUkFORF9JRB4LXyFEYXRhQm91bmRnZBAVMAblhajpg6gEQUVPTgRBVURJBEJFTloDQk1XBERGU0sERk9SRAZHT0dPUk8PSEFSTEVZLURBVklEU09OBEhJTk8FSE9OREEHSFlVTkRBSQhJTkZJTklUSQVJU1VaVQVJVkVDTwZKQUdVQVIIS0FXQVNBS0kDS0lBA0tUTQVLWU1DTwpMQU5EIFJPVkVSBUxFWFVTBkxVWEdFTghNQUhJTkRSQQhNQVNFUkFUSQVNQVpEQQNNQ0MCTUcETUlOSQpNSVRTVUJJU0hJCU1WIEFHVVNUQQZOSVNTQU4HUEVVR0VPVANQR08HUElBR0dJTwdQT1JTQ0hFBlNJVFJBSwVTS09EQQVTTUFSVAZTVUJBUlUGU1VaVUtJ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MDIvMjUDMTQ5AjAxZAIBDxUGAU4DMTQ5BEJFTloEQzE4MAhBVlItMDYxOABkAjIPZBYEZg8VAwoyMDI2LzAyLzI1AzE1MAIwMWQCAQ8VBgFOAzE1MARCRU5aBEUyNTAHMzg4NS1SOABkAiAPZBYIAgEPDxYCHgdWaXNpYmxlaGRkAgMPFgIfCwIKFhRmD2QWAgIBDw8WCB4PQ29tbWFuZEFyZ3VtZW50BQExHwUFATEeCENzc0NsYXNzBQZhY3RpdmUeBF8hU0ICAmRkAgEPZBYCAgEPDxYEHw0FATIfBQUBMmRkAgIPZBYCAgEPDxYEHw0FATMfBQUBM2RkAgMPZBYCAgEPDxYEHw0FATQfBQUBNGRkAgQPZBYCAgEPDxYEHw0FATUfBQUBNWRkAgUPZBYCAgEPDxYEHw0FATYfBQUBNmRkAgYPZBYCAgEPDxYEHw0FATcfBQUBN2RkAgcPZBYCAgEPDxYEHw0FATgfBQUBOGRkAggPZBYCAgEPDxYEHw0FATkfBQUBOWRkAgkPZBYCAgEPDxYEHw0FAjEwHwUFAjEwZGQCBw8QZGQWAQIEZAINDxYCHwUFEuWFsTI26aCB77yMMTI4NeethmQCIQ8WAh8LZmQCIg9kFgoCAQ8PFgIfDGhkZAIDDxYCHwtmZAIFDw8WAh8MaGRkAgcPEGRkFgECBGQCDQ8WAh8FZWQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFiQFE1FfQUxMX09VVFNJREVfUE9JTlQFEVFfT1VUU0lERV9QT0lOVCQwBRFRX09VVFNJREVfUE9JTlQkMQURUV9PVVRTSURFX1BPSU5UJDIFEVFfT1VUU0lERV9QT0lOVCQzBRFRX09VVFNJREVfUE9JTlQkNAURUV9PVVRTSURFX1BPSU5UJDUFEVFfT1VUU0lERV9QT0lOVCQ2BRFRX09VVFNJREVfUE9JTlQkNwURUV9PVVRTSURFX1BPSU5UJDgFEVFfT1VUU0lERV9QT0lOVCQ4BQ5RX0FMTF9DQVJfRE9PUgUMUV9DQVJfRE9PUiQwBQxRX0NBUl9ET09SJDEFDFFfQ0FSX0RPT1IkMgUMUV9DQVJfRE9PUiQzBQxRX0NBUl9ET09SJDMFC1FfQUxMX0NPTE9SBQlRX0NPTE9SJDAFCVFfQ09MT1IkMQUJUV9DT0xPUiQyBQlRX0NPTE9SJDMFCVFfQ09MT1IkNAUJUV9DT0xPUiQ1BQlRX0NPTE9SJDYFCVFfQ09MT1IkNwUJUV9DT0xPUiQ3BQpRX0FMTF9UWVBFBQhRX1RZUEUkMAUIUV9UWVBFJDEFCFFfVFlQRSQyBQhRX1RZUEUkMwUIUV9UWVBFJDQFCFFfVFlQRSQ1BQhRX1RZUEUkNgUIUV9UWVBFJDZECihviI9fxDNNvAQdjzTvx+wBMQ==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="165DC942">
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="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">
+</div>
+        <input type="hidden" name="M_BID_DATE" id="M_BID_DATE" value="20260225">
+        
+        <a id="LOGIN_BTN" href="javascript:__doPostBack('LOGIN_BTN','')"></a>
+        <input type="hidden" name="PreBidCancelFlag" id="PreBidCancelFlag">
+
+        
+        <div class="lightbox-target" id="notice">
+            <div class="content" id="notice_content">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mb2">
+                    <tbody><tr>
+                        <td height="30" align="left" valign="middle">
+                            <img src="https://www.sinjang.com.tw/Data/Portal/images/Sinjiag_logo.png">
+                            <img src="https://www.sinjang.com.tw/Data/Portal/images/title.gif">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr>
+                                    <td width="72%" align="left" valign="top">
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="box3">
+                                            <tbody><tr>
+                                                <td width="31%" height="38" align="center" class="content_w2">帳 號</td>
+                                                <td width="69%" height="38" class="bg2">
+                                                    <input name="ACCOUNT" type="text" id="ACCOUNT" class="form_input" onkeyup="this.value=this.value.toUpperCase()" style="width: 100%;"></td>
+                                            </tr>
+                                        </tbody></table>
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="box3">
+                                            <tbody><tr>
+                                                <td width="31%" height="38" align="center" class="content_w2">密 碼</td>
+                                                <td width="69%" height="38" align="center" class="bg2">
+                                                    <input name="PASSWORD" type="password" id="PASSWORD" class="form_input" style="width: 100%;"></td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                            <div>
+                                <button class="button style1 large" style="width: 100%; cursor: pointer;" onclick="return doLogin();">登  入</button></div>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </div>
+            
+            <script type="text/javascript">
+                function hide_empty_lightbox() {
+                    if ($.trim($('#notice_content').html()) == '') {
+                        $('#notice').hide();
+                    }
+                }
+                hide_empty_lightbox();
+            </script>
+            <a class="lightbox-close" onclick="$('#notice').hide();"></a>
+        </div>
+
+        
+
+        <div id="toggle_wrapper">
+            <div class="toggle_content">
+                <div class="toggle">
+                    <div id="tab" class="title"><span class="title_content">車輛明細/預標</span></div>
+                    
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div style="font-size: 14px;">
+            拍賣日期 &nbsp;&nbsp;
+            <span id="Q_BID_DATE" style="color:Blue;">2026/02/25</span>
+        </div>
+        <div id="div_search_all">
+            <table style="width: 100%;">
+                <tbody><tr>
+                    <td style="width: 15%;">廠牌
+                    </td>
+                    <td style="width: 35%;">
+                        <select name="Q_BRAND_ID" onchange="javascript:setTimeout('__doPostBack(\'Q_BRAND_ID\',\'\')', 0)" id="Q_BRAND_ID">
+	<option selected="selected" value="">全部</option>
+	<option value="84">AEON</option>
+	<option value="05">AUDI</option>
+	<option value="07">BENZ</option>
+	<option value="09">BMW</option>
+	<option value="103">DFSK</option>
+	<option value="23">FORD</option>
+	<option value="119">GOGORO</option>
+	<option value="93">HARLEY-DAVIDSON</option>
+	<option value="28">HINO</option>
+	<option value="29">HONDA</option>
+	<option value="31">HYUNDAI</option>
+	<option value="32">INFINITI</option>
+	<option value="33">ISUZU</option>
+	<option value="34">IVECO</option>
+	<option value="36">JAGUAR</option>
+	<option value="38">KAWASAKI</option>
+	<option value="39">KIA</option>
+	<option value="113">KTM</option>
+	<option value="40">KYMCO</option>
+	<option value="42">LAND ROVER</option>
+	<option value="43">LEXUS</option>
+	<option value="44">LUXGEN</option>
+	<option value="104">MAHINDRA</option>
+	<option value="87">MASERATI</option>
+	<option value="46">MAZDA</option>
+	<option value="47">MCC</option>
+	<option value="145">MG</option>
+	<option value="107">MINI</option>
+	<option value="49">MITSUBISHI</option>
+	<option value="92">MV AGUSTA</option>
+	<option value="50">NISSAN</option>
+	<option value="53">PEUGEOT</option>
+	<option value="111">PGO</option>
+	<option value="95">PIAGGIO</option>
+	<option value="56">PORSCHE</option>
+	<option value="116">SITRAK</option>
+	<option value="64">SKODA</option>
+	<option value="101">SMART</option>
+	<option value="66">SUBARU</option>
+	<option value="67">SUZUKI</option>
+	<option value="68">SYM</option>
+	<option value="80">TESLA</option>
+	<option value="71">TOYOTA</option>
+	<option value="138">TVS</option>
+	<option value="73">VOLKSWAGEN</option>
+	<option value="74">VOLVO</option>
+	<option value="75">YAMAHA</option>
+
+</select>
+                    </td>
+                    <td style="width: 15%;">車型
+                    </td>
+                    <td style="width: 35%;">
+                        <select name="Q_MODEL_ID" id="Q_MODEL_ID">
+	<option value="">全部</option>
+
+</select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>車號
+                    </td>
+                    <td>
+                        <input name="Q_CAR_NUMBER" type="text" id="Q_CAR_NUMBER" onkeyup="this.value=this.value.toUpperCase()" style="width:80px;">
+                    </td>
+
+                    <td>頻道
+                    </td>
+                    <td>
+                        <select name="Q_CHANNEL" id="Q_CHANNEL">
+	<option value="">全部</option>
+	<option value="01">A</option>
+	<option value="02">B</option>
+	<option value="03">C</option>
+
+</select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>拍賣編號
+                    </td>
+                    <td colspan="3">
+                        
+                        <input name="Q_BID_SERNO_S" type="text" id="Q_BID_SERNO_S" placeholder="例:81001" style="width: 25vw;">
+                        ~ 
+                            <input name="Q_BID_SERNO_E" type="text" id="Q_BID_SERNO_E" placeholder="例:85001" style="width: 25vw;">
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>出廠年份
+                    </td>
+                    <td colspan="3">
+                        
+                        <input name="Q_CAR_AGE_S" type="text" id="Q_CAR_AGE_S" placeholder="例:2010" style="width: 25vw;">
+                        ~ 
+                        <input name="Q_CAR_AGE_E" type="text" id="Q_CAR_AGE_E" placeholder="例:2015" style="width: 25vw;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>排氣量
+                    </td>
+                    <td colspan="3">
+                        
+                        <input name="Q_TOLERANCE_S" type="text" id="Q_TOLERANCE_S" placeholder="例:1800" style="width: 25vw;">
+                        ~ 
+                        <input name="Q_TOLERANCE_E" type="text" id="Q_TOLERANCE_E" placeholder="例:2400" style="width: 25vw;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>燃油
+                    </td>
+                    <td>
+                        <select name="Q_OIL_TYPE" id="Q_OIL_TYPE">
+	<option selected="selected" value="">全部</option>
+	<option value="汽油">汽油</option>
+	<option value="柴油">柴油</option>
+	<option value="油電">油電</option>
+	<option value="電動">電動</option>
+	<option value="柴油電">柴油電</option>
+
+</select>
+                    </td>
+                    <td>里程數
+                    </td>
+                    <td>
+                        <select name="Q_SPEEDOMETER" id="Q_SPEEDOMETER">
+	<option selected="selected" value="">全部</option>
+	<option value="-20000">2萬內</option>
+	<option value="-50000">5萬內</option>
+	<option value="-100000">10萬內</option>
+	<option value="-150000">15萬內</option>
+	<option value="-200000">20萬內</option>
+	<option value="200000-">20萬以上</option>
+
+</select>
+                    </td>
+
+                    
+                </tr>
+                <tr>
+                    <td>傳動方式
+                    </td>
+                    <td>
+                        <select name="Q_WD" id="Q_WD">
+	<option selected="selected" value="">全部</option>
+	<option value="2">2WD</option>
+	<option value="4">4WD</option>
+
+</select>
+                    </td>
+                    <td>排檔
+                    </td>
+                    <td>
+                        <select name="Q_GEAR_TYPE" id="Q_GEAR_TYPE">
+	<option selected="selected" value="">全部</option>
+	<option value="自">自排</option>
+	<option value="手">手排</option>
+	<option value="手自">手自排</option>
+
+</select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>車體評價
+                    </td>
+                    <td colspan="3">
+                        <input id="Q_ALL_OUTSIDE_POINT" type="checkbox" name="Q_ALL_OUTSIDE_POINT" checked="checked"><label for="Q_ALL_OUTSIDE_POINT">全選</label>
+                        <table id="Q_OUTSIDE_POINT" border="0">
+	<tbody><tr>
+		<td><input id="Q_OUTSIDE_POINT_0" type="checkbox" name="Q_OUTSIDE_POINT$0" checked="checked"><label for="Q_OUTSIDE_POINT_0">A+</label></td><td><input id="Q_OUTSIDE_POINT_1" type="checkbox" name="Q_OUTSIDE_POINT$1" checked="checked"><label for="Q_OUTSIDE_POINT_1">A</label></td><td><input id="Q_OUTSIDE_POINT_2" type="checkbox" name="Q_OUTSIDE_POINT$2" checked="checked"><label for="Q_OUTSIDE_POINT_2">B+</label></td><td><input id="Q_OUTSIDE_POINT_3" type="checkbox" name="Q_OUTSIDE_POINT$3" checked="checked"><label for="Q_OUTSIDE_POINT_3">B</label></td><td><input id="Q_OUTSIDE_POINT_4" type="checkbox" name="Q_OUTSIDE_POINT$4" checked="checked"><label for="Q_OUTSIDE_POINT_4">C</label></td><td><input id="Q_OUTSIDE_POINT_5" type="checkbox" name="Q_OUTSIDE_POINT$5" checked="checked"><label for="Q_OUTSIDE_POINT_5">D</label></td><td><input id="Q_OUTSIDE_POINT_6" type="checkbox" name="Q_OUTSIDE_POINT$6" checked="checked"><label for="Q_OUTSIDE_POINT_6">E</label></td><td><input id="Q_OUTSIDE_POINT_7" type="checkbox" name="Q_OUTSIDE_POINT$7" checked="checked"><label for="Q_OUTSIDE_POINT_7">N</label></td><td><input id="Q_OUTSIDE_POINT_8" type="checkbox" name="Q_OUTSIDE_POINT$8" checked="checked"><label for="Q_OUTSIDE_POINT_8">W</label></td>
+	</tr>
+</tbody></table>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>車門數
+                    </td>
+                    <td colspan="3">
+                        <input id="Q_ALL_CAR_DOOR" type="checkbox" name="Q_ALL_CAR_DOOR" checked="checked"><label for="Q_ALL_CAR_DOOR">全選</label>
+                        <table id="Q_CAR_DOOR" border="0">
+	<tbody><tr>
+		<td><input id="Q_CAR_DOOR_0" type="checkbox" name="Q_CAR_DOOR$0" checked="checked"><label for="Q_CAR_DOOR_0">2</label></td><td><input id="Q_CAR_DOOR_1" type="checkbox" name="Q_CAR_DOOR$1" checked="checked"><label for="Q_CAR_DOOR_1">3</label></td><td><input id="Q_CAR_DOOR_2" type="checkbox" name="Q_CAR_DOOR$2" checked="checked"><label for="Q_CAR_DOOR_2">4</label></td><td><input id="Q_CAR_DOOR_3" type="checkbox" name="Q_CAR_DOOR$3" checked="checked"><label for="Q_CAR_DOOR_3">5</label></td>
+	</tr>
+</tbody></table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>車色
+                    </td>
+                    <td colspan="3">
+                        <input id="Q_ALL_COLOR" type="checkbox" name="Q_ALL_COLOR" checked="checked"><label for="Q_ALL_COLOR">全選</label>
+                        <table id="Q_COLOR" border="0">
+	<tbody><tr>
+		<td><input id="Q_COLOR_0" type="checkbox" name="Q_COLOR$0" checked="checked"><label for="Q_COLOR_0">白</label></td><td><input id="Q_COLOR_1" type="checkbox" name="Q_COLOR$1" checked="checked"><label for="Q_COLOR_1">黑</label></td><td><input id="Q_COLOR_2" type="checkbox" name="Q_COLOR$2" checked="checked"><label for="Q_COLOR_2">銀</label></td><td><input id="Q_COLOR_3" type="checkbox" name="Q_COLOR$3" checked="checked"><label for="Q_COLOR_3">深灰</label></td><td><input id="Q_COLOR_4" type="checkbox" name="Q_COLOR$4" checked="checked"><label for="Q_COLOR_4">紅</label></td><td><input id="Q_COLOR_5" type="checkbox" name="Q_COLOR$5" checked="checked"><label for="Q_COLOR_5">藍</label></td><td><input id="Q_COLOR_6" type="checkbox" name="Q_COLOR$6" checked="checked"><label for="Q_COLOR_6">黃</label></td><td><input id="Q_COLOR_7" type="checkbox" name="Q_COLOR$7" checked="checked"><label for="Q_COLOR_7">其他</label></td>
+	</tr>
+</tbody></table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>車種
+                    </td>
+                    <td colspan="3">
+                        <input id="Q_ALL_TYPE" type="checkbox" name="Q_ALL_TYPE" checked="checked"><label for="Q_ALL_TYPE">全選</label>
+                        <table id="Q_TYPE" border="0">
+	<tbody><tr>
+		<td><input id="Q_TYPE_0" type="checkbox" name="Q_TYPE$0" checked="checked"><label for="Q_TYPE_0">白牌機車</label></td><td><input id="Q_TYPE_1" type="checkbox" name="Q_TYPE$1" checked="checked"><label for="Q_TYPE_1">重型機車</label></td><td><input id="Q_TYPE_2" type="checkbox" name="Q_TYPE$2" checked="checked"><label for="Q_TYPE_2">大貨車</label></td><td><input id="Q_TYPE_3" type="checkbox" name="Q_TYPE$3" checked="checked"><label for="Q_TYPE_3">小客車</label></td><td><input id="Q_TYPE_4" type="checkbox" name="Q_TYPE$4" checked="checked"><label for="Q_TYPE_4">小客貨</label></td><td><input id="Q_TYPE_5" type="checkbox" name="Q_TYPE$5" checked="checked"><label for="Q_TYPE_5">小貨車</label></td><td><input id="Q_TYPE_6" type="checkbox" name="Q_TYPE$6" checked="checked"><label for="Q_TYPE_6">拖曳車</label></td>
+	</tr>
+</tbody></table>
+                    </td>
+                </tr>
+                <tr style="text-align: right;">
+                    <td colspan="4">
+                        <input type="submit" name="QUERY_BTN" value="查  詢" onclick="return doQuery();" id="QUERY_BTN" style="width: 27vw; height: 9vw; font-size: 12pt;">
+                        <input type="submit" name="QCLEAR_BTN2" value="清  除" onclick="clearQueryForm();" id="QCLEAR_BTN2" style="width: 27vw; height: 9vw; font-size: 12pt;">
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+        <br>
+        <div id="tab-demo">
+            <ul class="tab-title">
+                <li id="liTab01" class="active"><a href="#tab01">查詢車輛清單</a></li>
+                <li id="liTab02"><a href="#tab02">已預標車輛</a></li>
+            </ul>
+            <div id="tab01" class="tab-inner">
+                <div class="list-wrapper" id="div_list_data">
+                    
+                            <table class="list-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <a id="rptCar_ctl00_LinkButton1" href="javascript:__doPostBack('rptCar$ctl00$LinkButton1','')">No.</a>
+                                        </th>
+                                        <th>
+                                            <a id="rptCar_ctl00_LinkButton14" href="javascript:__doPostBack('rptCar$ctl00$LinkButton14','')">廠牌/車型</a>
+                                        </th>
+                                        <th>
+                                            <a id="rptCar_ctl00_LinkButton2" href="javascript:__doPostBack('rptCar$ctl00$LinkButton2','')">車號/預標金額</a>
+                                        </th>
+                                        <th>
+                                            <a id="rptCar_ctl00_LinkButton3" href="javascript:__doPostBack('rptCar$ctl00$LinkButton3','')">查看</a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','101','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">101 </td>
+                                <td class="style1">BMW
+                                    <br>
+                                    528</td>
+                                <td class="style1">BDX-1199
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','102','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">102 </td>
+                                <td class="style1">LEXUS
+                                    <br>
+                                    ES200</td>
+                                <td class="style1">APJ-9666
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','103','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">103 </td>
+                                <td class="style1">PORSCHE
+                                    <br>
+                                    CAYENNE</td>
+                                <td class="style1">BXK-7061
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','104','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">104 </td>
+                                <td class="style1">HYUNDAI
+                                    <br>
+                                    ELANTRA</td>
+                                <td class="style1">BPM-9155
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','105','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">105 </td>
+                                <td class="style1">BMW
+                                    <br>
+                                    730D</td>
+                                <td class="style1">ATH-2001
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','106','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">106 </td>
+                                <td class="style1">MITSUBISHI
+                                    <br>
+                                    LANCER IO</td>
+                                <td class="style1">ALM-8726
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','107','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">107 </td>
+                                <td class="style1">MITSUBISHI
+                                    <br>
+                                    ZINGER</td>
+                                <td class="style1">BGX-1520
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','108','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">108 </td>
+                                <td class="style1">BMW
+                                    <br>
+                                    520</td>
+                                <td class="style1">ALZ-3993
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','109','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">109 </td>
+                                <td class="style1">BENZ
+                                    <br>
+                                    E350</td>
+                                <td class="style1">ASF-7058
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','110','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">110 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    CAMRY</td>
+                                <td class="style1">BPZ-0280
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','111','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">111 </td>
+                                <td class="style1">HONDA
+                                    <br>
+                                    CIVIC</td>
+                                <td class="style1">BTN-0672
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','112','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">112 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    INNOVA</td>
+                                <td class="style1">ALF-3119
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','113','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">113 </td>
+                                <td class="style1">BENZ
+                                    <br>
+                                    CLA250</td>
+                                <td class="style1">BGZ-7230
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','114','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">114 </td>
+                                <td class="style1">BENZ
+                                    <br>
+                                    CLA200</td>
+                                <td class="style1">AQX-0011
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','115','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">115 </td>
+                                <td class="style1">SUBARU
+                                    <br>
+                                    XV</td>
+                                <td class="style1">AXR-5522
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','116','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">116 </td>
+                                <td class="style1">MAZDA
+                                    <br>
+                                    MAZDA 6</td>
+                                <td class="style1">AQC-2332
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','117','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">117 </td>
+                                <td class="style1">SUBARU
+                                    <br>
+                                    XV</td>
+                                <td class="style1">BTA-8571
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','118','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">118 </td>
+                                <td class="style1">HYUNDAI
+                                    <br>
+                                    STARIA</td>
+                                <td class="style1">RCX-0236
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','119','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">119 </td>
+                                <td class="style1">BMW
+                                    <br>
+                                    116</td>
+                                <td class="style1">AAR-1169
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','120','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">120 </td>
+                                <td class="style1">BENZ
+                                    <br>
+                                    CLA250</td>
+                                <td class="style1">BTQ-7286
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','121','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">121 </td>
+                                <td class="style1">BENZ
+                                    <br>
+                                    CLS63AMG</td>
+                                <td class="style1">ARQ-7777
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','122','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">122 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    PRIUS</td>
+                                <td class="style1">CAZ-1987
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','123','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">123 </td>
+                                <td class="style1">MAZDA
+                                    <br>
+                                    MAZDA 3</td>
+                                <td class="style1">BMM-5877
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','124','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">124 </td>
+                                <td class="style1">MITSUBISHI
+                                    <br>
+                                    FORTIS</td>
+                                <td class="style1">3258-B7
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','125','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">125 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    PRIUS C</td>
+                                <td class="style1">BCM-0213
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','126','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">126 </td>
+                                <td class="style1">NISSAN
+                                    <br>
+                                    TIIDA</td>
+                                <td class="style1">BRJ-3313
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','127','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">127 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    WISH</td>
+                                <td class="style1">TDA-0882
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','128','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">128 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    WISH</td>
+                                <td class="style1">BFR-6712
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','129','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">129 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    SIENTA</td>
+                                <td class="style1">BFU-2796
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','130','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">130 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    ALTIS</td>
+                                <td class="style1">7927-U2
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','131','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">131 </td>
+                                <td class="style1">BMW
+                                    <br>
+                                    435</td>
+                                <td class="style1">BMW-0208
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','132','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">132 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    WISH</td>
+                                <td class="style1">ASW-3788
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','133','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">133 </td>
+                                <td class="style1">FORD
+                                    <br>
+                                    FOCUS</td>
+                                <td class="style1">BCG-5381
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','134','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">134 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    WISH</td>
+                                <td class="style1">TDE-0116
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','135','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">135 </td>
+                                <td class="style1">TESLA
+                                    <br>
+                                    MODEL 3</td>
+                                <td class="style1">EAK-0666
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','136','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">136 </td>
+                                <td class="style1">NISSAN
+                                    <br>
+                                    LIVINA</td>
+                                <td class="style1">AUP-5772
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','137','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">137 </td>
+                                <td class="style1">BMW
+                                    <br>
+                                    320</td>
+                                <td class="style1">ANC-9103
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','138','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">138 </td>
+                                <td class="style1">HYUNDAI
+                                    <br>
+                                    TUCSON</td>
+                                <td class="style1">BEN-9591
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','139','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">139 </td>
+                                <td class="style1">MAZDA
+                                    <br>
+                                    MAZDA 3</td>
+                                <td class="style1">BLP-8895
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','140','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">140 </td>
+                                <td class="style1">MAZDA
+                                    <br>
+                                    CX-5</td>
+                                <td class="style1">BBZ-7812
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','141','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">141 </td>
+                                <td class="style1">LUXGEN
+                                    <br>
+                                    U7</td>
+                                <td class="style1">AWF-9278
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','142','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">142 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    ALTIS</td>
+                                <td class="style1">BPK-6072
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','143','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">143 </td>
+                                <td class="style1">HONDA
+                                    <br>
+                                    CR-V</td>
+                                <td class="style1">BYA-9197
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','144','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">144 </td>
+                                <td class="style1">LEXUS
+                                    <br>
+                                    ES200</td>
+                                <td class="style1">BVK-9559
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','145','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">145 </td>
+                                <td class="style1">TOYOTA
+                                    <br>
+                                    SIENTA</td>
+                                <td class="style1">BLK-5592
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','146','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">146 </td>
+                                <td class="style1">NISSAN
+                                    <br>
+                                    TIIDA</td>
+                                <td class="style1">ABJ-5737
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','147','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">147 </td>
+                                <td class="style1">MAZDA
+                                    <br>
+                                    MAZDA 6</td>
+                                <td class="style1">BNT-6612
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','148','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">148 </td>
+                                <td class="style1">SKODA
+                                    <br>
+                                    YETI</td>
+                                <td class="style1">APU-0612
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','149','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">149 </td>
+                                <td class="style1">BENZ
+                                    <br>
+                                    C180</td>
+                                <td class="style1">AVR-0618
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+
+                            <tr onclick="ajaxGetLogin('2026/02/25','150','01','B1012','Y','N');" style="cursor: pointer;">
+
+                                <td class="style1">150 </td>
+                                <td class="style1">BENZ
+                                    <br>
+                                    E250</td>
+                                <td class="style1">3885-R8
+                                    <br>
+                                    </td>
+                                <td class="style1">
+                                    <a id="aLogin">
+                                        <input id="Button1" type="button" value="查看">
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        
+                            </tbody>
+                    </table>
+                        
+                    <p style="clear: both;"></p>
+                </div>
+
+                <!--頁數控制-->
+                <div id="divPage" class="pageNum">
+                    
+                    
+                            <a id="rptPaging_ctl00_btnPage" class="active" href="javascript:__doPostBack('rptPaging$ctl00$btnPage','')">1</a>
+                        
+                            <a id="rptPaging_ctl01_btnPage" href="javascript:__doPostBack('rptPaging$ctl01$btnPage','')">2</a>
+                        
+                            <a id="rptPaging_ctl02_btnPage" href="javascript:__doPostBack('rptPaging$ctl02$btnPage','')">3</a>
+                        
+                            <a id="rptPaging_ctl03_btnPage" href="javascript:__doPostBack('rptPaging$ctl03$btnPage','')">4</a>
+                        
+                            <a id="rptPaging_ctl04_btnPage" href="javascript:__doPostBack('rptPaging$ctl04$btnPage','')">5</a>
+                        
+                            <a id="rptPaging_ctl05_btnPage" href="javascript:__doPostBack('rptPaging$ctl05$btnPage','')">6</a>
+                        
+                            <a id="rptPaging_ctl06_btnPage" href="javascript:__doPostBack('rptPaging$ctl06$btnPage','')">7</a>
+                        
+                            <a id="rptPaging_ctl07_btnPage" href="javascript:__doPostBack('rptPaging$ctl07$btnPage','')">8</a>
+                        
+                            <a id="rptPaging_ctl08_btnPage" href="javascript:__doPostBack('rptPaging$ctl08$btnPage','')">9</a>
+                        
+                            <a id="rptPaging_ctl09_btnPage" href="javascript:__doPostBack('rptPaging$ctl09$btnPage','')">10</a>
+                        
+                    <a id="Next10Page" href="javascript:__doPostBack('Next10Page','')">下十頁</a>
+                    <span>每頁
+           
+                        <select name="ddlPageSize" onchange="javascript:setTimeout('__doPostBack(\'ddlPageSize\',\'\')', 0)" id="ddlPageSize" style="min-width: 20px !important;">
+	<option value="5">5</option>
+	<option value="10">10</option>
+	<option value="20">20</option>
+	<option value="30">30</option>
+	<option selected="selected" value="50">50</option>
+
+</select>
+                        筆，第<input name="tPageNo" type="text" value="1" id="tPageNo" style="width:15px;">
+                        <input onclick="__doPostBack('ToGoPage','')" name="ToGoPage" type="button" id="ToGoPage" value="頁">
+                    </span>
+                    <span>
+                        共26頁，1285筆</span>
+                </div>
+                <!--頁數控制-->
+            </div>
+
+            <div id="tab02" class="tab-inner" style="display: none;">
+                <div class="list-wrapper" id="div_list_data2">
+                    
+                            <table class="list-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <a id="rptPreBid_ctl00_LinkButton1" href="javascript:__doPostBack('rptPreBid$ctl00$LinkButton1','')">No.</a>
+                                        </th>
+                                        <th>
+                                            <a id="rptPreBid_ctl00_LinkButton14" href="javascript:__doPostBack('rptPreBid$ctl00$LinkButton14','')">廠牌/車型</a>
+                                        </th>
+                                        <th>
+                                            <a id="rptPreBid_ctl00_LinkButton2" href="javascript:__doPostBack('rptPreBid$ctl00$LinkButton2','')">車號/預標金額</a>
+                                        </th>
+                                        <th>
+                                            <a id="rptPreBid_ctl00_LinkButton3" href="javascript:__doPostBack('rptPreBid$ctl00$LinkButton3','')">取消預標</a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        
+                            </tbody>
+                    </table>
+                        
+                    <p style="clear: both;"></p>
+                </div>
+
+                <!--頁數控制-->
+                <div id="divPage2" class="pageNum">
+                    
+                    
+                    
+                    <span>每頁
+           
+                        <select name="ddlPageSize2" onchange="javascript:setTimeout('__doPostBack(\'ddlPageSize2\',\'\')', 0)" id="ddlPageSize2" style="min-width: 20px !important;">
+	<option value="5">5</option>
+	<option value="10">10</option>
+	<option value="20">20</option>
+	<option value="30">30</option>
+	<option selected="selected" value="50">50</option>
+
+</select>
+                        筆，第<input name="tPageNo2" type="text" value="1" id="tPageNo2" style="width:15px;">
+                        <input onclick="__doPostBack('ToGoPage2','')" name="ToGoPage2" type="button" id="ToGoPage2" value="頁">
+                    </span>
+                    <span>
+                        </span>
+                </div>
+                <!--頁數控制-->
+            </div>
+
+        </div>
+        <a id="LOGIN_BTN2" href="javascript:__doPostBack('LOGIN_BTN2','')"></a>
+        <br>
+        <br>
+        <div style="text-align: center; font-size: medium;">
+            <a href="CARDETAIL.aspx?BID_DATE=20260225">前往:電腦版</a>
+        </div>
+
+        <script>
+            $(document).ready(page_init);
+
+            ////修正postback後，未執行page_init的錯誤
+            //Sys.WebForms.PageRequestManager.getInstance().add_endRequest(page_init);
+
+        </script>
+    
+
+<script type="text/javascript">
+//<![CDATA[
+Message.hideProcess();;yd_goRepeat();;$('#tab01').show();$('#tab02').hide();;$('#liTab01').addClass('active');$('#liTab02').removeClass('active');;$('#div_search_all').show();;Message.hideProcess();;yd_goRepeat2();;var $li = $('ul.tab-title li');
+                                $($li.eq(0).addClass('active').find('a').attr('href')).siblings('.tab-inner').hide();;try{$(_d()).ready(Grid.setGridEvent);$(_d()).ready(iniGridClickColor);$(_d()).ready(SortTable.sortables_init);}catch(ex){};try{reSize();}catch(ex){};try{switchLabel();}catch(ex){};var	proj	=	'PORTAL';try{$(_d()).ready(function(){try{gridOuterHTML=_('DataGrid').outerHTML;setColumnHide()}catch(ex){}})}catch(ex){};try{Form.iniFormColor();}catch(ex){};;//]]>
+</script>
+</form>
+
+
+<div id="__SuccessWindow" style="border-right: 1px solid rgb(69, 86, 144); border-left: 1px solid rgb(166, 180, 207); border-top: 1px solid rgb(166, 180, 207); z-index: 9999999; top: 0px; left: 64px; visibility: hidden; width: 168px; position: absolute; height: 115px; background-color: rgb(201, 211, 243);"></div><div id="__Calendar" style="position:absolute;top:0px;left:0px;display:none;z-index:99"><span id="__SelectYearSpan" style="position:absolute;top:3px;left:42px;"></span><span id="__SelectMonthSpan" style="position:absolute;top:3px;left:98px;"></span><table whdth="100%" border="1" cellspacing="0" cellpadding="0" width="200" height="160" bordercolor="#8080C0" bgcolor="#8080C0">	<tbody><tr>		<td bgcolor="#FFFFFF">			<table border="0" cellspacing="1" cellpadding="0" width="100%" height="23">				<tbody><tr align="center">					<td width="100" align="center" bgcolor="#8080C0" style="cursor:pointer;color:#ffffff" onclick="_c().prevMonth()" title="向前翻 1 月"><b>&lt;</b>					</td>					<td width="100" align="center" style="cursor:default" onmouseover="style.backgroundColor=&quot;#FFD700&quot;;" onmouseout="style.backgroundColor=&quot;white&quot;" onclick="_c().selectYear(_it(this)._s(0, 4))" title="點擊這裡選擇年份">						<span id="__YearHeader">2005 年</span>					</td>					<td width="100" align="center" style="cursor:default" onmouseover="style.backgroundColor='#FFD700';" onmouseout="style.backgroundColor='white'" onclick="_c().selectMonth(_it(_('__MonthHeader')).length==3?_it(this)._s(0, 1):_it(this)._s(0, 2))" title="點擊這裡選擇月份">						<span id="__MonthHeader">11 月</span>					</td>					<td width="100" bgcolor="#8080C0" align="center" style="cursor:pointer;color:#ffffff" onclick="_c().nextMonth()" title="向後翻 1 月"><b>&gt;</b></td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td>			<table border="1" cellspacing="0" cellpadding="0" bgcolor="#8080C0" bordercolorlight="#8080C0" bordercolordark="#FFFFFF" width="100%" height="20">				<tbody><tr align="center" style="color:#FFFFFF;font-size:12px;">					<td><font color="white">日</font></td>					<td><font color="white">一</font></td>					<td><font color="white">二</font></td>					<td><font color="white">三</font></td>					<td><font color="white">四</font></td>					<td><font color="white">五</font></td>					<td><font color="white">六</font></td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td height="120">			<table border="1" cellspacing="1" cellpadding="0" width="100%"><tbody><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day0">11</td><td height="20" id="__Day1">11</td><td height="20" id="__Day2">11</td><td height="20" id="__Day3">11</td><td height="20" id="__Day4">11</td><td height="20" id="__Day5">11</td><td height="20" id="__Day6">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day7">11</td><td height="20" id="__Day8">11</td><td height="20" id="__Day9">11</td><td height="20" id="__Day10">11</td><td height="20" id="__Day11">11</td><td height="20" id="__Day12">11</td><td height="20" id="__Day13">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day14">11</td><td height="20" id="__Day15">11</td><td height="20" id="__Day16">11</td><td height="20" id="__Day17">11</td><td height="20" id="__Day18">11</td><td height="20" id="__Day19">11</td><td height="20" id="__Day20">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day21">11</td><td height="20" id="__Day22">11</td><td height="20" id="__Day23">11</td><td height="20" id="__Day24">11</td><td height="20" id="__Day25">11</td><td height="20" id="__Day26">11</td><td height="20" id="__Day27">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day28">11</td><td height="20" id="__Day29">11</td><td height="20" id="__Day30">11</td><td height="20" id="__Day31">11</td><td height="20" id="__Day32">11</td><td height="20" id="__Day33">11</td><td height="20" id="__Day34">11</td></tr><tr style="font-size:12px;color:#00008C;font-weight:bold;text-align:center;"><td height="20" id="__Day35">11</td><td height="20" id="__Day36">11</td><td height="20" id="__Day37">11</td><td height="20" id="__Day38">11</td>					<td colspan="3" align="right">						<span onclick="_c().closeCalendar();" style="font-size:12px;cursor:pointer;font-weight:normal;color:#ffffff;"><u>關閉</u></span>&nbsp;					</td>				</tr>			</tbody></table>		</td>	</tr>	<tr>		<td>			<table border="0" cellspacing="1" cellpadding="0" width="100%" bgcolor="#FFFFFF">				<tbody><tr>					<td align="left" nowrap="">						<input type="button" value="&lt;&lt;" title="向前 1 年" onclick="_c().prevYear();" style="font-size:12px;height:20px;cursor:pointer">						<input type="button" value="&lt; " title="向前 1 月" onclick="_c().prevMonth();" style="font-size:12px;height:20px;cursor:pointer">					</td>					<td align="center">						<input type="button" value="Today" title="當前日期" onclick="_c().today();" style="font-size:12px;height:20px;cursor:pointer">					</td>					<td align="right" nowrap="">						<input type="button" value=" &gt;" title="向後 1 月" onclick="_c().nextMonth();" style="font-size:12px;height:20px;cursor:pointer">						<input type="button" value="&gt;&gt;" title="向後 1 年" onclick="_c().nextYear()" style="font-size:12px;height:20px;cursor:pointer">					</td>				</tr>			</tbody></table>		</td>	</tr></tbody></table></div><div id="__SuccessWindow" style="border-right: 1px solid rgb(69, 86, 144); border-left: 1px solid rgb(166, 180, 207); border-top: 1px solid rgb(166, 180, 207); z-index: 9999999; top: 0px; left: 64px; visibility: hidden; width: 168px; position: absolute; height: 115px; background-color: rgb(201, 211, 243);"></div></body></html>

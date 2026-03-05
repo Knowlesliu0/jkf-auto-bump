@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const [editUsername, setEditUsername] = useState('');
   const [editPassword, setEditPassword] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -19,8 +20,10 @@ export default function DashboardPage() {
   }, []);
 
   const fetchApi = async (url, options = {}) => {
+    const token = localStorage.getItem('jkf_token');
     const headers = {
       'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...(options.headers || {})
     };
 
@@ -28,6 +31,13 @@ export default function DashboardPage() {
     const API_BASE_URL = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://back888.zeabur.app');
 
     const res = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+
+    // Automatically log out if token is invalid or expired
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem('jkf_token');
+      navigate('/login');
+    }
+
     return res;
   };
 
@@ -149,6 +159,15 @@ export default function DashboardPage() {
             <Zap className="text-red-500 w-6 h-6" />
             <span className="font-bold tracking-wider">黑閃行銷 - 個人版</span>
           </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem('jkf_token');
+              navigate('/login');
+            }}
+            className="text-gray-400 hover:text-white flex items-center gap-2 text-sm font-medium transition-colors border border-white/10 px-3 py-1.5 rounded-lg hover:bg-white/5"
+          >
+            <LogOut className="w-4 h-4" /> 登出
+          </button>
         </div>
       </nav>
 

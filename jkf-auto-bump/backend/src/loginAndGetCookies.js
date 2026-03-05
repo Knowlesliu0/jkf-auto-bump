@@ -1,34 +1,21 @@
-const { chromium } = require('playwright');
+/**
+ * Login flow that works within an EXISTING page (from the persistent browser context).
+ * Does NOT launch its own browser — the caller provides the page.
+ */
+
 const path = require('path');
 const fs = require('fs');
 
-async function loginAndGetCookies(url, username, password) {
-    let browser;
+/**
+ * Perform login on JKF using the provided page (from persistent context).
+ * @param {import('playwright').Page} page - An existing page from the persistent browser context
+ * @param {string} username - JKF username
+ * @param {string} password - JKF password
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+async function loginOnPage(page, username, password) {
     try {
-        browser = await chromium.launch({
-            headless: true
-        });
-
-        const context = await browser.newContext({
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0',
-            viewport: { width: 1920, height: 1080 },
-            deviceScaleFactor: 1,
-            isMobile: false,
-            hasTouch: false,
-            locale: 'zh-TW',
-            timezoneId: 'Asia/Taipei',
-            extraHTTPHeaders: {
-                'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7'
-            }
-        });
-
-        await context.addInitScript(() => {
-            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-        });
-
-        const page = await context.newPage();
-
-        // Step 1: Navigate to JKF homepage (the login modal only triggers from UI clicks)
+        // Step 1: Navigate to JKF homepage
         console.log(`[AutoLogin] Navigating to JKF homepage...`);
         await page.goto('https://www.jkforum.net/', {
             waitUntil: 'domcontentloaded',
@@ -55,63 +42,54 @@ async function loginAndGetCookies(url, username, password) {
                 return false;
             });
             if (ageClicked) {
-                console.log(`[AutoLogin] Clicked 18+ button.`);
-                await page.waitForTimeout(1500);
+                console.log(`[AutoLogin] Clicked 18+ button inside shadow DOM.`);
+                await page.waitForTimeout(1000);
             }
-        } catch (e) { }
+        } catch (e) { /* ignore */ }
 
-        // Step 2: Click the 登入 button to open the login modal
+        // Step 2: Click the "登入" button to open the login modal
         console.log(`[AutoLogin] Clicking 登入 button to open modal...`);
         const loginButtonSelectors = [
             'span.cursor-pointer:has-text("登入")',
-            '.left-user-info span:has-text("登入")',
-            'button:has-text("登入")',
             'a:has-text("登入")',
-            'text=登入',
+            'button:has-text("登入")',
+            'text=登入'
         ];
 
-        let modalOpened = false;
+        let clickedLogin = false;
         for (const sel of loginButtonSelectors) {
             try {
-                const btn = page.locator(sel).first();
-                if (await btn.isVisible({ timeout: 2000 })) {
-                    await btn.click({ force: true });
+                const el = page.locator(sel).first();
+                if (await el.isVisible({ timeout: 2000 })) {
+                    await el.click();
                     console.log(`[AutoLogin] Clicked: ${sel}`);
-                    modalOpened = true;
+                    clickedLogin = true;
                     break;
                 }
             } catch (e) { /* try next */ }
         }
-
-        if (!modalOpened) {
-            console.log(`[AutoLogin] Could not find any login button. Taking screenshot...`);
-            await page.screenshot({ path: path.join(__dirname, '..', 'login_no_button.png'), fullPage: true });
+        if (!clickedLogin) {
+            return { success: false, message: '找不到登入按鈕' };
         }
 
-        // Wait for modal + iframe to load
         console.log(`[AutoLogin] Waiting for login modal iframe to load...`);
-        await page.waitForTimeout(5000);
+        await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => console.log('Wait for networkidle timed out'));
+        await page.waitForTimeout(2000);
 
-        // Wait for the shadow DOM host to appear
-        try {
-            await page.waitForSelector('#pan-oauth-card', { timeout: 15000 });
+        // Step 3: Find the login iframe
+        let loginFrame = null;
+
+        // Method 1: check for #pan-oauth-card
+        const oauthCard = page.locator('#pan-oauth-card');
+        if (await oauthCard.isVisible({ timeout: 3000 }).catch(() => false)) {
             console.log(`[AutoLogin] Found #pan-oauth-card`);
-        } catch (e) {
-            console.log(`[AutoLogin] #pan-oauth-card not found. Taking screenshot...`);
-            await page.screenshot({ path: path.join(__dirname, '..', 'login_no_modal.png'), fullPage: true });
-            throw new Error('登入 modal 未出現（找不到 #pan-oauth-card）');
+            console.log(`[AutoLogin] Waiting for login iframe to render (5s)...`);
+            await page.waitForTimeout(5000);
         }
 
-        console.log(`[AutoLogin] Waiting for login iframe to render (5s)...`);
-        await page.waitForTimeout(5000); // Give the iframe time to load its cross-origin content
-
-        // ========================================================
-        // Find the iframe by checking all frames on the page
-        // The login iframe is loaded from pan-login.hare200.com
-        // ========================================================
-        let loginFrame = null;
+        // Method 2: find the login iframe by URL in page.frames()
         for (const frame of page.frames()) {
-            if (frame.url().includes('pan-login') || frame.url().includes('login')) {
+            if (frame.url().includes('pan-login') || frame.url().includes('hare200.com/login')) {
                 loginFrame = frame;
                 console.log(`[AutoLogin] Found login frame by URL: ${frame.url()}`);
                 break;
@@ -119,112 +97,96 @@ async function loginAndGetCookies(url, username, password) {
         }
 
         if (!loginFrame) {
-            // Fallback to shadow piercing locator if URL match fails
-            console.log(`[AutoLogin] Could not find login frame by URL. Falling back to CSS frameLocator.`);
-            loginFrame = page.frameLocator('#pan-oauth-card >>> iframe');
-        }
-
-        // Step 3: Click 密碼登入 inside the iframe
-        console.log(`[AutoLogin] Clicking 密碼登入 inside iframe...`);
-        try {
-            // We use 'evaluate' inside the frame as the most bulletproof way, as getByText can still fail if Vue wraps text in comments
-            const clicked = await loginFrame.evaluate(() => {
-                const all = Array.from(document.querySelectorAll('*'));
-                for (const el of all) {
-                    if (el.textContent && el.textContent.trim() === '密碼登入') {
-                        el.click();
-                        return true;
+            // Method 3: use frameLocator
+            try {
+                const fl = page.frameLocator('#pan-oauth-card iframe');
+                const test = fl.locator('body');
+                if (await test.isVisible({ timeout: 5000 }).catch(() => false)) {
+                    // frameLocator doesn't give us a Frame object, we need to find it in page.frames()
+                    for (const frame of page.frames()) {
+                        if (frame.url().includes('login') || frame.url().includes('pan-login')) {
+                            loginFrame = frame;
+                            break;
+                        }
                     }
                 }
-                return false;
-            }).catch(() => false);
-
-            if (clicked) {
-                console.log(`[AutoLogin] ✅ Clicked 密碼登入 via evaluate`);
-            } else {
-                throw new Error('evaluate returned false');
-            }
-        } catch (e) {
-            console.log(`[AutoLogin] evaluate('密碼登入') failed: ${e.message}`);
-            // Fallback: try locator
-            try {
-                await loginFrame.locator('text=密碼登入').first().click({ timeout: 5000 });
-                console.log(`[AutoLogin] ✅ Clicked 密碼登入 via text locator`);
-            } catch (e2) {
-                console.log(`[AutoLogin] text locator also failed. Taking screenshot...`);
-                await page.screenshot({ path: path.join(__dirname, '..', 'login_modal_debug.png'), fullPage: true });
-                throw new Error('無法在 iframe 內點擊密碼登入');
-            }
+            } catch (e) { /* ignore */ }
         }
 
-        await page.waitForTimeout(3000); // Wait for password form to render
+        if (!loginFrame) {
+            await page.screenshot({ path: path.join(__dirname, '..', 'login_failure.png') });
+            return { success: false, message: '找不到登入 iframe' };
+        }
 
-        // Step 4: Fill username and password inside the iframe
+        // Step 4: Click "密碼登入" tab if present
+        console.log(`[AutoLogin] Clicking 密碼登入 inside iframe...`);
+        try {
+            const passwordTabBtn = loginFrame.locator('text=密碼登入').first();
+            if (await passwordTabBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+                await passwordTabBtn.click();
+                console.log(`[AutoLogin] ✅ Clicked 密碼登入`);
+                await page.waitForTimeout(1000);
+            }
+        } catch (e) {
+            console.log(`[AutoLogin] 密碼登入 tab not found or not needed`);
+        }
+
+        // Step 5: Fill in credentials
         console.log(`[AutoLogin] Filling login form for user: ${username}`);
-
-        // Try to find username input
         const usernameSelectors = [
-            'input[placeholder="輸入你的JKF帳號或是E-mail"]',
-            'input[placeholder*="JKF帳號"]',
+            'input[placeholder*="帳號"]',
+            'input[placeholder*="E-mail"]',
             'input[name="username"]',
             'input[type="text"]'
         ];
+        const passwordSelectors = [
+            'input[placeholder*="密碼"]',
+            'input[name="password"]',
+            'input[type="password"]'
+        ];
+
         let usernameLocator = null;
         for (const sel of usernameSelectors) {
             try {
                 const loc = loginFrame.locator(sel).first();
-                if (await loc.isVisible({ timeout: 2000 })) {
-                    usernameLocator = loc;
+                if (await loc.isVisible({ timeout: 1000 }).catch(() => false)) {
                     console.log(`[AutoLogin] Found username input: ${sel}`);
+                    usernameLocator = loc;
                     break;
                 }
             } catch (e) { /* try next */ }
         }
 
-        if (!usernameLocator) {
-            console.log(`[AutoLogin] [FAILED] No username input found in iframe.`);
-            await page.screenshot({ path: path.join(__dirname, '..', 'login_page_debug.png'), fullPage: true });
-            throw new Error(`點了密碼登入但找不到帳號輸入框`);
-        }
-
-        // Find password input
         let passwordLocator = null;
-        const passwordSelectors = [
-            'input[placeholder="輸入你的JKF密碼"]',
-            'input[placeholder*="JKF密碼"]',
-            'input[name="password"]',
-            'input[type="password"]'
-        ];
         for (const sel of passwordSelectors) {
             try {
                 const loc = loginFrame.locator(sel).first();
-                if (await loc.isVisible({ timeout: 2000 })) {
-                    passwordLocator = loc;
+                if (await loc.isVisible({ timeout: 1000 }).catch(() => false)) {
                     console.log(`[AutoLogin] Found password input: ${sel}`);
+                    passwordLocator = loc;
                     break;
                 }
             } catch (e) { /* try next */ }
         }
 
-        if (!passwordLocator) {
-            passwordLocator = loginFrame.locator('input[type="password"]').first();
+        if (!usernameLocator || !passwordLocator) {
+            await page.screenshot({ path: path.join(__dirname, '..', 'login_failure.png') });
+            return { success: false, message: '找不到帳號或密碼輸入框' };
         }
 
-        // Fill credentials
         await usernameLocator.fill(username);
+        await page.waitForTimeout(300);
         await passwordLocator.fill(password);
         console.log(`[AutoLogin] ✅ Filled credentials`);
+        await page.waitForTimeout(500);
 
-        await page.waitForTimeout(1500);
-
-        // Step 5: Click submit button
-        let submitted = false;
+        // Step 6: Click submit
         const submitSelectors = [
-            'button[type="submit"]',
             'button:has-text("登入")',
+            'button[type="submit"]',
             'input[type="submit"]',
-            'button:has-text("Login")',
         ];
+        let submitted = false;
         for (const sel of submitSelectors) {
             try {
                 const btn = loginFrame.locator(sel).first();
@@ -236,19 +198,92 @@ async function loginAndGetCookies(url, username, password) {
                 }
             } catch (e) { /* try next */ }
         }
-
         if (!submitted) {
-            // Press Enter as fallback
             await passwordLocator.press('Enter');
             console.log(`[AutoLogin] Pressed Enter to submit.`);
         }
 
+        // Step 7: Handle reCAPTCHA
+        console.log(`[AutoLogin] Checking for reCAPTCHA challenge...`);
+        await page.waitForTimeout(3000);
+
+        let recaptchaFrame = null;
+        for (const f of page.frames()) {
+            const fUrl = f.url().toLowerCase();
+            if (fUrl.includes('recaptcha')) {
+                recaptchaFrame = f;
+                console.log(`[AutoLogin] Found recaptcha frame: ${f.url()}`);
+                break;
+            }
+        }
+
+        if (recaptchaFrame) {
+            console.log(`[AutoLogin] ⚠️ Detected reCAPTCHA! Attempting native locator click...`);
+
+            try {
+                // Use Playwright's native locator - it handles nested iframe coordinate math
+                const checkbox = recaptchaFrame.locator('#recaptcha-anchor').first();
+                await checkbox.waitFor({ state: 'visible', timeout: 5000 });
+
+                // Simulate human-like behavior
+                console.log(`[AutoLogin] Hovering over checkbox...`);
+                await checkbox.hover();
+                await page.waitForTimeout(800);
+
+                console.log(`[AutoLogin] Clicking checkbox...`);
+                await checkbox.click({ delay: 200 });
+
+                console.log(`[AutoLogin] ✅ Clicked reCAPTCHA checkbox! Waiting 5s for validation...`);
+                await page.waitForTimeout(5000);
+
+                // Take screenshot to see result
+                await page.screenshot({ path: path.join(__dirname, '..', 'recaptcha_result.png') });
+
+                // Check if reCAPTCHA was solved (checkbox gets green checkmark)
+                try {
+                    const isChecked = await recaptchaFrame.locator('.recaptcha-checkbox-checked, [aria-checked="true"]').isVisible({ timeout: 2000 });
+                    if (isChecked) {
+                        console.log(`[AutoLogin] ✅ reCAPTCHA solved!`);
+                    } else {
+                        console.log(`[AutoLogin] ⚠️ reCAPTCHA may not be solved yet.`);
+                    }
+                } catch (e) { /* ignore */ }
+
+                // Try clicking submit again after reCAPTCHA
+                for (const sel of submitSelectors) {
+                    try {
+                        // Re-find login frame
+                        let currentLoginFrame = null;
+                        for (const frame of page.frames()) {
+                            if (frame.url().includes('pan-login') || frame.url().includes('login')) {
+                                currentLoginFrame = frame;
+                                break;
+                            }
+                        }
+                        if (!currentLoginFrame) continue;
+
+                        const btn = currentLoginFrame.locator(sel).first();
+                        if (await btn.isVisible({ timeout: 1000 }).catch(() => false)) {
+                            await btn.click({ force: true });
+                            console.log(`[AutoLogin] Clicked submit again after reCAPTCHA`);
+                            break;
+                        }
+                    } catch (e) { /* try next */ }
+                }
+            } catch (err) {
+                console.log(`[AutoLogin] Error with reCAPTCHA:`, err.message);
+            }
+        } else {
+            console.log(`[AutoLogin] No reCAPTCHA detected (stealth may have bypassed it).`);
+        }
+
+        // Step 8: Wait for login to complete
         console.log(`[AutoLogin] Waiting for login to complete...`);
         await page.waitForTimeout(5000);
         await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => { });
         await page.waitForTimeout(3000);
 
-        // Check login success — look for the user menu or check we're no longer a guest
+        // Step 9: Check login result
         const isGuest = await page.evaluate(() => {
             const text = document.body?.innerText || '';
             return text.includes('訪客') && !text.includes('個人空間');
@@ -257,28 +292,16 @@ async function loginAndGetCookies(url, username, password) {
         if (isGuest) {
             console.log(`[AutoLogin] [FAILED] Still showing as guest after login attempt.`);
             await page.screenshot({ path: path.join(__dirname, '..', 'login_failure.png'), fullPage: true });
-            return { success: false, message: '登入失敗，可能是密碼錯誤或需要驗證碼。查看 backend/login_failure.png' };
+            return { success: false, message: '登入失敗，可能是密碼錯誤或驗證碼未通過。查看 backend/login_failure.png' };
         }
 
-        console.log(`[AutoLogin] [SUCCESS] ✅ Logged in! Extracting session cookies...`);
-
-        const rawCookies = await context.cookies();
-        const cookieString = JSON.stringify(rawCookies);
-
-        return {
-            success: true,
-            cookieString: cookieString,
-            message: `成功登入並取得新 cookies。`
-        };
+        console.log(`[AutoLogin] [SUCCESS] ✅ Logged in!`);
+        return { success: true, message: '成功登入！' };
 
     } catch (error) {
         console.error(`[AutoLogin] Error:`, error);
         return { success: false, message: `System Error: ${error.message}` };
-    } finally {
-        if (browser) {
-            await browser.close();
-        }
     }
 }
 
-module.exports = { loginAndGetCookies };
+module.exports = { loginOnPage };

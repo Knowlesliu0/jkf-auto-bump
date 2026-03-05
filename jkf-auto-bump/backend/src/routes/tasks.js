@@ -1,11 +1,15 @@
 const express = require('express');
 const db = require('../db');
 const { autoBump } = require('../scraper');
+const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Assign default user for single-user system
+// Assign default user for single-user system (Fallback if no user)
 const DEFAULT_USER_ID = 1;
+
+// Protect all /api/tasks routes
+router.use(authenticateToken);
 
 router.get('/', (req, res) => {
     try {
@@ -58,7 +62,7 @@ router.delete('/:id', (req, res) => {
     }
 });
 
-router.patch('/:id/cookie', (req, res) => {
+router.patch('/:id/cookie', async (req, res) => {
     try {
         const { cookieString, jkfUsername, jkfPassword } = req.body;
         if (!cookieString && !jkfUsername) {
@@ -77,6 +81,14 @@ router.patch('/:id/cookie', (req, res) => {
         const result = db.prepare(`UPDATE tasks SET ${updates.join(', ')} WHERE id = ?`).run(...params);
         if (result.changes > 0) {
             const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id);
+
+            // Also refresh cookies in the persistent browser context
+            if (cookieString && task.jkf_username) {
+                const browserManager = require('../browserManager');
+                await browserManager.refreshCookies(task.jkf_username, cookieString);
+                console.log(`[API] Refreshed persistent context cookies for "${task.jkf_username}"`);
+            }
+
             res.json(task);
         } else {
             res.status(404).json({ error: 'Task not found' });

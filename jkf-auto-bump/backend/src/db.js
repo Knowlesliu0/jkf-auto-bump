@@ -49,4 +49,32 @@ for (const m of migrations) {
     } catch (e) { /* column already exists */ }
 }
 
+// Initialize default admin user
+const bcrypt = require('bcryptjs');
+try {
+    const adminEmail = 'knowles';
+    const adminPassword = 'ad1114';
+    const adminQuery = db.prepare('SELECT id, password_hash FROM users WHERE email = ?').get(adminEmail);
+    if (!adminQuery) {
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(adminPassword, salt);
+        const trialExpiresAt = new Date();
+        trialExpiresAt.setFullYear(trialExpiresAt.getFullYear() + 10);
+
+        db.prepare(`
+            INSERT INTO users (email, password_hash, role, trial_expires_at)
+            VALUES (?, ?, 'admin', ?)
+        `).run(adminEmail, hash, trialExpiresAt.toISOString());
+        console.log(`[DB] Default admin user initialized.`);
+    } else {
+        // Update password to the new one
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(adminPassword, salt);
+        db.prepare('UPDATE users SET password_hash = ? WHERE email = ?').run(hash, adminEmail);
+        console.log(`[DB] Admin password updated.`);
+    }
+} catch (error) {
+    console.error(`[DB] Error initializing admin user:`, error);
+}
+
 module.exports = db;
