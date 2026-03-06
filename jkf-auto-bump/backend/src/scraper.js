@@ -1,6 +1,38 @@
 const browserManager = require('./browserManager');
 const path = require('path');
 const fs = require('fs');
+const { loginOnPage } = require('./loginAndGetCookies');
+
+function hasJkfAuthCookie(cookies = []) {
+    return cookies.some(c => c && c.name === 'jkf-ap-pot' && String(c.value || '').length > 10);
+}
+
+async function isGuestPage(page) {
+    return await page.evaluate(() => {
+        const loggedNode = document.querySelector('[data-logged-in]');
+        if (loggedNode) {
+            const state = loggedNode.getAttribute('data-logged-in');
+            if (state === 'true') return false;
+            if (state === 'false') return true;
+        }
+
+        const hasLogoutLink = !!document.querySelector('a[href*="logout"], a[href*="signout"]');
+        const hasLoginHint = !!document.querySelector('a[href*="login"], button[id*="login"], [class*="login"]');
+        if (hasLogoutLink) return false;
+        return hasLoginHint;
+    });
+}
+
+async function openTargetPage(page, url) {
+    console.log(`Navigating to ${url}...`);
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+    console.log("Waiting for network idle to ensure dynamic content loads...");
+    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => console.log('Wait for networkidle timed out'));
+
+    console.log("Waiting 5s for JKF specific rendering delays...");
+    await page.waitForTimeout(5000);
+}
 
 async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
     let page;
@@ -12,51 +44,73 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
         // If caller provided fresh cookies, check if context needs them
         if (cookieString) {
             const existingCookies = await context.cookies();
-            const hasJkfToken = existingCookies.some(c => c.name === 'jkf-ap-pot' && c.value.length > 10);
+            const hasJkfToken = hasJkfAuthCookie(existingCookies);
             if (!hasJkfToken) {
                 await browserManager.refreshCookies(accountKey, cookieString);
                 console.log(`[AutoBump] Injected fresh cookies into persistent context for "${accountKey}"`);
             }
         }
-
         page = await context.newPage();
-        console.log(`Navigating to ${url}...`);
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+        await openTargetPage(page, url);
 
-        console.log("Waiting for network idle to ensure dynamic content loads...");
-        await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => console.log('Wait for networkidle timed out'));
+        // Check if we are logged in. If guest and credentials exist, try auto-login once.
+        let isGuest = await isGuestPage(page);
 
-        console.log("Waiting 5s for JKF specific rendering delays...");
-        await page.waitForTimeout(5000);
+        if (isGuest && jkfUsername && jkfPassword) {
+            console.warn('[AutoBump] WARNING: Page loaded as GUEST. Trying credential login...');
+            const loginResult = await loginOnPage(page, jkfUsername, jkfPassword);
 
-        // Check if we are logged in
-        const isGuest = await page.evaluate(() => {
-            const body = document.body.innerText;
-            return body.includes('訪客') && body.includes('登入');
-        });
+            if (loginResult.success) {
+                console.log('[AutoBump] Auto-login succeeded, reloading target page...');
+                await openTargetPage(page, url);
+                isGuest = await isGuestPage(page);
+            } else {
+                const screenshotPath = path.join(__dirname, '..', 'login_failure.png');
+                await page.screenshot({ path: screenshotPath, fullPage: false });
+
+                const rawCookies = await context.cookies();
+                const newCookieString = JSON.stringify(rawCookies);
+                const hasAuthCookie = hasJkfAuthCookie(rawCookies);
+
+                await page.close().catch(() => { });
+                page = null;
+                await browserManager.destroyContext(accountKey);
+
+                return {
+                    success: false,
+                    message: hasAuthCookie
+                        ? `Cookie expired, and auto-login failed: ${loginResult.message}`
+                        : `Cookie is missing auth token (jkf-ap-pot), and auto-login failed: ${loginResult.message}`,
+                    newCookieString
+                };
+            }
+        }
 
         if (isGuest) {
-            console.warn('[AutoBump] WARNING: Page loaded as GUEST - cookies expired!');
+            console.warn('[AutoBump] WARNING: Page still loaded as GUEST.');
 
-            // Don't try auto-login (triggers unsolvable reCAPTCHA).
             const screenshotPath = path.join(__dirname, '..', 'login_failure.png');
             await page.screenshot({ path: screenshotPath, fullPage: false });
             const rawCookies = await context.cookies();
             const newCookieString = JSON.stringify(rawCookies);
+            const hasAuthCookie = hasJkfAuthCookie(rawCookies);
 
-            // Destroy this context so a fresh one is created with new cookies next time
             await page.close().catch(() => { });
             page = null;
             await browserManager.destroyContext(accountKey);
 
             return {
                 success: false,
-                message: 'Cookie 已失效，請重新貼上有效的 Cookie。（持久化瀏覽器會自動保持登入狀態）',
+                message: hasAuthCookie
+                    ? 'Cookie expired. Please paste a valid Cookie, or update credentials and retry.'
+                    : 'Cookie is missing auth token (jkf-ap-pot). Please copy Cookie again while logged in to JKF.',
                 newCookieString
             };
-        } else {
-            console.log('[AutoBump] ✅ Login verified (persistent context).');
         }
+
+        console.log('[AutoBump] Login verified (persistent context).');
+
+
 
         // 0. Handle 18+ Age Verification Modal (button is inside <apea-logo> shadow DOM)
         try {
