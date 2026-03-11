@@ -7,10 +7,28 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// 簡易 Basic Auth 登入驗證
+app.use((req, res, next) => {
+    // 從 .env 取得自己設定的網站帳密，若未設定則預設為 admin / admin123
+    const authUsername = process.env.WEB_USERNAME || 'admin';
+    const authPassword = process.env.WEB_PASSWORD || 'admin123';
+
+    const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
+    const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
+
+    if (login && password && login === authUsername && password === authPassword) {
+        return next();
+    }
+
+    res.set('WWW-Authenticate', 'Basic realm="401"');
+    res.status(401).send('驗證失敗，請重新整理並輸入正確的系統帳號與密碼。');
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 確保有資料夾放報告
@@ -35,6 +53,86 @@ function cleanupReports() {
     } catch (e) { /* ignore */ }
 }
 
+// Resilient select helper for dynamic ASP.NET postback pages.
+async function selectOptionSafe(page, selector, target) {
+    if (!target) return false;
+    const desired = String(target).trim();
+    if (!desired) return false;
+    const normalize = (s) => (s || '').replace(/\s+/g, '').toLowerCase();
+    const desiredNorm = normalize(desired);
+
+    const getSelected = async () => {
+        try {
+            return await page.$eval(selector, (select) => {
+                const opt = select.options[select.selectedIndex];
+                if (!opt) return null;
+                return { value: opt.value || '', text: opt.text || '' };
+            });
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const isMatch = (opt) => {
+        if (!opt) return false;
+        const text = normalize(opt.text);
+        const value = normalize(opt.value);
+        return (
+            text === desiredNorm ||
+            value === desiredNorm ||
+            text.includes(desiredNorm) ||
+            value.includes(desiredNorm)
+        );
+    };
+
+    const trySelect = async (opts) => {
+        try {
+            const res = await page.selectOption(selector, opts);
+            return Array.isArray(res) ? res.length > 0 : !!res;
+        } catch (e) {
+            return false;
+        }
+    };
+
+    if (await trySelect({ value: desired })) {
+        if (isMatch(await getSelected())) return true;
+    }
+    if (await trySelect({ label: desired })) {
+        if (isMatch(await getSelected())) return true;
+    }
+
+    let matched = '';
+    try {
+        matched = await page.$eval(
+            selector,
+            (select, targetNorm) => {
+                const norm = (s) => (s || '').replace(/\s+/g, '').toLowerCase();
+                const t = targetNorm;
+                const option = Array.from(select.options).find((o) => {
+                    const text = norm(o.text);
+                    const val = norm(o.value);
+                    return text === t || val === t || text.includes(t) || val.includes(t);
+                });
+                if (!option) return '';
+                select.value = option.value;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                return option.value;
+            },
+            desiredNorm
+        );
+    } catch (e) {
+        return false;
+    }
+
+    if (!matched) return false;
+    return isMatch(await getSelected());
+}
+
+function normalizeFuelLabel(fuel) {
+    if (!fuel) return '';
+    return fuel === '純電' ? '電動' : fuel;
+}
+
 // 取得目前的帳號密碼，方便網頁自動填寫
 app.get('/api/config', (req, res) => {
     res.json({
@@ -54,14 +152,30 @@ app.post('/api/scrape', async (req, res) => {
     }
 
     // 更新 .env 檔案以記憶帳密與金鑰
-    let currentApiKey = process.env.DEEPSEEK_API_KEY || '';
+    // 更新 .env 檔案以記憶帳密
     try {
-        const currentEnv = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
-        const match = currentEnv.match(/DEEPSEEK_API_KEY=(.*)/);
-        if (match) currentApiKey = match[1].trim();
-    } catch (e) { }
-    const envContent = `AIS_USERNAME=${username}\nAIS_PASSWORD=${password}\nDEEPSEEK_API_KEY=${currentApiKey}`;
-    fs.writeFileSync(path.join(__dirname, '.env'), envContent, 'utf8');
+        let currentEnv = '';
+        if (fs.existsSync(path.join(__dirname, '.env'))) {
+            currentEnv = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+        }
+        
+        // 用正則表達式替換或新增 AIS_USERNAME 和 AIS_PASSWORD
+        if (/^AIS_USERNAME=/m.test(currentEnv)) {
+            currentEnv = currentEnv.replace(/^AIS_USERNAME=.*$/m, `AIS_USERNAME=${username}`);
+        } else {
+            currentEnv += `\nAIS_USERNAME=${username}`;
+        }
+        
+        if (/^AIS_PASSWORD=/m.test(currentEnv)) {
+            currentEnv = currentEnv.replace(/^AIS_PASSWORD=.*$/m, `AIS_PASSWORD=${password}`);
+        } else {
+            currentEnv += `\nAIS_PASSWORD=${password}`;
+        }
+        
+        fs.writeFileSync(path.join(__dirname, '.env'), currentEnv.trim() + '\n', 'utf8');
+    } catch (e) {
+        console.error('更新 .env 失敗:', e);
+    }
 
     console.log(`收到查詢請求: 需求="${need}"`);
 
@@ -294,11 +408,15 @@ BENZ C300, C250, W204, W205 等，model 是 "C CLASS"`;
         }
 
         // 加入新的額外搜尋條件 (依照前端傳來的選項填寫)
-        if (req.body.doors) await page.selectOption('#Q_DOOR_NO', req.body.doors);
-        if (req.body.mileage) await page.selectOption('#Q_MILAGE', req.body.mileage);
-        if (req.body.transmission) await page.selectOption('#Q_TRANS', req.body.transmission);
-        if (req.body.gear) await page.selectOption('#Q_GEAR', req.body.gear);
-        if (req.body.fuel) await page.selectOption('#Q_FUEL_ID', req.body.fuel);
+        if (req.body.doors) await page.selectOption('#Q_CAR_DOOR', req.body.doors).catch(() => { });
+        if (req.body.mileage) await page.selectOption('#Q_SPEEDOMETER', req.body.mileage).catch(() => { });
+        if (req.body.transmission) await page.selectOption('#Q_WD', { label: req.body.transmission }).catch(() => { });
+        if (req.body.gear) await page.selectOption('#Q_GEAR_TYPE', { label: req.body.gear }).catch(() => { });
+        if (req.body.fuel) {
+            const fuelLabel = normalizeFuelLabel(req.body.fuel);
+            const fuelSelected = await selectOptionSafe(page, '#Q_OIL_TYPE', fuelLabel);
+            if (!fuelSelected) console.log(`燃油選擇失敗: ${fuelLabel}`);
+        }
 
         // 設定車體評價：根據前端勾選的項目
         try {
@@ -335,6 +453,13 @@ BENZ C300, C250, W204, W205 等，model 是 "C CLASS"`;
             const spinner = document.querySelector('#Progress_Img');
             return !spinner || window.getComputedStyle(spinner).display === 'none';
         }, { timeout: 15000 }).catch(() => { });
+
+        // Re-apply fuel right before submit in case of any postback resets.
+        if (req.body.fuel) {
+            const fuelLabel = normalizeFuelLabel(req.body.fuel);
+            const fuelSelected = await selectOptionSafe(page, '#Q_OIL_TYPE', fuelLabel);
+            if (!fuelSelected) console.log(`燃油選擇失敗(送出前): ${fuelLabel}`);
+        }
 
         console.log('點擊查詢並等待資料載入...');
 
@@ -508,10 +633,9 @@ app.post('/api/scrape-auction', async (req, res) => {
 
         const count = await redCarLocator.count();
         if (count > 0) {
-            // 計算「明天」的 YYYYMMDD (根據本地時間)
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const tomorrowNum = parseInt(`${tomorrow.getFullYear()}${String(tomorrow.getMonth() + 1).padStart(2, '0')}${String(tomorrow.getDate()).padStart(2, '0')}`, 10);
+            // 計算「今天」的 YYYYMMDD (根據本地時間)
+            const today = new Date();
+            const todayNum = parseInt(`${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`, 10);
 
             let bestDate = Infinity;
             let chosenElIndex = -1;
@@ -521,8 +645,8 @@ app.post('/api/scrape-auction', async (req, res) => {
                 const match = outerHTML.match(/BID_DATE=(\d{8})/);
                 if (match) {
                     const dNum = parseInt(match[1], 10);
-                    // 尋找大於等於明天，且最接近明天的場次
-                    if (dNum >= tomorrowNum && dNum < bestDate) {
+                    // 尋找大於等於今天，且最接近今天的場次
+                    if (dNum >= todayNum && dNum < bestDate) {
                         bestDate = dNum;
                         chosenElIndex = i;
                     }
@@ -530,15 +654,14 @@ app.post('/api/scrape-auction', async (req, res) => {
             }
 
             if (chosenElIndex === -1) {
-                console.log(`⚠️ 找不到大於等於明天(${tomorrowNum})的場次，退而求其次點擊第一個`);
+                console.log(`⚠️ 找不到大於等於今天(${todayNum})的場次，退而求其次點擊第一個`);
                 chosenElIndex = 0;
             } else {
-                console.log(`找到了明天或之後最近的拍賣場次：${bestDate}`);
+                console.log(`找到了今天或之後最近的拍賣場次：${bestDate}`);
             }
 
             const newPagePromise = context.waitForEvent('page').catch(() => null);
             await redCarLocator.nth(chosenElIndex).click({ noWaitAfter: true });
-
             // 等待最多 8 秒看是否有彈出新視窗
             const newPage = await Promise.race([
                 newPagePromise,
@@ -654,7 +777,9 @@ app.post('/api/scrape-auction', async (req, res) => {
             if (aucCCEnd) await auctionPage.fill('#Q_TOLERANCE_E', aucCCEnd).catch(() => { });
             if (aucCarNo) await auctionPage.fill('#Q_CAR_NUMBER', aucCarNo).catch(() => { });
             if (aucFuel) {
-                await auctionPage.selectOption('#Q_OIL_TYPE', { label: aucFuel }).catch(() => { });
+                const fuelLabel = normalizeFuelLabel(aucFuel);
+                const fuelSelected = await selectOptionSafe(auctionPage, '#Q_OIL_TYPE', fuelLabel);
+                if (!fuelSelected) console.log(`燃油選擇失敗: ${fuelLabel}`);
             }
 
             // Checkboxes
@@ -685,6 +810,13 @@ app.post('/api/scrape-auction', async (req, res) => {
                 for (const t of aucCarTypes) {
                     if (typeMap[t] !== undefined) await auctionPage.check(`#Q_TYPE_${typeMap[t]}`).catch(() => { });
                 }
+            }
+
+            // Re-apply fuel before submit in case of any resets.
+            if (aucFuel) {
+                const fuelLabel = normalizeFuelLabel(aucFuel);
+                const fuelSelected = await selectOptionSafe(auctionPage, '#Q_OIL_TYPE', fuelLabel);
+                if (!fuelSelected) console.log(`燃油選擇失敗(送出前): ${fuelLabel}`);
             }
 
             console.log('點擊查詢並等待表格載入...');

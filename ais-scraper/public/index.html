@@ -88,11 +88,12 @@
                             <label for="mileage">里程數</label>
                             <select id="mileage" name="mileage">
                                 <option value="">全部</option>
-                                <option value="M1">5萬以下</option>
-                                <option value="M2">5-10萬</option>
-                                <option value="M3">10-15萬</option>
-                                <option value="M4">15-20萬</option>
-                                <option value="M5">20萬以上</option>
+                                <option value="-20000">2萬內</option>
+                                <option value="-50000">5萬內</option>
+                                <option value="-100000">10萬內</option>
+                                <option value="-150000">15萬內</option>
+                                <option value="-200000">20萬內</option>
+                                <option value="200000-">20萬以上</option>
                             </select>
                         </div>
                     </div>
@@ -121,18 +122,19 @@
                             <label for="gear">排檔</label>
                             <select id="gear" name="gear">
                                 <option value="">全部</option>
-                                <option value="A">自排</option>
-                                <option value="M">手排</option>
+                                <option value="自排">自排</option>
+                                <option value="手排">手排</option>
+                                <option value="手自排">手自排</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="fuel">燃油</label>
                             <select id="fuel" name="fuel">
                                 <option value="">全部</option>
-                                <option value="G">汽油</option>
-                                <option value="D">柴油</option>
-                                <option value="H">油電</option>
-                                <option value="E">純電</option>
+                                <option value="汽油">汽油</option>
+                                <option value="柴油">柴油</option>
+                                <option value="油電">油電</option>
+                                <option value="純電">純電</option>
                             </select>
                         </div>
                     </div>

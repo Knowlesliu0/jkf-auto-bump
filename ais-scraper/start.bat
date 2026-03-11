@@ -1,26 +1,31 @@
 @echo off
+setlocal
 chcp 65001 > nul
+
+cd /d "%~dp0"
+set "AIS_PORT=3030"
+
 echo.
 echo ==========================================
-echo       AIS 成交行情爬蟲系統 啟動腳本
+echo AIS scraper launcher
 echo ==========================================
 echo.
-echo 正在啟動伺服器...請勿關閉此視窗
+
+where node > nul 2>&1
+if errorlevel 1 (
+  echo [ERROR] Node.js was not found in PATH.
+  echo Install Node.js, then run this file again.
+  pause
+  exit /b 1
+)
+
+echo Starting AIS server on http://localhost:%AIS_PORT%
+start "" powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Start-Sleep -Seconds 2; Start-Process 'http://localhost:%AIS_PORT%'" > nul 2>&1
+
+set "PORT=%AIS_PORT%"
+node server.js
+
 echo.
-
-:: 啟動 node.js 應用程式
-start /b node server.js
-
-:: 等待 2 秒讓伺服器準備好
-timeout /t 2 /nobreak > nul
-
-:: 使用系統預設瀏覽器開啟系統首頁
-start http://localhost:3000
-
-echo.
-echo 系統已成功啟動！
-echo 若要關閉系統，請直接關閉本黑色視窗。
-echo.
-
-:: 保持視窗開啟以查看 node 伺服器的輸出 log
-cmd /k
+echo [WARN] AIS server stopped.
+pause
+exit /b 0
