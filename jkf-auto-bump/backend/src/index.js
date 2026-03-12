@@ -53,3 +53,15 @@ app.listen(port, async () => {
 
     startScheduler();
 });
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('[App] Received SIGTERM - shutting down gracefully');
+    require('./db').close();
+    process.exit(0);
+});
+process.on('SIGINT', () => {
+    console.log('[App] Received SIGINT - shutting down gracefully');
+    require('./db').close();
+    process.exit(0);
+});
