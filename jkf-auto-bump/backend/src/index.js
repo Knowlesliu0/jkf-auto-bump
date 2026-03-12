@@ -23,6 +23,26 @@ app.use(express.static('public'));
 const { startScheduler } = require('./scheduler');
 const browserManager = require('./browserManager');
 
+app.get('/api/debug-env', (req, res) => {
+    try {
+        const fs = require('fs');
+        const dbPath = process.env.DB_PATH || 'no path';
+        const dataPath = '/data';
+        let files = [];
+        if (fs.existsSync(dataPath)) {
+            files = fs.readdirSync(dataPath);
+        }
+        res.json({
+            ok: true,
+            dbPath,
+            files: files,
+            uptime: process.uptime()
+        });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.listen(port, async () => {
     console.log(`Backend API listening on port ${port}`);
 
