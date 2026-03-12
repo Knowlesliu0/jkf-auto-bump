@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黑閃行銷 - 個人版 (輕量模式)</title>
+    <style>
+        body { font-family: sans-serif; background: #fdfdfd; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1, h2, h3 { color: #d00; }
+        input, button, textarea { padding: 8px; margin: 4px 0; font-size: 14px; width: 100%; box-sizing: border-box; }
+        button { background: #d00; color: #fff; border: none; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #a00; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .card { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 4px; background: #fff; }
+        .hidden { display: none !important; }
+        .row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 150px; }
+        .text-small { font-size: 12px; color: #666; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f5f5f5; }
+        .status-running { color: #d97706; }
+        .status-success { color: #16a34a; }
+        .status-failed { color: #dc2626; }
+        .btn-small { padding: 4px 8px; font-size: 12px; width: auto; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        #logoutBtn { background: #666; width: auto; float: right; padding: 5px 10px;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="loginView" class="card">
+        <h1>黑閃行銷系統</h1>
+        <p>授權人員專用登入</p>
+        <form id="loginForm">
+            <label>帳號:</label>
+            <input type="text" id="email" required placeholder="系統帳號">
+            <label>密碼:</label>
+            <input type="password" id="password" required placeholder="系統密碼">
+            <button type="submit" id="loginBtn">登入</button>
+            <p id="loginError" style="color:red;"></p>
+        </form>
+    </div>
+
+    <div id="dashboardView" class="hidden">
+        <button id="logoutBtn">登出</button>
+        <h2>自動推文任務管理</h2>
+        
+        <div class="card">
+            <h3>新增推文任務</h3>
+            <form id="addTaskForm">
+                <label>JKF 貼文網址:</label>
+                <input type="url" id="newUrl" required placeholder="https://www.jkforum.net/thread-...">
+                
+                <label>JKF Cookies (有填帳密可不填):</label>
+                <textarea id="newCookie" rows="2" placeholder="bbs_sid=..."></textarea>
+                
+                <div class="row">
+                    <div class="col">
+                        <label>JKF 帳號 (自動重新登入用):</label>
+                        <input type="text" id="newDefaultUser">
+                    </div>
+                    <div class="col">
+                        <label>JKF 密碼:</label>
+                        <input type="password" id="newDefaultPass">
+                    </div>
+                </div>
+
+                <label>推文間隔 (分鐘):</label>
+                <input type="number" id="newInterval" required min="10" value="60">
+
+                <button type="submit">新增任務</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>任務列表 <button type="button" class="btn-small" style="background:#555" onclick="fetchTasks()">重新整理</button></h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>貼文</th>
+                            <th>狀態</th>
+                            <th>下次執行 / 到期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="taskList">
+                        <tr><td colspan="4" align="center">載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 編輯 Cookie 對話框 -->
+        <div id="editModal" class="card hidden" style="border-color:#d00; background:#fffafa;">
+            <h3>編輯登入資訊 <span id="editTaskName" class="text-small"></span></h3>
+            <form id="editForm">
+                <input type="hidden" id="editTaskId">
+                <div class="row">
+                     <div class="col">
+                        <label>JKF 帳號:</label>
+                        <input type="text" id="editUser">
+                    </div>
+                    <div class="col">
+                        <label>JKF 密碼:</label>
+                        <input type="password" id="editPass">
+                    </div>
+                </div>
+                <label>Cookie 字串 (手動更新):</label>
+                <textarea id="editCookie" rows="2"></textarea>
+                <div class="row">
+                    <button type="submit" class="col">儲存變更</button>
+                    <button type="button" class="col" style="background:#666" onclick="closeEdit()">取消</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Config
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001' : ''; 
+    let token = localStorage.getItem('jkf_token');
+
+    // DOM Elements
+    const loginView = document.getElementById('loginView');
+    const dashboardView = document.getElementById('dashboardView');
+    const loginForm = document.getElementById('loginForm');
+    const addTaskForm = document.getElementById('addTaskForm');
+    const taskList = document.getElementById('taskList');
+    const editModal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Switch Views
+    function showView() {
+        if (token) {
+            loginView.classList.add('hidden');
+            dashboardView.classList.remove('hidden');
+            fetchTasks();
+        } else {
+            loginView.classList.remove('hidden');
+            dashboardView.classList.add('hidden');
+        }
+    }
+
+    // API Helper
+    async function apiCall(path, options = {}) {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        try {
+            const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+            if (res.status === 401 || res.status === 403) {
+                logout();
+                throw new Error("未經授權，請重新登入");
+            }
+            return res;
+        } catch (e) {
+            alert("網路錯誤或" + e.message);
+            throw e;
+        }
+    }
+
+    // Auth
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('loginBtn');
+        const errObj = document.getElementById('loginError');
+        btn.disabled = true; errObj.textContent = '';
+        
+        try {
+            const res = await apiCall('/api/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                token = data.token;
+                localStorage.setItem('jkf_token', token);
+                showView();
+            } else {
+                errObj.textContent = data.error || '登入失敗';
+            }
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    function logout() {
+        token = null;
+        localStorage.removeItem('jkf_token');
+        showView();
+    }
+    logoutBtn.addEventListener('click', logout);
+
+    // Tasks Management
+    async function fetchTasks() {
+        try {
+            const res = await apiCall('/api/tasks');
+            const tasks = await res.json();
+            renderTasks(tasks);
+        } catch(e) {}
+    }
+
+    function renderTasks(tasks) {
+        if (tasks.length === 0) {
+            taskList.innerHTML = '<tr><td colspan="4" align="center">沒有任務。</td></tr>';
+            return;
+        }
+        
+        taskList.innerHTML = tasks.map(t => {
+            const dateFmt = new Date(t.next_run).toLocaleString('zh-TW', { hour12: false });
+            let topStr = "";
+            let freeStr = "";
+            
+            if (t.top_expires_at) {
+                const expiresAtStr = t.top_expires_at.replace('T', ' ').replace('.000Z', '');
+                topStr = `<br><span class="badge" style="background:#eee">頂到: ${expiresAtStr}</span>`;
+            }
+
+            if (t.free_status && t.free_status.includes('現在有空')) {
+                freeStr = `<br><span class="badge" style="background:#dcfce7;color:#16a34a">空檔時間</span>`;
+            }
+
+            return `
+            <tr>
+                <td>
+                    <b>${t.name}</b><br>
+                    <a href="${t.url}" target="_blank" class="text-small">連結</a>
+                    ${t.status === 'failed' && t.last_message ? `<div class="text-small" style="color:red">[錯誤] ${t.last_message}</div>` : ''}
+                </td>
+                <td>
+                    <span class="status-${t.status}">${t.status}</span><br>
+                    <span class="text-small">每 ${t.interval_minutes}m</span>
+                </td>
+                <td class="text-small">
+                    下回: ${dateFmt}
+                    ${topStr}
+                    ${freeStr}
+                </td>
+                <td>
+                    <div style="display:flex; gap:4px; flex-direction:column">
+                        <button class="btn-small" onclick="triggerTask(${t.id})">立即推</button>
+                        <button class="btn-small" style="background:#d97706" onclick='openEdit(${JSON.stringify(t)})'>修改帳密</button>
+                        <button class="btn-small" style="background:#dc2626" onclick="deleteTask(${t.id})">刪除</button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Create Task
+    addTaskForm.addEventListener('submit', async(e) => {
+        e.preventDefault();
+        try {
+            const btn = addTaskForm.querySelector('button');
+            btn.disabled = true;
+            await apiCall('/api/tasks', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: "擷取標題中...",
+                    url: document.getElementById('newUrl').value,
+                    cookieString: document.getElementById('newCookie').value,
+                    jkfUsername: document.getElementById('newDefaultUser').value,
+                    jkfPassword: document.getElementById('newDefaultPass').value,
+                    intervalMinutes: parseInt(document.getElementById('newInterval').value)
+                })
+            });
+            addTaskForm.reset();
+            alert('新增成功');
+            fetchTasks();
+        } finally {
+            addTaskForm.querySelector('button').disabled = false;
+        }
+    });
+
+    // Actions
+    window.triggerTask = async function(id) {
+        await apiCall(`/api/tasks/${id}/trigger`, { method: 'POST' });
+        fetchTasks();
+    };
+
+    window.deleteTask = async function(id) {
+        if(!confirm('確定刪除？')) return;
+        await apiCall(`/api/tasks/${id}`, { method: 'DELETE' });
+        fetchTasks();
+    };
+
+    // Edit modal
+    window.openEdit = function(task) {
+        document.getElementById('editTaskId').value = task.id;
+        document.getElementById('editTaskName').textContent = task.name;
+        document.getElementById('editUser').value = task.jkf_username || '';
+        document.getElementById('editPass').value = task.jkf_password || '';
+        document.getElementById('editCookie').value = '';
+        editModal.classList.remove('hidden');
+    }
+
+    window.closeEdit = function() {
+        editModal.classList.add('hidden');
+    }
+
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('editTaskId').value;
+        const cookieVal = document.getElementById('editCookie').value;
+        
+        await apiCall(`/api/tasks/${id}/cookie`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                cookieString: cookieVal ? cookieVal : undefined,
+                jkfUsername: document.getElementById('editUser').value,
+                jkfPassword: document.getElementById('editPass').value
+            })
+        });
+        
+        alert('更新成功');
+        closeEdit();
+        fetchTasks();
+    });
+
+    // Auto refresh
+    setInterval(() => {
+        if(token && !dashboardView.classList.contains('hidden')) {
+            fetchTasks();
+        }
+    }, 15000);
+
+    // Initial load
+    showView();
+</script>
+</body>
+</html>

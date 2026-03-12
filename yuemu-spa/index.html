@@ -4,381 +4,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>越沐天和舒壓館 | 越式洗頭・精油按摩・做臉</title>
-    <meta name="description" content="全方位舒壓套餐！提供專業越式洗頭、精油按摩、頭皮深層淨化、耳燭療程與做臉服務。桃園/新竹專業放鬆首選。">
+    <title>越沐天和 YUEMU SPA | 法式奶油金緻會館</title>
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Outfit:wght@300;400;500&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css">
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <!-- Header / Navigation -->
-    <header class="header">
+    <!-- Minimalist Navigation -->
+    <nav class="header" id="navbar">
         <div class="nav-container">
-            <a href="#" class="logo">
-                <img src="./img/logo-final.png" alt="越沐天和舒壓館 LOGO" class="logo-img">
-            </a>
             <nav class="nav-links">
-                <a href="#concept">品牌理念</a>
-                <a href="#services">特色服務</a>
-                <a href="#menu">全方位舒壓套餐</a>
-                <a href="#contact">預約資訊</a>
+                <a href="#philosophy">理念 Philosophy</a>
+                <a href="#services">服務 Services</a>
+                <a href="#menu">價目 Menu</a>
             </nav>
-            <a href="tel:0979759899" class="btn-primary nav-btn"><i class="ph ph-phone"></i> 預約放鬆</a>
-
-            <button class="menu-toggle">
-                <i class="ph ph-list"></i>
-            </button>
+            <a href="#" class="logo">
+                <img src="C:/Users/user/.gemini/antigravity/brain/894822b8-9ddc-4ca8-b71a-7f7c3e9bfd0f/yuemu_spa_logo_cream_gold_1773085649965.png"
+                    alt="越沐天和 SPA Logo" class="logo-img">
+            </a>
+            <div class="nav-actions">
+                <a href="https://line.me/ti/p/vvan8" class="btn-outline" target="_blank">預約 Reservation</a>
+                <button class="menu-toggle"><i class="ph ph-list"></i></button>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-bg">
-            <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2670&auto=format&fit=crop"
-                alt="Spa Background">
-            <div class="hero-overlay"></div>
-        </div>
-        <div class="hero-content">
-            <span class="hero-subtitle">Melt Away the Stress</span>
-            <h1 class="hero-title">沉浸式精油舒壓<br>找回身心的純粹</h1>
-            <p class="hero-desc">以頂級植萃精油喚醒感官・在疲憊時讓您體驗極致放鬆<br><small>亦提供特色越式洗頭，為您變換舒壓口味</small></p>
-            <div class="hero-actions">
-                <a href="#menu" class="btn-primary">探索療程</a>
-                <a href="#concept" class="btn-secondary">了解理念</a>
+    <!-- Editorial Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-split">
+            <div class="hero-text-area reveal slide-up">
+                <span class="eyebrow">Friendly & Professional Service</span>
+                <h1 class="hero-title">越沐天和<br>舒壓館</h1>
+                <p class="hero-desc">以親切的服務與精湛的按摩技術為引，在城市喧囂中為您開闢一處沉澱心靈的秘境。專注於深層解壓與感官的寧靜重新連結。</p>
+                <a href="#philosophy" class="scroll-down-btn">
+                    <span class="line"></span>
+                    <span class="text">探索旅程 Explore</span>
+                </a>
+            </div>
+            <div class="hero-image-area reveal slide-left">
+                <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                    alt="Spa Tranquility">
             </div>
         </div>
     </section>
 
-    <!-- Brand Concept (relax33 style) -->
-    <section id="concept" class="concept section">
-        <div class="container pattern-bg">
-            <div class="concept-grid">
-                <div class="concept-text reveal-left">
-                    <span class="section-tag">Brand Concept</span>
-                    <h2 class="section-title">不只是按摩<br>更是一場五感療癒之旅</h2>
-                    <p>越沐天和舒壓館，致力於為繁忙的都會人打造一個專屬的放鬆綠洲。我們深信，<strong>精油按摩</strong>是通往徹底放鬆最直接的路徑。</p>
-                    <p>從踏入館內的那一刻起，溫潤的木質裝潢、空氣中淡雅的植萃精油香氣、輕柔撫慰的音樂，到按摩師帶有些微力道卻又溫和的手勢，隨著精油滑動，為您推開積累已久的疲倦。偶爾想換點新鮮感？我們也提供道地的越式洗頭，在細緻的水流與洗髮香氣中，給您另一種截然不同的舒壓體驗。
-                    </p>
-                    <div class="features">
-                        <div class="feature-item">
-                            <i class="ph ph-wind"></i>
-                            <span>天然植萃香氛</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="ph ph-waves"></i>
-                            <span>極致沉浸氛圍</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="ph ph-hand-heart"></i>
-                            <span>專業熟練手法</span>
-                        </div>
+    <!-- Zen Philosophy Section -->
+    <section class="philosophy-section section" id="philosophy">
+        <div class="container view-grid">
+            <div class="phil-image reveal slide-right">
+                <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    alt="Natural Oil Settings">
+            </div>
+            <div class="phil-content reveal fade-in">
+                <span class="eyebrow">Our Philosophy</span>
+                <h2 class="section-title">五感。歸零</h2>
+                <div class="divider"></div>
+                <p class="body-text">
+                    真正的放鬆，來自於如同家人般的親切接待與專業技術的完美結合。越沐天和以精湛的按摩手技與嚴選的溫和抗敏精油，為您拂去生活中的疲憊。透過理療師帶有溫度的指尖，從觸覺的深層壓力釋放開始，讓您的身、心、靈在此刻得以完全歸零。
+                </p>
+                <div class="zen-features">
+                    <div class="z-feat">
+                        <i class="ph ph-heart"></i>
+                        <span>至臻親切服務</span>
                     </div>
-                </div>
-                <div class="concept-image reveal-right">
-                    <div class="glass-card image-card">
-                        <img src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=2070&auto=format&fit=crop"
-                            alt="Relaxing Spa Details">
+                    <div class="z-feat">
+                        <i class="ph ph-wind"></i>
+                        <span>專屬靜謐空間</span>
+                    </div>
+                    <div class="z-feat">
+                        <i class="ph ph-hands-clapping"></i>
+                        <span>精湛技術釋放</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Services Highlight (venusspa style - step by step) -->
-    <section id="services" class="services section bg-light">
+    <!-- Services Section -->
+    <section class="services-section section bg-sand" id="services">
         <div class="container">
-            <div class="text-center reveal-up">
-                <div class="text-center reveal-up">
-                    <span class="section-tag">Our Speciality</span>
-                    <h2 class="section-title">頂級精油按摩 ‧ 為您洗去一身疲憊</h2>
-                    <p class="section-subtitle">我們的主打星是帶來深層釋放的精油按摩；當您想嘗試不同的放鬆節奏，越式洗頭也是絕佳的選擇。</p>
+            <div class="section-header text-center reveal fade-up">
+                <span class="eyebrow">Signatures</span>
+                <h2 class="section-title">極致呵護</h2>
+                <div class="divider center"></div>
+                <p class="section-subtitle">專注於深層解壓的沐浴與按摩工藝</p>
+            </div>
+
+            <div class="editorial-cards">
+                <!-- Primary Service: Oil Massage -->
+                <div class="ed-card reveal slide-up">
+                    <div class="ed-card-img">
+                        <img src="https://images.unsplash.com/photo-1600334129128-685c5582fd35?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                            alt="精油按摩">
+                        <div class="card-badge">Signature</div>
+                    </div>
+                    <div class="ed-card-content">
+                        <h3>深層經絡舒壓按摩</h3>
+                        <p>為追求極致放鬆的您量身打造。以我們引以為傲的精湛按摩技術，搭配親膚的溫和抗敏精油，進行深層肌肉推拿。有效融化長日累積的肩頸僵硬，引領您進入安穩的深層睡眠狀態。</p>
+                        <a href="#menu" class="text-link">查看療程細節 <i class="ph ph-arrow-right"></i></a>
+                    </div>
                 </div>
 
-                <div class="service-showcase overflow-visible reveal-up">
-
-                    <!-- Main Feature: Massage -->
-                    <div class="service-info glass-card luxury-card mb-4 relative z-10">
-                        <div class="service-badge">核心主打</div>
-                        <h3>深層植萃精油按摩</h3>
-                        <p class="service-desc">以溫熱的植物精油，配合專業經絡手法，從肩頸到背部，深層化解肌肉僵硬，帶領您進入深度的寧靜狀態。</p>
-                        <ul class="feature-bullets">
-                            <li><i class="ph ph-check-circle text-gold"></i> <strong>客製化力道：</strong> 針對您的緊繃部位加強舒緩。</li>
-                            <li><i class="ph ph-check-circle text-gold"></i> <strong>頂級抗過敏精油：</strong>
-                                採用天然無添加配方，滋潤肌膚同時香氛療癒。
-                            </li>
-                            <li><i class="ph ph-check-circle text-gold"></i> <strong>全身代謝：</strong> 搭配刮痧拔罐，促進循環，徹底排空壓力。
-                            </li>
-                        </ul>
+                <!-- Secondary Service: Hair Wash -->
+                <div class="ed-card reveal slide-up" style="transition-delay: 0.2s;">
+                    <div class="ed-card-img">
+                        <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                            alt="越式洗頭">
+                        <div class="card-badge secondary">Experience</div>
                     </div>
-
-                    <!-- Secondary Feature: Hair Wash -->
-                    <div class="service-info glass-card secondary-card">
-                        <div class="service-badge alt">特色推薦</div>
+                    <div class="ed-card-content">
                         <h3>道地越式洗頭</h3>
-                        <p class="service-desc">如果今天不想按摩，不妨試試越式洗頭。細膩的水流與獨特手法，洗淨的不只是髮絲，更是日常的繁雜思緒。</p>
-                        <ul class="feature-bullets">
-                            <li><i class="ph ph-drop text-rose"></i> <strong>草本水循環：</strong> 溫和喚醒頭皮活力。</li>
-                            <li><i class="ph ph-drop text-rose"></i> <strong>頭頸放鬆：</strong> 結合臉部與肩頸的輕柔按摩。</li>
-                        </ul>
-                    </div>
-
-                    <div class="service-images">
-                        <img class="img-1 glass-card"
-                            src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=2070&auto=format&fit=crop"
-                            alt="Massage Service">
-                        <img class="img-2 glass-card"
-                            src="https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=2574&auto=format&fit=crop"
-                            alt="Hair Wash Spa">
-                    </div>
-                </div>
-            </div>
-    </section>
-
-    <!-- Price List -->
-    <section id="menu" class="menu section">
-        <div class="container">
-            <div class="text-center reveal-up">
-                <span class="section-tag">Price List</span>
-                <h2 class="section-title">全方位舒壓套餐</h2>
-                <p class="section-subtitle">男女皆適用，從基礎保養到頂級奢華，為您量身打造。</p>
-            </div>
-
-            <div class="menu-tabs reveal-up">
-                <button class="tab-btn active" data-target="single">單項按摩與美容</button>
-                <button class="tab-btn" data-target="packages">全方位舒壓套餐</button>
-            </div>
-
-            <div class="menu-content active" id="packages">
-                <div class="package-grid">
-                    <!-- Package A -->
-                    <div class="package-card glass-card">
-                        <div class="pkg-header">
-                            <h3 class="pkg-title">A. 薰蒸舒壓套餐</h3>
-                            <div class="pkg-price">1500<span>元</span> <small>/ 90分鐘</small></div>
-                            <span class="pkg-highlight">**基礎保養 | 頭頸放鬆專案**</span>
-                        </div>
-                        <ul class="pkg-list">
-                            <li>草本海鹽足浴</li>
-                            <li>熱敷眼部舒緩</li>
-                            <li>頸部淋巴疏通按摩</li>
-                            <li>頭皮深層淨化按摩</li>
-                            <li>深層潔顏+臉部去角質</li>
-                            <li>舒壓按摩敷臉 (抗老精油按摩)</li>
-                            <li>薰蒸護髮+水療舒壓按摩</li>
-                            <li>基礎保濕鎖水 (無添加配方)</li>
-                            <li>耳燭舒緩</li>
-                            <li class="pkg-footer">(含養生茶點+頭髮吹乾服務)</li>
-                        </ul>
-                    </div>
-
-                    <!-- Package B -->
-                    <div class="package-card glass-card featured">
-                        <div class="popular-badge">性價比首選</div>
-                        <div class="pkg-header">
-                            <h3 class="pkg-title">B. 經典舒壓套餐</h3>
-                            <div class="pkg-price">2000<span>元</span> <small>/ 120分鐘</small></div>
-                            <span class="pkg-highlight">**頭背雙重深層放鬆**</span>
-                        </div>
-                        <ul class="pkg-list">
-                            <li>草本海鹽足浴</li>
-                            <li>熱敷眼部舒緩</li>
-                            <li>頸部淋巴疏通按摩</li>
-                            <li>頭皮深層淨化按摩</li>
-                            <li>深層潔顏+臉部去角質</li>
-                            <li>舒壓按摩敷臉 (抗老精油按摩)</li>
-                            <li>薰蒸護髮+水療舒壓按摩</li>
-                            <li>基礎保濕鎖水 (無添加配方)</li>
-                            <li>耳燭舒緩</li>
-                            <li class="accent">30分鐘背部經絡釋壓按摩</li>
-                            <li class="accent">腰臀筋膜放鬆</li>
-                            <li class="pkg-footer">(含養生茶點+頭髮吹乾服務)</li>
-                        </ul>
-                    </div>
-
-                    <!-- Package C -->
-                    <div class="package-card glass-card">
-                        <div class="pkg-header">
-                            <h3 class="pkg-title">C. 尊榮養護套餐</h3>
-                            <div class="pkg-price">2300<span>元</span> <small>/ 120分鐘</small></div>
-                            <span class="pkg-highlight">**升級 | 全身調理 ✕ 中藥頭療**</span>
-                        </div>
-                        <ul class="pkg-list">
-                            <li>熱敷眼部舒緩</li>
-                            <li>中藥足浴+足部去角質</li>
-                            <li>剪指甲</li>
-                            <li>背部經絡按摩</li>
-                            <li>需修容者專享 (精緻刮鬍+深層潔顏)</li>
-                            <li>天然無添加臉部SPA (含蘆薈面膜/積雪草舒緩配方)</li>
-                            <li>頭肩頸穴位按摩</li>
-                            <li>中藥頭部薰蒸</li>
-                            <li>循環水療潤髮</li>
-                            <li>耳燭舒緩</li>
-                            <li>天然無添加手部滋養護理 (按摩同步敷潤)</li>
-                            <li class="pkg-footer">(含養生茶點+頭髮吹乾服務)</li>
-                        </ul>
-                    </div>
-
-                    <!-- Package D -->
-                    <div class="package-card glass-card luxury">
-                        <div class="pkg-header">
-                            <h3 class="pkg-title">D. 帝王臻享套餐</h3>
-                            <div class="pkg-price">3600<span>元</span> <small>/ 160分鐘</small></div>
-                            <span class="pkg-highlight">**頂規天然奢養 | 耳部三重淨化**</span>
-                        </div>
-                        <p class="pkg-note">保養品: 頂級植萃奢養系列</p>
-                        <ul class="pkg-list">
-                            <li>熱敷眼部舒緩</li>
-                            <li>中藥足浴+足部去角質</li>
-                            <li>全身精緻按摩</li>
-                            <li>剪指甲</li>
-                            <li>需修容者專享 (精緻刮鬍+深層潔顏)</li>
-                            <li>頂級無添加臉部SPA (含面膜/抗氧提亮/深度修護)</li>
-                            <li>頭肩頸深度舒壓</li>
-                            <li>中藥頭部薰蒸+光療頭皮養護</li>
-                            <li>循環水療潤髮</li>
-                            <li>專業耳部三部曲 (草本耳浴+小舒麻採耳+耳燭排濕)</li>
-                            <li>臉部經絡撥筋</li>
-                            <li class="pkg-footer">(含養生茶點+頭髮吹乾服務)</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="menu-content" id="single">
-                <div class="single-grid">
-                    <!-- Massage -->
-                    <div class="category-card glass-card">
-                        <h4 class="category-title"><i class="ph ph-hands-praying"></i> 精油按摩系列 <small>(皆含刮痧拔罐)</small>
-                        </h4>
-                        <ul class="item-list">
-                            <li>
-                                <span class="item-name">精油按摩 100分鐘</span>
-                                <span class="item-price">1300元</span>
-                            </li>
-                            <li>
-                                <span class="item-name">精油按摩 120分鐘</span>
-                                <span class="item-price">1500元</span>
-                            </li>
-                            <li>
-                                <span class="item-name">2人4手按摩 60分鐘</span>
-                                <span class="item-price">1600元</span>
-                            </li>
-                            <li>
-                                <span class="item-name">2人4手按摩 120分鐘</span>
-                                <span class="item-price">3000元</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Moxibustion -->
-                    <div class="category-card glass-card">
-                        <h4 class="category-title"><i class="ph ph-fire"></i> 艾草溫罐系列</h4>
-                        <ul class="item-list">
-                            <li>
-                                <span class="item-name">艾草溫罐(半身含按摩) 60分鐘</span>
-                                <span class="item-price">1000元</span>
-                            </li>
-                            <li>
-                                <span class="item-name">艾草溫罐(全身含按摩) 120分鐘</span>
-                                <span class="item-price">2000元</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Beauty -->
-                    <div class="category-card glass-card">
-                        <h4 class="category-title"><i class="ph ph-sparkle"></i> 美容助眠系列</h4>
-                        <ul class="item-list">
-                            <li>
-                                <span class="item-name">耳燭療程 60分鐘</span>
-                                <span class="item-price">1000元</span>
-                            </li>
-                            <li>
-                                <span class="item-name">做臉</span>
-                                <span class="item-price">1000元</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Addons & Wash -->
-                    <div class="category-card glass-card">
-                        <h4 class="category-title"><i class="ph ph-plus-circle"></i> 套餐組合與洗頭</h4>
-                        <ul class="item-list">
-                            <li>
-                                <span class="item-name">套餐組合 (所有按摩項目+耳燭)</span>
-                                <span class="item-price">+500元</span>
-                            </li>
-                            <li>
-                                <span class="item-name">洗頭 (男)</span>
-                                <span class="item-price">600元</span>
-                            </li>
-                            <li>
-                                <span class="item-name">洗頭 (女)</span>
-                                <span class="item-price">800元</span>
-                            </li>
-                        </ul>
+                        <p>不僅是頭皮的深層潔淨，更是一系列的臉部撥筋與肩頸水療體驗。搭配極致舒適的專業按摩手法，為您的頭部帶來前所未有的輕盈暢快感。</p>
+                        <a href="#menu" class="text-link">查看療程細節 <i class="ph ph-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer / Contact -->
-    <footer id="contact" class="footer">
-        <div class="container pattern-bg">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <h2><i class="ph ph-flower-lotus"></i> 越沐天和舒壓館</h2>
-                    <p>給您最尊榮的舒壓體驗，從心出發的五感放鬆。</p>
-                    <div class="social-links">
-                        <a href="#" class="social-icon"><i class="ph ph-facebook-logo"></i></a>
-                        <a href="#" class="social-icon"><i class="ph ph-instagram-logo"></i></a>
-                        <a href="#" class="social-icon"><i class="ph ph-line-logo"></i></a>
+    <!-- Minimalist Menu Section -->
+    <section class="menu-section section" id="menu">
+        <div class="container">
+            <div class="section-header text-center reveal fade-up">
+                <span class="eyebrow">Price List</span>
+                <h2 class="section-title">舒壓療程</h2>
+                <div class="divider center"></div>
+            </div>
+
+            <div class="menu-tabs reveal fade-in">
+                <button class="tab-btn active" data-target="single">單項療程 Single Treatments</button>
+                <button class="tab-btn" data-target="packages">全方位套餐 Comprehensive Packages</button>
+            </div>
+
+            <div class="menu-content">
+
+                <!-- 單項按摩與美容 -->
+                <div class="menu-pane active reveal fade-in" id="single">
+                    <div class="menu-layout">
+                        <!-- Column 1 -->
+                        <div class="menu-col">
+                            <h3 class="menu-category">精油按摩系列</h3>
+                            <div class="cl-bot mb-2" style="margin-bottom: 1rem; color: var(--z-accent-gold-light);">
+                                (皆含刮痧拔罐)</div>
+                            <ul class="clean-list">
+                                <li>
+                                    <div class="cl-top"><span>精油按摩</span><span class="price">$1300</span></div>
+                                    <div class="cl-bot">100 mins</div>
+                                </li>
+                                <li>
+                                    <div class="cl-top"><span>精油按摩</span><span class="price">$1500</span></div>
+                                    <div class="cl-bot">120 mins</div>
+                                </li>
+                                <li>
+                                    <div class="cl-top"><span>2人4手按摩</span><span class="price">$1600</span></div>
+                                    <div class="cl-bot">60 mins</div>
+                                </li>
+                                <li>
+                                    <div class="cl-top"><span>2人4手按摩</span><span class="price">$3000</span></div>
+                                    <div class="cl-bot">120 mins</div>
+                                </li>
+                            </ul>
+
+                            <h3 class="menu-category mt-l">艾草溫罐系列</h3>
+                            <ul class="clean-list">
+                                <li>
+                                    <div class="cl-top"><span>艾草溫罐 (半身)</span><span class="price">$1000</span></div>
+                                    <div class="cl-bot">60 mins ‧ 含按摩</div>
+                                </li>
+                                <li>
+                                    <div class="cl-top"><span>艾草溫罐 (全身)</span><span class="price">$2000</span></div>
+                                    <div class="cl-bot">120 mins ‧ 含按摩</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Column 2 -->
+                        <div class="menu-col">
+                            <h3 class="menu-category">美容助眠系列</h3>
+                            <ul class="clean-list">
+                                <li>
+                                    <div class="cl-top"><span>耳燭療程</span><span class="price">$1000</span></div>
+                                    <div class="cl-bot">60 mins</div>
+                                </li>
+                                <li>
+                                    <div class="cl-top"><span>做臉</span><span class="price">$1000</span></div>
+                                    <div class="cl-bot">臉部保養護理</div>
+                                </li>
+                            </ul>
+
+                            <h3 class="menu-category mt-l">加購/單項組合</h3>
+                            <ul class="clean-list">
+                                <li>
+                                    <div class="cl-top"><span>所有按摩附加耳燭</span><span class="price">+$500</span></div>
+                                </li>
+                                <li>
+                                    <div class="cl-top"><span>洗頭服務</span><span class="price">男 $600 / 女 $800</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
-                <div class="footer-info">
-                    <h3>營業資訊 (Open Time)</h3>
-                    <ul class="info-list">
-                        <li>
-                            <i class="ph ph-clock"></i>
-                            <span>12:00 - 02:00</span>
-                        </li>
-                        <li>
-                            <i class="ph ph-phone"></i>
-                            <a href="tel:0979759899">0979-759-899</a>
-                        </li>
-                        <li>
-                            <i class="ph ph-chat-circle-dots"></i>
-                            <span>LINE ID: vvan8</span>
-                        </li>
-                        <li>
-                            <i class="ph ph-car"></i>
-                            <span>附近有室內收費停車場 (一分鐘可抵達)</span>
-                        </li>
+                <!-- 全方位舒壓套餐 -->
+                <div class="menu-pane reveal fade-in" id="packages">
+                    <div class="packages-layout">
+
+                        <div class="pkg-box">
+                            <div class="pb-head">
+                                <h3>A. 薰蒸舒壓套餐</h3>
+                                <div class="pb-details"><span>90 mins</span><span class="pb-price">$1500</span></div>
+                            </div>
+                            <div
+                                style="font-size: 0.9rem; margin-bottom: 2rem; color: var(--z-accent-gold-light); letter-spacing: 0.05em;">
+                                **基礎保養 | 頭頸放鬆專案**</div>
+                            <ol class="pb-list">
+                                <li>草本海鹽足浴</li>
+                                <li>熱敷眼部舒緩</li>
+                                <li class="highlight">頸部淋巴疏通按摩</li>
+                                <li>頭皮深層淨化按摩</li>
+                                <li>深層潔顏 + 臉部去角質</li>
+                                <li class="highlight">舒壓按摩敷臉 (抗敏精油)</li>
+                                <li>薰蒸護髮 + 水療舒壓按摩</li>
+                                <li>基礎保濕鎖水 (無添加配方)</li>
+                                <li>耳燭舒緩</li>
+                                <li
+                                    style="list-style: none; margin-top: 1rem; font-size: 0.85rem; color: var(--z-text);">
+                                    (含養生茶點+頭髮吹乾服務)</li>
+                            </ol>
+                        </div>
+
+                        <div class="pkg-box">
+                            <div class="pb-head">
+                                <h3>B. 經典舒壓套餐</h3>
+                                <div class="pb-details"><span>120 mins</span><span class="pb-price">$2000</span></div>
+                            </div>
+                            <div
+                                style="font-size: 0.9rem; margin-bottom: 2rem; color: var(--z-accent-gold-light); letter-spacing: 0.05em;">
+                                **性價比首選 | 頭背雙重深層放鬆**</div>
+                            <ol class="pb-list">
+                                <li>草本海鹽足浴</li>
+                                <li>熱敷眼部舒緩</li>
+                                <li class="highlight">頸部淋巴疏通按摩</li>
+                                <li>頭皮深層淨化按摩</li>
+                                <li>深層潔顏 + 臉部去角質</li>
+                                <li class="highlight">舒壓按摩敷臉 (抗敏精油)</li>
+                                <li>薰蒸護髮 + 水療舒壓按摩</li>
+                                <li>基礎保濕鎖水 (無添加配方)</li>
+                                <li>耳燭舒緩</li>
+                                <li class="highlight">30分鐘背部經絡釋壓按摩</li>
+                                <li>腰臀筋膜放鬆</li>
+                                <li
+                                    style="list-style: none; margin-top: 1rem; font-size: 0.85rem; color: var(--z-text);">
+                                    (含養生茶點+頭髮吹乾服務)</li>
+                            </ol>
+                        </div>
+
+                        <div class="pkg-box">
+                            <div class="pb-head">
+                                <h3>C. 尊榮養護套餐</h3>
+                                <div class="pb-details"><span>120 mins</span><span class="pb-price">$2300</span></div>
+                            </div>
+                            <div
+                                style="font-size: 0.9rem; margin-bottom: 2rem; color: var(--z-accent-gold-light); letter-spacing: 0.05em;">
+                                **升級 | 全身調理 × 中藥頭療**</div>
+                            <ol class="pb-list">
+                                <li>熱敷眼部舒緩</li>
+                                <li>中藥足浴 + 足部去角質</li>
+                                <li>剪指甲</li>
+                                <li class="highlight">背部經絡按摩</li>
+                                <li>需修容者尊享 (精緻刮鬍+深層潔顏)</li>
+                                <li class="highlight">臉部深層SPA (抗敏精油)</li>
+                                <li>頭肩頸穴位按摩</li>
+                                <li class="highlight">中藥頭部薰蒸</li>
+                                <li>循環水療潤髮</li>
+                                <li>耳燭舒緩</li>
+                                <li>精緻手部滋養護理</li>
+                                <li
+                                    style="list-style: none; margin-top: 1rem; font-size: 0.85rem; color: var(--z-text);">
+                                    (含養生茶點+頭髮吹乾服務)</li>
+                            </ol>
+                        </div>
+
+                        <div class="pkg-box">
+                            <div class="pb-head">
+                                <h3>D. 帝王臻享套餐</h3>
+                                <div class="pb-details"><span>160 mins</span><span class="pb-price">$3600</span></div>
+                            </div>
+                            <div
+                                style="font-size: 0.9rem; margin-bottom: 2rem; color: var(--z-accent-gold-light); letter-spacing: 0.05em;">
+                                **頂規奢享呵護 | 耳部三重淨化 × 光療頭養**</div>
+                            <ol class="pb-list">
+                                <li>熱敷眼部舒緩</li>
+                                <li>中藥足浴 + 足部去角質</li>
+                                <li class="highlight">全身精緻按摩</li>
+                                <li>剪指甲</li>
+                                <li>需修容者專享 (精緻刮鬍+深層潔顏)</li>
+                                <li class="highlight">頂級臉部SPA (抗敏精油)</li>
+                                <li>頭肩頸深度紓壓</li>
+                                <li class="highlight">中藥頭部薰蒸 + 光療頭皮養護</li>
+                                <li>循環水療潤髮</li>
+                                <li>專業耳部三部曲 (草本耳浴/採耳/耳燭)</li>
+                                <li>臉部經絡撥筋</li>
+                                <li
+                                    style="list-style: none; margin-top: 1rem; font-size: 0.85rem; color: var(--z-text);">
+                                    (含養生茶點+頭髮吹乾服務)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark" id="contact">
+        <div class="nav-container footer-inner">
+            <div class="f-brand">
+                <img src="C:/Users/user/.gemini/antigravity/brain/894822b8-9ddc-4ca8-b71a-7f7c3e9bfd0f/yuemu_spa_logo_cream_gold_1773085649965.png"
+                    alt="Yuemu SPA" class="f-logo">
+                <p>體驗身心的極致放鬆，法式優雅與頂級水療的完美結合。</p>
+            </div>
+
+            <div class="f-links">
+                <div class="f-col">
+                    <h4>Visit Us</h4>
+                    <ul>
+                        <li><i class="ph ph-clock"></i> 營業時間：12:00 - 02:00</li>
+                        <li><i class="ph ph-car"></i> 附近設有室內付費停車場 (約1分鐘步程)</li>
                     </ul>
                 </div>
-
-                <div class="footer-cta">
-                    <h3>立即預約</h3>
-                    <p>熱門時段容易客滿，建議您提早預約，為自己保留一段專屬的放鬆時光。</p>
-                    <a href="tel:0979759899" class="btn-primary"><i class="ph ph-phone"></i> 撥打預約專線</a>
+                <div class="f-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><i class="ph ph-phone"></i> 0979-759-899</li>
+                        <li><i class="ph ph-chat-circle-dots"></i> LINE: vvan8</li>
+                    </ul>
                 </div>
             </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2026 越沐天和舒壓館. All Rights Reserved.</p>
+        </div>
+        <div class="container">
+            <div class="f-bottom">
+                &copy; 2026 越沐天和舒壓館 Yuemu Spa. All Rights Reserved.
             </div>
         </div>
     </footer>
 
+    <!-- Custom JS -->
     <script src="./js/main.js"></script>
 </body>
 

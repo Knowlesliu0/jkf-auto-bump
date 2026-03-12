@@ -1,10 +1,54 @@
 const { client } = require('./lineClient');
-const { v4: uuidv4 } = require('crypto');
 
 const ADMIN_ID = process.env.ADMIN_USER_ID;
 
+// 暫停超時時間（毫秒），預設 30 分鐘
+const PAUSE_TIMEOUT_MS = parseInt(process.env.PAUSE_TIMEOUT_MIN || '30', 10) * 60 * 1000;
+
 // 待處理的人工訊息佇列（記憶體中，重啟會清空）
 const pendingMessages = new Map();
+
+// 暫停中的用戶：Map<userId, { pausedAt, displayName, reason, timer }>
+const pausedUsers = new Map();
+
+// ── 暫停 / 恢復 機器人 ───────────────────────────────────
+
+function pauseUser(userId, displayName, reason = '人工接手') {
+    // 清除舊的計時器（如果有）
+    const existing = pausedUsers.get(userId);
+    if (existing?.timer) clearTimeout(existing.timer);
+
+    // 設定自動恢復計時器
+    const timer = setTimeout(() => {
+        console.log(`⏰ 用戶 ${displayName}(${userId}) 暫停超時，自動恢復機器人`);
+        pausedUsers.delete(userId);
+    }, PAUSE_TIMEOUT_MS);
+
+    pausedUsers.set(userId, {
+        userId,
+        displayName,
+        reason,
+        pausedAt: new Date().toISOString(),
+        timer,
+    });
+
+    console.log(`🔇 機器人已暫停：${displayName}(${userId}) - ${reason}`);
+}
+
+function resumeUser(userId) {
+    const entry = pausedUsers.get(userId);
+    if (entry?.timer) clearTimeout(entry.timer);
+    pausedUsers.delete(userId);
+    console.log(`🔔 機器人已恢復：${userId}`);
+}
+
+function isUserPaused(userId) {
+    return pausedUsers.has(userId);
+}
+
+function getPausedUsers() {
+    return Array.from(pausedUsers.values()).map(({ timer, ...rest }) => rest);
+}
 
 // ── 轉發給管理者 ─────────────────────────────────────────
 
@@ -31,6 +75,9 @@ async function forwardToAdmin(event) {
         timestamp: new Date().toISOString(),
     });
 
+    // 暫停該用戶的機器人自動回覆
+    pauseUser(userId, displayName, `客人說：${text.slice(0, 30)}`);
+
     // 發訊息給管理者
     await client.pushMessage({
         to: ADMIN_ID,
@@ -41,6 +88,7 @@ async function forwardToAdmin(event) {
                     `📩 客人訊息\n\n` +
                     `👤 ${displayName}\n` +
                     `💬 ${text}\n\n` +
+                    `🔇 機器人已暫停（該客人）\n\n` +
                     `回覆請輸入：\n` +
                     `@回覆 ${userId} 你要回覆的內容`,
             },
@@ -80,10 +128,13 @@ async function handleAdminReply(text) {
         }
     }
 
+    // 恢復該用戶的機器人
+    resumeUser(targetUserId);
+
     // 通知管理者回覆成功
     await client.pushMessage({
         to: ADMIN_ID,
-        messages: [{ type: 'text', text: `✅ 已回覆客人` }],
+        messages: [{ type: 'text', text: `✅ 已回覆客人，機器人已恢復 🔔` }],
     });
 }
 
@@ -95,12 +146,13 @@ async function replyToCustomer(userId, message) {
         messages: [{ type: 'text', text: message }],
     });
 
-    // 清除待處理
+    // 清除待處理 & 恢復機器人
     for (const [id, msg] of pendingMessages) {
         if (msg.userId === userId) {
             pendingMessages.delete(id);
         }
     }
+    resumeUser(userId);
 }
 
 // ── 待處理列表 ──────────────────────────────────────────
@@ -121,4 +173,7 @@ module.exports = {
     replyToCustomer,
     getPending,
     removePending,
+    isUserPaused,
+    resumeUser,
+    getPausedUsers,
 };

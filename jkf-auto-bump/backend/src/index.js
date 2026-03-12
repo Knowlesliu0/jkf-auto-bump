@@ -17,6 +17,9 @@ const tasksRoutes = require('./routes/tasks');
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', tasksRoutes);
 
+// Serve static frontend files
+app.use(express.static('public'));
+
 const { startScheduler } = require('./scheduler');
 const browserManager = require('./browserManager');
 

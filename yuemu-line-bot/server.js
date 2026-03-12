@@ -74,7 +74,7 @@ app.post('/api/upload-photo', upload.single('photo'), (req, res) => {
 });
 
 // 待回覆訊息 API
-const { getPending, removePending } = require('./src/humanHandoff');
+const { getPending, removePending, getPausedUsers, resumeUser } = require('./src/humanHandoff');
 
 app.get('/api/pending', (_req, res) => {
     res.json(getPending());
@@ -96,6 +96,16 @@ app.post('/api/reply', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+// 暫停中用戶 API
+app.get('/api/paused', (_req, res) => {
+    res.json(getPausedUsers());
+});
+
+app.post('/api/resume/:userId', (req, res) => {
+    resumeUser(req.params.userId);
+    res.json({ ok: true });
 });
 
 app.listen(PORT, () => {

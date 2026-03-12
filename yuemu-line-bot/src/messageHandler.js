@@ -1,5 +1,6 @@
-const { autoReply } = require('./autoReply');
-const { forwardToAdmin, handleAdminReply } = require('./humanHandoff');
+const { autoReply, replyFaq } = require('./autoReply');
+const { forwardToAdmin, handleAdminReply, isUserPaused } = require('./humanHandoff');
+const { knowledgeBase } = require('./knowledgeBase');
 const { client } = require('./lineClient');
 
 // 管理者 ID
@@ -48,13 +49,24 @@ const RULES = [
 function classify(text) {
     const normalized = text.toLowerCase().trim();
 
+    // 靜態規則優先
     for (const rule of RULES) {
         if (rule.keywords.some((kw) => normalized.includes(kw))) {
-            return rule.category;
+            return { category: rule.category };
         }
     }
 
-    return 'unknown';
+    // FAQ 動態匹配
+    const faqList = knowledgeBase.get('faq');
+    if (faqList && faqList.length) {
+        for (const faq of faqList) {
+            if (faq.question.some((kw) => normalized.includes(kw.toLowerCase()))) {
+                return { category: 'faq', faqItem: faq };
+            }
+        }
+    }
+
+    return { category: 'unknown' };
 }
 
 // ── 處理訊息 ────────────────────────────────────────────
@@ -69,7 +81,14 @@ async function handleMessage(event) {
         return handleAdminReply(text);
     }
 
-    const category = classify(text);
+    // 🔇 若該用戶處於「真人接手」暫停狀態 → 直接轉發，不自動回覆
+    if (isUserPaused(userId)) {
+        console.log(`[暫停中] "${text}" → 直接轉發管理者`);
+        await forwardToAdmin(event);
+        return;
+    }
+
+    const { category, faqItem } = classify(text);
 
     console.log(`[分類] "${text}" → ${category}`);
 
@@ -86,8 +105,14 @@ async function handleMessage(event) {
         });
 
         await forwardToAdmin(event);
+    } else if (category === 'faq') {
+        // FAQ 自動回覆
+        await client.replyMessage({
+            replyToken,
+            messages: [{ type: 'text', text: faqItem.answer }],
+        });
     } else {
-        // 自動回覆
+        // 知識庫自動回覆
         const messages = autoReply(category, text);
 
         await client.replyMessage({

@@ -11,24 +11,6 @@ const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-
-// 簡易 Basic Auth 登入驗證
-app.use((req, res, next) => {
-    // 從 .env 取得自己設定的網站帳密，若未設定則預設為 admin / admin123
-    const authUsername = process.env.WEB_USERNAME || 'admin';
-    const authPassword = process.env.WEB_PASSWORD || 'admin123';
-
-    const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
-    const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
-
-    if (login && password && login === authUsername && password === authPassword) {
-        return next();
-    }
-
-    res.set('WWW-Authenticate', 'Basic realm="401"');
-    res.status(401).send('驗證失敗，請重新整理並輸入正確的系統帳號與密碼。');
-});
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 確保有資料夾放報告
@@ -152,30 +134,14 @@ app.post('/api/scrape', async (req, res) => {
     }
 
     // 更新 .env 檔案以記憶帳密與金鑰
-    // 更新 .env 檔案以記憶帳密
+    let currentApiKey = process.env.DEEPSEEK_API_KEY || '';
     try {
-        let currentEnv = '';
-        if (fs.existsSync(path.join(__dirname, '.env'))) {
-            currentEnv = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
-        }
-        
-        // 用正則表達式替換或新增 AIS_USERNAME 和 AIS_PASSWORD
-        if (/^AIS_USERNAME=/m.test(currentEnv)) {
-            currentEnv = currentEnv.replace(/^AIS_USERNAME=.*$/m, `AIS_USERNAME=${username}`);
-        } else {
-            currentEnv += `\nAIS_USERNAME=${username}`;
-        }
-        
-        if (/^AIS_PASSWORD=/m.test(currentEnv)) {
-            currentEnv = currentEnv.replace(/^AIS_PASSWORD=.*$/m, `AIS_PASSWORD=${password}`);
-        } else {
-            currentEnv += `\nAIS_PASSWORD=${password}`;
-        }
-        
-        fs.writeFileSync(path.join(__dirname, '.env'), currentEnv.trim() + '\n', 'utf8');
-    } catch (e) {
-        console.error('更新 .env 失敗:', e);
-    }
+        const currentEnv = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+        const match = currentEnv.match(/DEEPSEEK_API_KEY=(.*)/);
+        if (match) currentApiKey = match[1].trim();
+    } catch (e) { }
+    const envContent = `AIS_USERNAME=${username}\nAIS_PASSWORD=${password}\nDEEPSEEK_API_KEY=${currentApiKey}`;
+    fs.writeFileSync(path.join(__dirname, '.env'), envContent, 'utf8');
 
     console.log(`收到查詢請求: 需求="${need}"`);
 
