@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -17,8 +18,13 @@ const tasksRoutes = require('./routes/tasks');
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', tasksRoutes);
 
-// Serve static frontend files
-app.use(express.static('public'));
+// Serve static frontend files (use absolute path to avoid CWD issues)
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Catch-all: serve index.html for any unmatched route
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+});
 
 const { startScheduler } = require('./scheduler');
 const browserManager = require('./browserManager');
