@@ -26,6 +26,10 @@
         .btn-small { padding: 4px 8px; font-size: 12px; width: auto; }
         .badge { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
         #logoutBtn { background: #666; width: auto; float: right; padding: 5px 10px;}
+        .btn-notify { background: #2563eb; }
+        .btn-notify:hover { background: #1d4ed8; }
+        .btn-notify-on { background: #16a34a; }
+        .btn-notify-on:hover { background: #15803d; }
     </style>
 </head>
 <body>
@@ -92,6 +96,24 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- Telegram 通知設定對話框 -->
+        <div id="notifyModal" class="card hidden" style="border-color:#2563eb; background:#f0f7ff;">
+            <h3>🔔 設定 Telegram 通知 <span id="notifyTaskName" class="text-small"></span></h3>
+            <form id="notifyForm">
+                <input type="hidden" id="notifyTaskId">
+                <label>Bot Token:</label>
+                <input type="text" id="notifyBotToken" placeholder="1234567890:AAFxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                <label>Chat ID:</label>
+                <input type="text" id="notifyChatId" placeholder="123456789">
+                <p class="text-small" style="color:#555">有新留言時，系統會自動透過 Telegram Bot 通知您。</p>
+                <div class="row">
+                    <button type="submit" class="col" style="background:#2563eb">儲存</button>
+                    <button type="button" class="col" style="background:#dc2626" onclick="clearNotify()">清除通知</button>
+                    <button type="button" class="col" style="background:#666" onclick="closeNotify()">取消</button>
+                </div>
+            </form>
         </div>
 
         <!-- 編輯 Cookie 對話框 -->
@@ -249,6 +271,7 @@
                 <td>
                     <div style="display:flex; gap:4px; flex-direction:column">
                         <button class="btn-small" onclick="triggerTask(${t.id})">立即推</button>
+                        <button class="btn-small ${t.telegram_bot_token ? 'btn-notify-on' : 'btn-notify'}" onclick='openNotify(${JSON.stringify(t)})'>${t.telegram_bot_token ? '🔔已設通知' : '🔕設定通知'}</button>
                         <button class="btn-small" style="background:#d97706" onclick='openEdit(${JSON.stringify(t)})'>修改帳密</button>
                         <button class="btn-small" style="background:#dc2626" onclick="deleteTask(${t.id})">刪除</button>
                     </div>
@@ -324,6 +347,48 @@
         
         alert('更新成功');
         closeEdit();
+        fetchTasks();
+    });
+
+    // Telegram notify modal
+    const notifyModal = document.getElementById('notifyModal');
+    const notifyForm = document.getElementById('notifyForm');
+
+    window.openNotify = function(task) {
+        document.getElementById('notifyTaskId').value = task.id;
+        document.getElementById('notifyTaskName').textContent = task.name;
+        document.getElementById('notifyBotToken').value = task.telegram_bot_token || '';
+        document.getElementById('notifyChatId').value = task.telegram_chat_id || '';
+        notifyModal.classList.remove('hidden');
+    }
+
+    window.closeNotify = function() {
+        notifyModal.classList.add('hidden');
+    }
+
+    window.clearNotify = async function() {
+        const id = document.getElementById('notifyTaskId').value;
+        await apiCall(`/api/tasks/${id}/telegram`, {
+            method: 'PATCH',
+            body: JSON.stringify({ telegramBotToken: null, telegramChatId: null })
+        });
+        alert('通知已清除');
+        closeNotify();
+        fetchTasks();
+    }
+
+    notifyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('notifyTaskId').value;
+        await apiCall(`/api/tasks/${id}/telegram`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                telegramBotToken: document.getElementById('notifyBotToken').value,
+                telegramChatId: document.getElementById('notifyChatId').value
+            })
+        });
+        alert('✅ 通知設定已儲存！下次有新留言時會通知您。');
+        closeNotify();
         fetchTasks();
     });
 
