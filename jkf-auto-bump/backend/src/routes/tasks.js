@@ -35,10 +35,12 @@ router.post('/', (req, res) => {
         const nextRun = new Date(Date.now() + interval * 60000).toISOString();
         const topExp = topExpiresAt ? new Date(topExpiresAt).toISOString() : null;
 
+        const DEFAULT_BOT_TOKEN = '8338883566:AAElkPZeA7GUdwTkqJsYY_X1puPU630kHnM';
+        const DEFAULT_CHAT_ID = '8508057624';
         const result = db.prepare(`
             INSERT INTO tasks (user_id, name, url, cookie_string, interval_minutes, status, next_run, top_expires_at, jkf_username, jkf_password, telegram_bot_token, telegram_chat_id)
             VALUES (?, ?, ?, ?, ?, 'idle', ?, ?, ?, ?, ?, ?)
-        `).run(DEFAULT_USER_ID, name || '擷取標題中...', url, cookieString || '', interval, nextRun, topExp, jkfUsername || null, jkfPassword || null, telegramBotToken || null, telegramChatId || null);
+        `).run(DEFAULT_USER_ID, name || '擷取標題中...', url, cookieString || '', interval, nextRun, topExp, jkfUsername || null, jkfPassword || null, telegramBotToken || DEFAULT_BOT_TOKEN, telegramChatId || DEFAULT_CHAT_ID);
 
         const newTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(result.lastInsertRowid);
         res.status(201).json(newTask);

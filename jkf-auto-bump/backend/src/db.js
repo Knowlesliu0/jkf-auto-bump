@@ -57,6 +57,19 @@ for (const m of migrations) {
     } catch (e) { /* column already exists */ }
 }
 
+// Apply default Telegram notification settings to all tasks that don't have them
+const DEFAULT_TELEGRAM_BOT_TOKEN = '8338883566:AAElkPZeA7GUdwTkqJsYY_X1puPU630kHnM';
+const DEFAULT_TELEGRAM_CHAT_ID = '8508057624';
+try {
+    db.prepare(`
+        UPDATE tasks SET telegram_bot_token = ?, telegram_chat_id = ?
+        WHERE telegram_bot_token IS NULL OR telegram_bot_token = ''
+    `).run(DEFAULT_TELEGRAM_BOT_TOKEN, DEFAULT_TELEGRAM_CHAT_ID);
+    console.log('[DB] Default Telegram notification applied to all tasks.');
+} catch (e) {
+    console.error('[DB] Failed to apply default Telegram settings:', e.message);
+}
+
 // Initialize default admin user
 const bcrypt = require('bcryptjs');
 try {
