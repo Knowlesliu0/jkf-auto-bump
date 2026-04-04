@@ -4,5 +4,6 @@
     },
     "start": {
         "command": "npm start"
-    }
+    },
+    "port": 3001
 }
