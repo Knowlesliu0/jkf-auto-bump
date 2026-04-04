@@ -18,14 +18,6 @@ const tasksRoutes = require('./routes/tasks');
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', tasksRoutes);
 
-// Serve static frontend files (use absolute path to avoid CWD issues)
-app.use(express.static(path.join(__dirname, '..', 'public')));
-
-// Catch-all: serve index.html for any unmatched route
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-});
-
 const { startScheduler } = require('./scheduler');
 const browserManager = require('./browserManager');
 
@@ -33,20 +25,28 @@ app.get('/api/debug-env', (req, res) => {
     try {
         const fs = require('fs');
         const dbPath = process.env.DB_PATH || 'no path';
-        const dataPath = '/data';
-        let files = [];
-        if (fs.existsSync(dataPath)) {
-            files = fs.readdirSync(dataPath);
-        }
+        const publicPath = path.join(__dirname, '..', 'public');
         res.json({
             ok: true,
             dbPath,
-            files: files,
+            __dirname,
+            publicPath,
+            publicExists: fs.existsSync(publicPath),
+            indexExists: fs.existsSync(path.join(publicPath, 'index.html')),
             uptime: process.uptime()
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
+});
+
+// Serve static frontend files (absolute path, Express 5 compatible)
+const publicDir = path.join(__dirname, '..', 'public');
+app.use(express.static(publicDir));
+
+// Catch-all: use app.use (works in Express 4 & 5, unlike app.get('*'))
+app.use((req, res) => {
+    res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 app.listen(port, async () => {
