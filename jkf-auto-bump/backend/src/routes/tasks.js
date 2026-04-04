@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
     try {
-        const { url, cookieString, intervalMinutes, name, topExpiresAt, jkfUsername, jkfPassword } = req.body;
+        const { url, cookieString, intervalMinutes, name, topExpiresAt, jkfUsername, jkfPassword, telegramBotToken, telegramChatId } = req.body;
         if (!url) {
             return res.status(400).json({ error: 'URL is required' });
         }
@@ -36,9 +36,9 @@ router.post('/', (req, res) => {
         const topExp = topExpiresAt ? new Date(topExpiresAt).toISOString() : null;
 
         const result = db.prepare(`
-            INSERT INTO tasks (user_id, name, url, cookie_string, interval_minutes, status, next_run, top_expires_at, jkf_username, jkf_password)
-            VALUES (?, ?, ?, ?, ?, 'idle', ?, ?, ?, ?)
-        `).run(DEFAULT_USER_ID, name || '擷取標題中...', url, cookieString || '', interval, nextRun, topExp, jkfUsername || null, jkfPassword || null);
+            INSERT INTO tasks (user_id, name, url, cookie_string, interval_minutes, status, next_run, top_expires_at, jkf_username, jkf_password, telegram_bot_token, telegram_chat_id)
+            VALUES (?, ?, ?, ?, ?, 'idle', ?, ?, ?, ?, ?, ?)
+        `).run(DEFAULT_USER_ID, name || '擷取標題中...', url, cookieString || '', interval, nextRun, topExp, jkfUsername || null, jkfPassword || null, telegramBotToken || null, telegramChatId || null);
 
         const newTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(result.lastInsertRowid);
         res.status(201).json(newTask);
@@ -163,6 +163,25 @@ router.post('/:id/trigger', async (req, res) => {
         if (!res.headersSent) {
             res.status(500).json({ error: 'Internal server error' });
         }
+    }
+});
+
+router.patch('/:id/telegram', (req, res) => {
+    try {
+        const { telegramBotToken, telegramChatId } = req.body;
+        const result = db.prepare(`
+            UPDATE tasks SET telegram_bot_token = ?, telegram_chat_id = ? WHERE id = ?
+        `).run(telegramBotToken || null, telegramChatId || null, req.params.id);
+
+        if (result.changes > 0) {
+            const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id);
+            res.json(task);
+        } else {
+            res.status(404).json({ error: 'Task not found' });
+        }
+    } catch (error) {
+        console.error('Error updating telegram settings:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

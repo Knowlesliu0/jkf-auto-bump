@@ -3,6 +3,29 @@ const path = require('path');
 const fs = require('fs');
 const { loginOnPage } = require('./loginAndGetCookies');
 
+async function getReplyCount(page) {
+    try {
+        return await page.evaluate(() => {
+            // Method 1: Count post elements (JKF uses li[id^="pid"] or [id^="post_"])
+            const posts = document.querySelectorAll('li[id^="pid"], [id^="post_"], .postlist .post');
+            if (posts.length > 1) return posts.length - 1; // subtract OP post
+
+            // Method 2: Find reply count in body text
+            const bodyText = document.body?.innerText || '';
+            const match = bodyText.match(/回覆[數数]?\s*[：:\s]\s*(\d+)/);
+            if (match) return parseInt(match[1]);
+
+            // Method 3: Count reply elements in thread
+            const replies = document.querySelectorAll('.reply, [class*="reply-item"], [class*="comment-item"]');
+            if (replies.length > 0) return replies.length;
+
+            return 0;
+        });
+    } catch (e) {
+        return 0;
+    }
+}
+
 function hasJkfAuthCookie(cookies = []) {
     return cookies.some(c => c && c.name === 'jkf-ap-pot' && String(c.value || '').length > 10);
 }
@@ -221,6 +244,8 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
             let threadTitle = await page.title();
             threadTitle = threadTitle.replace(/ - JKF.*/, '').trim();
 
+            const replyCount = await getReplyCount(page);
+
             // Save cookies from persistent context back to caller
             const rawCookies = await context.cookies();
             const newCookieString = JSON.stringify(rawCookies);
@@ -228,7 +253,7 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
             await page.close().catch(() => { });
             page = null;
 
-            return { success: true, message: 'Successfully clicked bump button.', topExpiresAt, freeStatus, threadTitle, newCookieString };
+            return { success: true, message: 'Successfully clicked bump button.', topExpiresAt, freeStatus, threadTitle, newCookieString, replyCount };
         } else {
             // Button not found — check if already in "現在有空" state
             console.log(`[Info] Bump button not found on ${url}, checking if already free...`);
@@ -265,13 +290,15 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
                 let threadTitle = await page.title();
                 threadTitle = threadTitle.replace(/ - JKF.*/, '').trim();
 
+                const replyCount = await getReplyCount(page);
+
                 const rawCookies = await context.cookies();
                 const newCookieString = JSON.stringify(rawCookies);
 
                 await page.close().catch(() => { });
                 page = null;
 
-                return { success: true, message: '已在有空狀態中，無需再次點擊。', topExpiresAt, freeStatus, threadTitle, newCookieString };
+                return { success: true, message: '已在有空狀態中，無需再次點擊。', topExpiresAt, freeStatus, threadTitle, newCookieString, replyCount };
             }
 
             // Truly not found — save debug info

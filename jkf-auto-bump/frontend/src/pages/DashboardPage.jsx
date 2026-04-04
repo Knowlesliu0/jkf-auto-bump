@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Zap, LogOut, Plus, Trash2, Play, AlertCircle, CheckCircle2, Clock, HelpCircle, Cookie, Edit3, Timer } from 'lucide-react';
+import { Zap, LogOut, Plus, Trash2, Play, AlertCircle, CheckCircle2, Clock, HelpCircle, Cookie, Edit3, Timer, Bell } from 'lucide-react';
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newTask, setNewTask] = useState({ url: '', cookieString: '', intervalMinutes: 60, jkfUsername: '', jkfPassword: '' });
+  const [newTask, setNewTask] = useState({ url: '', cookieString: '', intervalMinutes: 60, jkfUsername: '', jkfPassword: '', telegramBotToken: '', telegramChatId: '' });
+  const [notifyTask, setNotifyTask] = useState(null);
+  const [notifyBotToken, setNotifyBotToken] = useState('');
+  const [notifyChatId, setNotifyChatId] = useState('');
   const [showCookieHelp, setShowCookieHelp] = useState(false);
   const [editCookieTask, setEditCookieTask] = useState(null);
   const [editCookieValue, setEditCookieValue] = useState('');
@@ -80,7 +83,9 @@ export default function DashboardPage() {
           cookieString: newTask.cookieString,
           intervalMinutes: newTask.intervalMinutes,
           jkfUsername: newTask.jkfUsername,
-          jkfPassword: newTask.jkfPassword
+          jkfPassword: newTask.jkfPassword,
+          telegramBotToken: newTask.telegramBotToken || undefined,
+          telegramChatId: newTask.telegramChatId || undefined
         })
       });
 
@@ -88,7 +93,7 @@ export default function DashboardPage() {
         const createdTask = await res.json();
         setTasks([createdTask, ...tasks]);
         setShowAddModal(false);
-        setNewTask({ url: '', cookieString: '', intervalMinutes: 60, jkfUsername: '', jkfPassword: '' });
+        setNewTask({ url: '', cookieString: '', intervalMinutes: 60, jkfUsername: '', jkfPassword: '', telegramBotToken: '', telegramChatId: '' });
         alert('任務新增成功！');
       } else {
         alert('新增任務失敗');
@@ -119,6 +124,29 @@ export default function DashboardPage() {
       await fetchApi(`/api/tasks/${id}/trigger`, { method: 'POST' });
     } catch (err) {
       alert('手動觸發失敗');
+    }
+  };
+
+  const handleUpdateTelegram = async (e) => {
+    e.preventDefault();
+    if (!notifyTask) return;
+    try {
+      const res = await fetchApi(`/api/tasks/${notifyTask.id}/telegram`, {
+        method: 'PATCH',
+        body: JSON.stringify({ telegramBotToken: notifyBotToken, telegramChatId: notifyChatId })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setTasks(tasks.map(t => t.id === updated.id ? updated : t));
+        setNotifyTask(null);
+        setNotifyBotToken('');
+        setNotifyChatId('');
+        alert('Telegram 通知設定已儲存！');
+      } else {
+        alert('儲存失敗');
+      }
+    } catch (err) {
+      alert('操作失敗');
     }
   };
 
@@ -333,6 +361,12 @@ export default function DashboardPage() {
                             <Cookie className="w-3 h-3" /> 編輯 Cookie
                           </button>
                           <button
+                            onClick={() => { setNotifyTask(task); setNotifyBotToken(task.telegram_bot_token || ''); setNotifyChatId(task.telegram_chat_id || ''); }}
+                            className={`text-xs px-1 py-1 transition-colors flex items-center gap-1 ${task.telegram_bot_token ? 'text-blue-400 hover:text-blue-300' : 'text-gray-500 hover:text-blue-400'}`}
+                          >
+                            <Bell className="w-3 h-3" /> {task.telegram_bot_token ? 'Telegram 已設定' : '設定通知'}
+                          </button>
+                          <button
                             onClick={() => handleDeleteTask(task.id)}
                             className="text-gray-500 hover:text-red-500 text-xs px-1 py-1 transition-colors flex items-center gap-1"
                           >
@@ -418,12 +452,78 @@ export default function DashboardPage() {
                 />
               </div>
 
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 space-y-2">
+                <p className="text-xs text-blue-300 font-medium flex items-center gap-1"><Bell className="w-3.5 h-3.5" /> Telegram 新留言通知（選填）</p>
+                <input
+                  type="text" value={newTask.telegramBotToken} onChange={e => setNewTask({ ...newTask, telegramBotToken: e.target.value })}
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-blue-500/50 focus:outline-none"
+                  placeholder="Bot Token（從 @BotFather 取得）"
+                />
+                <input
+                  type="text" value={newTask.telegramChatId} onChange={e => setNewTask({ ...newTask, telegramChatId: e.target.value })}
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-white text-sm focus:border-blue-500/50 focus:outline-none"
+                  placeholder="Chat ID（從 @userinfobot 取得）"
+                />
+              </div>
+
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 px-4 py-3 rounded-lg border border-white/10 hover:bg-white/5 transition-colors">
                   取消
                 </button>
                 <button type="submit" className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
                   確認新增
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Telegram Notification Modal */}
+      {notifyTask && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass max-w-lg w-full rounded-2xl border border-white/10 shadow-2xl overflow-hidden p-6 animate-in fade-in zoom-in-95 duration-200">
+            <h2 className="text-xl font-bold mb-2 flex items-center gap-2"><Bell className="w-5 h-5 text-blue-400" /> Telegram 通知設定</h2>
+            <p className="text-sm text-gray-400 mb-4 truncate">任務: {notifyTask.name}</p>
+
+            <form onSubmit={handleUpdateTelegram} className="space-y-4">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-xs text-blue-300 space-y-1">
+                <p className="font-medium text-blue-200">📱 如何取得 Telegram 資訊：</p>
+                <ol className="list-decimal list-inside space-y-0.5 text-blue-300/80">
+                  <li>Telegram 搜尋 <b>@BotFather</b> → 輸入 <code className="bg-white/10 px-1 rounded">/newbot</code> → 取得 Bot Token</li>
+                  <li>Telegram 搜尋 <b>@userinfobot</b> → 取得你的 Chat ID</li>
+                  <li>先傳一則訊息給你的 Bot，再儲存設定</li>
+                </ol>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-300">Bot Token</label>
+                <input
+                  type="text" value={notifyBotToken} onChange={e => setNotifyBotToken(e.target.value)}
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white text-sm focus:border-blue-500/50 focus:outline-none font-mono"
+                  placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-300">Chat ID</label>
+                <input
+                  type="text" value={notifyChatId} onChange={e => setNotifyChatId(e.target.value)}
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white text-sm focus:border-blue-500/50 focus:outline-none font-mono"
+                  placeholder="123456789"
+                />
+              </div>
+
+              {notifyBotToken && (
+                <p className="text-xs text-green-400">✅ 已設定通知，廣告有新留言時會自動發送 Telegram 訊息</p>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setNotifyTask(null)} className="flex-1 px-4 py-3 rounded-lg border border-white/10 hover:bg-white/5 transition-colors">
+                  取消
+                </button>
+                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                  儲存設定
                 </button>
               </div>
             </form>

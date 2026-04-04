@@ -43,6 +43,9 @@ const migrations = [
     { column: 'free_status', sql: 'ALTER TABLE tasks ADD COLUMN free_status TEXT' },
     { column: 'jkf_username', sql: 'ALTER TABLE tasks ADD COLUMN jkf_username TEXT' },
     { column: 'jkf_password', sql: 'ALTER TABLE tasks ADD COLUMN jkf_password TEXT' },
+    { column: 'last_reply_count', sql: 'ALTER TABLE tasks ADD COLUMN last_reply_count INTEGER' },
+    { column: 'telegram_bot_token', sql: 'ALTER TABLE tasks ADD COLUMN telegram_bot_token TEXT' },
+    { column: 'telegram_chat_id', sql: 'ALTER TABLE tasks ADD COLUMN telegram_chat_id TEXT' },
 ];
 for (const m of migrations) {
     try {
