@@ -40,8 +40,9 @@ const RULES = [
         category: 'stylists',
     },
     {
-        // 需要人工：預約、有空、指定
-        keywords: ['預約', '有空', '排班', '指定', '約', '還有人嗎', '今天有', '明天有', '可以約'],
+        // 需要人工：預約、有空、指定、詢問目前有誰/幾號
+        keywords: ['預約', '有空', '排班', '指定', '約', '還有人嗎', '今天有', '明天有', '可以約',
+                   '幾號', '幾位', '目前有', '有誰', '誰有空', '哪位', '哪號'],
         category: 'human',
     },
 ];
@@ -96,7 +97,7 @@ async function handleMessage(event) {
         // 人工轉接
         const defaultMsg =
             category === 'human'
-                ? '好的，我幫您問一下，請稍等！🙏'
+                ? '好的！請稍等一下，馬上確認誰有空 🙏'
                 : '收到您的訊息！我請專人為您回覆，請稍等 🙏';
 
         await client.replyMessage({

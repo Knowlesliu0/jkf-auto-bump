@@ -5,6 +5,12 @@ const ADMIN_ID = process.env.ADMIN_USER_ID;
 // 暫停超時時間（毫秒），預設 30 分鐘
 const PAUSE_TIMEOUT_MS = parseInt(process.env.PAUSE_TIMEOUT_MIN || '30', 10) * 60 * 1000;
 
+// 真人回覆後，AI 恢復等待時間（毫秒），預設 1 分鐘
+const RESUME_DELAY_MS = parseInt(process.env.RESUME_DELAY_MIN || '1', 10) * 60 * 1000;
+
+// 待恢復計時器：Map<userId, Timer>
+const resumeTimers = new Map();
+
 // 待處理的人工訊息佇列（記憶體中，重啟會清空）
 const pendingMessages = new Map();
 
@@ -128,13 +134,23 @@ async function handleAdminReply(text) {
         }
     }
 
-    // 恢復該用戶的機器人
-    resumeUser(targetUserId);
+    // 清除舊的恢復計時器（若真人連續回覆，重新計時）
+    if (resumeTimers.has(targetUserId)) {
+        clearTimeout(resumeTimers.get(targetUserId));
+    }
+
+    // 1 分鐘後若真人沒有再回覆，自動恢復 AI
+    const t = setTimeout(() => {
+        resumeTimers.delete(targetUserId);
+        resumeUser(targetUserId);
+        console.log(`🔔 真人 1 分鐘未繼續回覆，AI 已自動恢復服務客人 ${targetUserId}`);
+    }, RESUME_DELAY_MS);
+    resumeTimers.set(targetUserId, t);
 
     // 通知管理者回覆成功
     await client.pushMessage({
         to: ADMIN_ID,
-        messages: [{ type: 'text', text: `✅ 已回覆客人，機器人已恢復 🔔` }],
+        messages: [{ type: 'text', text: `✅ 已回覆客人。\n\n⏱ AI 將在 1 分鐘後自動恢復，若要繼續由您回覆，請在 1 分鐘內再傳訊息。` }],
     });
 }
 
