@@ -76,7 +76,7 @@ function startScheduler() {
                             const prevMaxId = task.last_reply_count; // NULL on first run
                             const newMaxId = result.replyCount;
 
-                            if (prevMaxId !== null && prevMaxId !== undefined && newMaxId > prevMaxId) {
+                            if (prevMaxId && prevMaxId > 0 && newMaxId > prevMaxId) {
                                 const taskName = result.threadTitle || task.name;
                                 const message = `🔔 <b>廣告有新留言！</b>\n\n📋 廣告：${taskName}\n🔗 連結：${task.url}`;
 
