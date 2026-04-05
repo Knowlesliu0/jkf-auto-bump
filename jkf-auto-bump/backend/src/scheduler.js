@@ -70,21 +70,22 @@ function startScheduler() {
                         }
 
                         // Check for new replies and send Telegram notification
-                        if (result.replyCount !== undefined && task.telegram_bot_token && task.telegram_chat_id) {
-                            const prevCount = task.last_reply_count; // NULL on first run
-                            const newCount = result.replyCount;
+                        // replyCount stores the max comment ID (timestamp-based), so
+                        // a higher value means a newer reply has appeared
+                        if (result.replyCount && task.telegram_bot_token && task.telegram_chat_id) {
+                            const prevMaxId = task.last_reply_count; // NULL on first run
+                            const newMaxId = result.replyCount;
 
-                            if (prevCount !== null && prevCount !== undefined && newCount > prevCount) {
-                                const newReplies = newCount - prevCount;
+                            if (prevMaxId !== null && prevMaxId !== undefined && newMaxId > prevMaxId) {
                                 const taskName = result.threadTitle || task.name;
-                                const message = `🔔 <b>廣告有新留言！</b>\n\n📋 廣告：${taskName}\n💬 留言數：${newCount} 則（+${newReplies} 則新留言）\n🔗 連結：${task.url}`;
+                                const message = `🔔 <b>廣告有新留言！</b>\n\n📋 廣告：${taskName}\n🔗 連結：${task.url}`;
 
                                 sendTelegramMessage(task.telegram_bot_token, task.telegram_chat_id, message)
-                                    .then(() => console.log(`[Telegram] ✅ 通知已發送，任務 ${task.id} 有 ${newReplies} 則新留言`))
+                                    .then(() => console.log(`[Telegram] ✅ 通知已發送，任務 ${task.id} 有新留言`))
                                     .catch(e => console.error(`[Telegram] ❌ 發送失敗（任務 ${task.id}）:`, e.message));
                             }
 
-                            db.prepare('UPDATE tasks SET last_reply_count = ? WHERE id = ?').run(newCount, task.id);
+                            db.prepare('UPDATE tasks SET last_reply_count = ? WHERE id = ?').run(newMaxId, task.id);
                         }
                     }
                 }).catch(e => {
