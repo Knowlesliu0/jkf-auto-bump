@@ -6,19 +6,19 @@ const { loginOnPage } = require('./loginAndGetCookies');
 async function getReplyCount(page) {
     try {
         return await page.evaluate(() => {
-            // Method 1: Count post elements (JKF uses li[id^="pid"] or [id^="post_"])
-            const posts = document.querySelectorAll('li[id^="pid"], [id^="post_"], .postlist .post');
-            if (posts.length > 1) return posts.length - 1; // subtract OP post
-
-            // Method 2: Find reply count in body text
-            const bodyText = document.body?.innerText || '';
-            const match = bodyText.match(/回覆[數数]?\s*[：:\s]\s*(\d+)/);
-            if (match) return parseInt(match[1]);
-
-            // Method 3: Count reply elements in thread
-            const replies = document.querySelectorAll('.reply, [class*="reply-item"], [class*="comment-item"]');
-            if (replies.length > 0) return replies.length;
-
+            // JKF Nuxt forum: each reply has id="comment-{ID}"
+            // IDs are timestamp-based — higher ID = newer reply
+            // JKF shows newest replies first, so tracking max ID detects new replies
+            // even when the page always shows a fixed number of replies (e.g. 20 per page)
+            const comments = document.querySelectorAll('[id^="comment-"]');
+            if (comments.length > 0) {
+                let maxId = 0;
+                for (const el of comments) {
+                    const idNum = parseInt(el.id.replace('comment-', ''), 10);
+                    if (!isNaN(idNum) && idNum > maxId) maxId = idNum;
+                }
+                return maxId;
+            }
             return 0;
         });
     } catch (e) {
