@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const db = require('./db');
 const { autoBump } = require('./scraper');
 const { sendTelegramMessage } = require('./telegram');
+const { notifyTaskIssue } = require('./taskNotifications');
 
 function startScheduler() {
     // Check every minute
@@ -55,6 +56,16 @@ function startScheduler() {
                         `).run(newStatus, lastRun, nextRun, result.message, task.id);
                     }
 
+                    if (!result.success) {
+                        notifyTaskIssue(task, newStatus, result.message, result)
+                            .then(sent => {
+                                if (sent) {
+                                    console.log(`[Telegram] ✅ 已通知任務 ${task.id} 自動有空狀態異常`);
+                                }
+                            })
+                            .catch(e => console.error(`[Telegram] ❌ 異常通知發送失敗（任務 ${task.id}）:`, e.message));
+                    }
+
                     if (result.success) {
                         if (result.topExpiresAt) {
                             db.prepare('UPDATE tasks SET top_expires_at = ? WHERE id = ?')
@@ -90,8 +101,16 @@ function startScheduler() {
                     }
                 }).catch(e => {
                     console.error(`[Scheduler] Error in autoBump for task ${task.id}`, e);
+                    const errorMessage = e && e.message ? e.message : String(e);
                     db.prepare('UPDATE tasks SET status = ?, last_message = ? WHERE id = ?')
-                        .run('failed', e.message, task.id);
+                        .run('failed', errorMessage, task.id);
+                    notifyTaskIssue(task, 'failed', errorMessage)
+                        .then(sent => {
+                            if (sent) {
+                                console.log(`[Telegram] ✅ 已通知任務 ${task.id} 自動有空執行錯誤`);
+                            }
+                        })
+                        .catch(err => console.error(`[Telegram] ❌ 執行錯誤通知發送失敗（任務 ${task.id}）:`, err.message));
                 });
             }
         } catch (error) {
