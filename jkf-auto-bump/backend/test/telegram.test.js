@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 const https = require('node:https');
+const childProcess = require('node:child_process');
 
 const { sendTelegramMessage } = require('../src/telegram');
 
@@ -88,5 +89,39 @@ test('sendTelegramMessage retries Telegram rate limit responses', async () => {
         assert.equal(mock.calls.length, 2);
     } finally {
         mock.restore();
+    }
+});
+
+test('sendTelegramMessage falls back to curl when Node TLS verification fails', async () => {
+    const originalRequest = https.request;
+    const originalExecFile = childProcess.execFile;
+    const calls = [];
+
+    https.request = () => {
+        const req = new EventEmitter();
+        req.write = () => { };
+        req.end = () => {
+            const error = new Error('unable to verify the first certificate');
+            error.code = 'UNABLE_TO_VERIFY_LEAF_SIGNATURE';
+            process.nextTick(() => req.emit('error', error));
+        };
+        return req;
+    };
+
+    childProcess.execFile = (command, args, options, callback) => {
+        calls.push({ command, args, options });
+        callback(null, JSON.stringify({ ok: true, result: { message_id: 99 } }), '');
+    };
+
+    try {
+        const result = await sendTelegramMessage('tls-token', 'tls-chat', 'message');
+
+        assert.equal(result.ok, true);
+        assert.equal(result.result.message_id, 99);
+        assert.equal(calls.length, 1);
+        assert.match(calls[0].args.join(' '), /sendMessage/);
+    } finally {
+        https.request = originalRequest;
+        childProcess.execFile = originalExecFile;
     }
 });

@@ -26,7 +26,13 @@ function getPreviousReplyMaxId(task = {}) {
 function hasNewReply(task, result) {
     const newMaxId = getReplyMaxId(result);
     const previousMaxId = getPreviousReplyMaxId(task);
-    return newMaxId !== null && previousMaxId > 0 && newMaxId > previousMaxId;
+    if (newMaxId === null) {
+        return false;
+    }
+    if (previousMaxId > 0) {
+        return newMaxId > previousMaxId;
+    }
+    return Boolean(task?.last_run);
 }
 
 function buildNewReplyMessage(task, result = {}) {

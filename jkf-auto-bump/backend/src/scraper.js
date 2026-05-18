@@ -3,13 +3,67 @@ const path = require('path');
 const fs = require('fs');
 const { loginOnPage } = require('./loginAndGetCookies');
 
-async function getReplyCount(page) {
+function extractThreadId(url) {
+    const match = String(url || '').match(/thread-(\d+)-/);
+    return match ? match[1] : null;
+}
+
+function buildLatestCommentsApiUrl(url) {
+    const threadId = extractThreadId(url);
+    if (!threadId) {
+        return null;
+    }
+    return `https://jkforum.net/api/jkf-forum/v1/CommentThread/${threadId}?authorOnly=false&sortingType=2&commentSortingColumn=0&Offset=0&Limit=20`;
+}
+
+function getMaxCommentId(commentResponse) {
+    const comments = Array.isArray(commentResponse?.content) ? commentResponse.content : [];
+    let maxId = 0;
+    for (const comment of comments) {
+        const idNum = Number(comment?.id);
+        if (Number.isFinite(idNum) && idNum > maxId) {
+            maxId = idNum;
+        }
+    }
+    return maxId;
+}
+
+async function getReplyCountFromLatestApi(page, url) {
+    const apiUrl = buildLatestCommentsApiUrl(url || page.url());
+    if (!apiUrl) {
+        return 0;
+    }
+
+    try {
+        return await page.evaluate(async latestCommentsApiUrl => {
+            const response = await fetch(latestCommentsApiUrl, {
+                headers: { Accept: 'application/json' },
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                return 0;
+            }
+            const data = await response.json();
+            const comments = Array.isArray(data?.content) ? data.content : [];
+            let maxId = 0;
+            for (const comment of comments) {
+                const idNum = Number(comment?.id);
+                if (Number.isFinite(idNum) && idNum > maxId) {
+                    maxId = idNum;
+                }
+            }
+            return maxId;
+        }, apiUrl);
+    } catch (e) {
+        return 0;
+    }
+}
+
+async function getReplyCountFromDom(page) {
     try {
         return await page.evaluate(() => {
             // JKF Nuxt forum: each reply has id="comment-{ID}"
-            // IDs are timestamp-based — higher ID = newer reply
-            // JKF shows newest replies first, so tracking max ID detects new replies
-            // even when the page always shows a fixed number of replies (e.g. 20 per page)
+            // IDs are timestamp-based; higher ID = newer reply.
             const comments = document.querySelectorAll('[id^="comment-"]');
             if (comments.length > 0) {
                 let maxId = 0;
@@ -24,6 +78,14 @@ async function getReplyCount(page) {
     } catch (e) {
         return 0;
     }
+}
+
+async function getReplyCount(page, url) {
+    const latestApiReplyCount = await getReplyCountFromLatestApi(page, url);
+    if (latestApiReplyCount > 0) {
+        return latestApiReplyCount;
+    }
+    return getReplyCountFromDom(page);
 }
 
 function hasJkfAuthCookie(cookies = []) {
@@ -244,7 +306,7 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
             let threadTitle = await page.title();
             threadTitle = threadTitle.replace(/ - JKF.*/, '').trim();
 
-            const replyCount = await getReplyCount(page);
+            const replyCount = await getReplyCount(page, url);
 
             // Save cookies from persistent context back to caller
             const rawCookies = await context.cookies();
@@ -290,7 +352,7 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
                 let threadTitle = await page.title();
                 threadTitle = threadTitle.replace(/ - JKF.*/, '').trim();
 
-                const replyCount = await getReplyCount(page);
+                const replyCount = await getReplyCount(page, url);
 
                 const rawCookies = await context.cookies();
                 const newCookieString = JSON.stringify(rawCookies);
@@ -335,4 +397,9 @@ async function autoBump(url, cookieString, jkfUsername, jkfPassword) {
     }
 }
 
-module.exports = { autoBump };
+module.exports = {
+    autoBump,
+    buildLatestCommentsApiUrl,
+    getMaxCommentId,
+    getReplyCount
+};
