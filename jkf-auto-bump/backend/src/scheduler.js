@@ -1,8 +1,8 @@
 const cron = require('node-cron');
 const db = require('./db');
 const { autoBump } = require('./scraper');
-const { sendTelegramMessage } = require('./telegram');
 const { notifyTaskIssue } = require('./taskNotifications');
+const { getReplyMaxId, notifyNewReply } = require('./replyNotifications');
 
 function startScheduler() {
     // Check every minute
@@ -80,23 +80,17 @@ function startScheduler() {
                                 .run(result.threadTitle, task.id);
                         }
 
-                        // Check for new replies and send Telegram notification
-                        // replyCount stores the max comment ID (timestamp-based), so
-                        // a higher value means a newer reply has appeared
-                        if (result.replyCount && task.telegram_bot_token && task.telegram_chat_id) {
-                            const prevMaxId = task.last_reply_count; // NULL on first run
-                            const newMaxId = result.replyCount;
+                        const newReplyMaxId = getReplyMaxId(result);
+                        if (newReplyMaxId !== null) {
+                            notifyNewReply(task, result)
+                                .then(sent => {
+                                    if (sent) {
+                                        console.log(`[Telegram] ✅ 通知已發送，任務 ${task.id} 有新留言`);
+                                    }
+                                })
+                                .catch(e => console.error(`[Telegram] ❌ 發送失敗（任務 ${task.id}）:`, e.message));
 
-                            if (prevMaxId && prevMaxId > 0 && newMaxId > prevMaxId) {
-                                const taskName = result.threadTitle || task.name;
-                                const message = `🔔 <b>廣告有新留言！</b>\n\n📋 廣告：${taskName}\n🔗 連結：${task.url}`;
-
-                                sendTelegramMessage(task.telegram_bot_token, task.telegram_chat_id, message)
-                                    .then(() => console.log(`[Telegram] ✅ 通知已發送，任務 ${task.id} 有新留言`))
-                                    .catch(e => console.error(`[Telegram] ❌ 發送失敗（任務 ${task.id}）:`, e.message));
-                            }
-
-                            db.prepare('UPDATE tasks SET last_reply_count = ? WHERE id = ?').run(newMaxId, task.id);
+                            db.prepare('UPDATE tasks SET last_reply_count = ? WHERE id = ?').run(newReplyMaxId, task.id);
                         }
                     }
                 }).catch(e => {

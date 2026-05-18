@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('../db');
 const { autoBump } = require('../scraper');
 const { authenticateToken } = require('../middleware/auth');
+const { getReplyMaxId, notifyNewReply } = require('../replyNotifications');
 
 const router = express.Router();
 
@@ -143,6 +144,19 @@ router.post('/:id/trigger', async (req, res) => {
                     SET status = ?, last_run = ?, next_run = ?, last_message = ?, top_expires_at = COALESCE(?, top_expires_at), free_status = COALESCE(?, free_status), name = COALESCE(?, name)
                     WHERE id = ?
                 `).run(newStatus, lastRun, nextRun, result.message, topExp, freeExp, result.threadTitle || null, task.id);
+            }
+
+            const newReplyMaxId = getReplyMaxId(result);
+            if (newReplyMaxId !== null) {
+                try {
+                    const sent = await notifyNewReply(task, result);
+                    if (sent) {
+                        console.log(`[Telegram] ✅ 通知已發送，任務 ${task.id} 有新留言`);
+                    }
+                } catch (e) {
+                    console.error(`[Telegram] ❌ 發送失敗（任務 ${task.id}）:`, e.message);
+                }
+                db.prepare('UPDATE tasks SET last_reply_count = ? WHERE id = ?').run(newReplyMaxId, task.id);
             }
         } else {
             if (result.newCookieString) {
